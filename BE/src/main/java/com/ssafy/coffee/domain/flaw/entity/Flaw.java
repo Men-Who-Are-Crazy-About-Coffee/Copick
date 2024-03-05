@@ -1,3 +1,27 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:b6b5ee80422caa6bfa8e6cbf923f0dece807a7f4fbe27f9c58e79f14849059c2
-size 710
+package com.ssafy.coffee.domain.flaw.entity;
+
+import com.ssafy.coffee.domain.result.entity.Result;
+import com.ssafy.coffee.global.entity.BaseObject;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Getter
+@NoArgsConstructor
+public class Flaw extends BaseObject {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "flaw_index", nullable = false)
+    private Long FlawIndex;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "result_index", nullable = false)
+    private Result result;
+
+    @Column(name = "flaw_image_path", nullable = false, length = 255)
+    private String imagePath;
+
+    // Constructors, Setters
+}

@@ -1,3 +1,21 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:4aaa503ca1deab9e79cb5a36bad1d5a06d34584a35113bd40d102a2cadd78f4b
-size 452
+package com.ssafy.coffee.domain.Bean.entity;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Getter
+@NoArgsConstructor
+public class Bean {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "bean_index", nullable = false)
+    private Long index;
+
+    @Column(name = "bean_type", nullable = false, length = 255)
+    private String type;
+
+    // Constructors and Setters
+}

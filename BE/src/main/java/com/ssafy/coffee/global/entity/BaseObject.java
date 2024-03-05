@@ -1,3 +1,30 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:e409fb4f008472fbd36f91307742ecc45075137bf0064bf4cf086cce08b20b76
-size 875
+package com.ssafy.coffee.global.entity;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDateTime;
+
+@MappedSuperclass
+@NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
+@Getter
+public abstract class BaseObject {
+
+    @Setter
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false; // 데이터 삭제 여부, 기본값 false
+
+    @CreatedDate
+    @Column(name = "reg_date", nullable = false)
+    private LocalDateTime regDate; // 등록 일시
+
+    @LastModifiedDate
+    @Column(name = "mod_date")
+    private LocalDateTime modDate; // 수정 일시
+}
