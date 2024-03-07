@@ -1,7 +1,10 @@
 package com.ssafy.coffee.domain.member.entity;
 
+import com.ssafy.coffee.global.constant.AuthType;
+import com.ssafy.coffee.global.constant.Role;
 import com.ssafy.coffee.global.entity.BaseObject;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,6 +25,14 @@ public class Member extends BaseObject {
     @Column(name = "member_password", nullable = false, length = 255)
     private String password;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name="member_role",nullable = false)
+    private Role role =Role.USER;
+
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "member_auth_type", nullable = false)
+    private AuthType authType;
+
     @Setter
     @Column(name = "member_nickname", nullable = false, length = 255)
     private String nickname;
@@ -31,4 +42,14 @@ public class Member extends BaseObject {
     private String profileImage;
 
     // Constructors, Setters
+    @Builder
+    public Member(Long index, String id, String password, Role role, AuthType authType, String nickname, String profileImage) {
+        this.index=index;
+        this.id = id;
+        this.password = password;
+        this.role = role;
+        this.authType = authType;
+        this.nickname = nickname;
+        this.profileImage = profileImage;
+    }
 }
