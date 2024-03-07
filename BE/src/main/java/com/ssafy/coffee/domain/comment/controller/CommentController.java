@@ -16,8 +16,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.awt.print.Pageable;
+import org.springframework.data.domain.Pageable;
 
 @RestController
 @RequiredArgsConstructor
@@ -39,6 +38,7 @@ public class CommentController {
 
     @Operation(summary = "게시물별 댓글 조회", description = "특정 게시물의 모든 댓글을 조회합니다.")
     @ApiResponse(responseCode = "200", description = "댓글 조회에 성공", content = @Content(schema = @Schema(implementation = CommentGetListResponseDto.class)))
+    @ApiResponse(responseCode = "404", description = "제공된 boardIndex로 댓글을 찾을 수 없음")
     @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터")
     @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     @GetMapping("/board/{boardIndex}")
@@ -51,6 +51,7 @@ public class CommentController {
 
     @Operation(summary = "사용자별 댓글 조회", description = "특정 사용자가 작성한 모든 댓글을 조회합니다.")
     @ApiResponse(responseCode = "200", description = "댓글 조회에 성공", content = @Content(schema = @Schema(implementation = CommentGetListResponseDto.class)))
+    @ApiResponse(responseCode = "404", description = "제공된 userIndex로 댓글을 찾을 수 없음")
     @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터")
     @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     @GetMapping("/user/{userIndex}")
@@ -63,22 +64,24 @@ public class CommentController {
 
     @Operation(summary = "댓글 수정", description = "기존 댓글을 수정합니다.")
     @ApiResponse(responseCode = "204", description = "댓글이 성공적으로 업데이트됨")
+    @ApiResponse(responseCode = "404", description = "제공된 commentIndex로 댓글을 찾을 수 없음")
     @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터")
     @ApiResponse(responseCode = "500", description = "서버 내부 오류")
-    @PutMapping("/{CommentIndex}")
-    public ResponseEntity<Object> updateComment(@PathVariable Long CommentIndex,
+    @PutMapping("/{commentIndex}")
+    public ResponseEntity<Object> updateComment(@PathVariable Long commentIndex,
                                                 @Valid @RequestBody CommentUpdateRequestDto commentUpdateRequestDto) {
-        commentService.updateComment(CommentIndex, commentUpdateRequestDto);
+        commentService.updateComment(commentIndex, commentUpdateRequestDto);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Comment updated successfully");
     }
 
     @Operation(summary = "댓글 삭제", description = "댓글을 삭제합니다.")
     @ApiResponse(responseCode = "204", description = "댓글이 성공적으로 삭제됨")
+    @ApiResponse(responseCode = "404", description = "제공된 commentIndex로 댓글을 찾을 수 없음")
     @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터")
     @ApiResponse(responseCode = "500", description = "서버 내부 오류")
-    @DeleteMapping("/{CommentIndex}")
-    public ResponseEntity<Object> deleteComment(@PathVariable Long CommentIndex) {
-        commentService.deleteComment(CommentIndex);
+    @DeleteMapping("/{commentIndex}")
+    public ResponseEntity<Object> deleteComment(@PathVariable Long commentIndex) {
+        commentService.deleteComment(commentIndex);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Comment deleted successfully");
     }
 }

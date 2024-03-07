@@ -1,2 +1,8 @@
-package com.ssafy.coffee.domain.Bean.dto;public class BeanPostRequestDto {
+package com.ssafy.coffee.domain.bean.dto;
+
+import lombok.Data;
+
+@Data
+public class BeanPostRequestDto {
+    private String type;
 }

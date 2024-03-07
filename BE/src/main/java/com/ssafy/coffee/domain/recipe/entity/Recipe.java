@@ -1,6 +1,6 @@
 package com.ssafy.coffee.domain.recipe.entity;
 
-import com.ssafy.coffee.domain.Bean.entity.Bean;
+import com.ssafy.coffee.domain.bean.entity.Bean;
 import com.ssafy.coffee.domain.roasting.entity.Roasting;
 import com.ssafy.coffee.global.entity.AuditableBaseObject;
 import jakarta.persistence.*;
