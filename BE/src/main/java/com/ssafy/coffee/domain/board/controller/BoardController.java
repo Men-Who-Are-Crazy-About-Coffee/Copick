@@ -49,7 +49,7 @@ public class BoardController {
         return ResponseEntity.status(HttpStatus.OK).body(boardGetResponseDto);
     }
 
-    @Operation(summary = "게시판 검색", description = "키워드, 위치, 카테고리, 정렬 기준, 페이지, 페이지 크기를 이용하여 게시판을 검색합니다.")
+    @Operation(summary = "게시판 검색", description = "키워드, 도메인, 정렬 기준, 페이지, 페이지 크기를 이용하여 게시판을 검색합니다.")
     @ApiResponse(responseCode = "200", description = "상점 검색 성공",
             content = @Content(array = @ArraySchema(schema = @Schema(implementation = BoardGetResponseDto.class))))
     @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터")
