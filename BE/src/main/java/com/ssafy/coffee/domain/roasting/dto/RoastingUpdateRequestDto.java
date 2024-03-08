@@ -1,9 +1,9 @@
-package com.ssafy.coffee.domain.bean.dto;
+package com.ssafy.coffee.domain.roasting.dto;
 
 import lombok.Data;
 
 @Data
-public class BeanUpdateRequestDto {
+public class RoastingUpdateRequestDto {
     private String type;
     private String content;
     private String image;

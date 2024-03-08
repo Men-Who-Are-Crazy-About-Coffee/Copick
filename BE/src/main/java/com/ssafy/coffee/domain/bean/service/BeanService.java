@@ -7,6 +7,8 @@ import com.ssafy.coffee.domain.bean.repository.BeanRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class BeanService {
@@ -20,6 +22,10 @@ public class BeanService {
         return null;
     }
 
+    public List<BeanGetResponseDto> getAllBeans() {
+        return null;
+    }
+
     public void updateBean(Long beanId, BeanUpdateRequestDto beanUpdateRequestDto) {
 
     }
@@ -27,4 +33,6 @@ public class BeanService {
     public void deleteBean(Long beanId) {
 
     }
+
+
 }

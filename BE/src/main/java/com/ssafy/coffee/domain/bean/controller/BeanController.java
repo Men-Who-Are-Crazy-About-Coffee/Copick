@@ -15,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "bean", description = "커피콩 API")
@@ -42,6 +44,16 @@ public class BeanController {
     public ResponseEntity<Object> getBean(@PathVariable Long beanIndex) {
         BeanGetResponseDto beanGetResponseDto = beanService.getBean(beanIndex);
         return ResponseEntity.status(HttpStatus.OK).body(beanGetResponseDto);
+    }
+
+    @Operation(summary = "모든 커피콩 조회", description = "저장된 모든 커피콩의 정보를 조회합니다.")
+    @ApiResponse(responseCode = "200", description = "커피콩 리스트 조회에 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = BeanGetResponseDto.class)))
+    @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터")
+    @ApiResponse(responseCode = "500", description = "서버 내부 오류")
+    @GetMapping
+    public ResponseEntity<List<BeanGetResponseDto>> getAllBeans() {
+        List<BeanGetResponseDto> beans = beanService.getAllBeans();
+        return ResponseEntity.status(HttpStatus.OK).body(beans);
     }
 
     @Operation(summary = "커피콩 수정", description = "기존 커피콩 정보를 수정합니다.")
