@@ -5,6 +5,7 @@ import com.ssafy.coffee.domain.bean.dto.BeanPostRequestDto;
 import com.ssafy.coffee.domain.bean.dto.BeanUpdateRequestDto;
 import com.ssafy.coffee.domain.bean.service.BeanService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -47,10 +48,10 @@ public class BeanController {
     }
 
     @Operation(summary = "모든 커피콩 조회", description = "저장된 모든 커피콩의 정보를 조회합니다.")
-    @ApiResponse(responseCode = "200", description = "커피콩 리스트 조회에 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = BeanGetResponseDto.class)))
+    @ApiResponse(responseCode = "200", description = "커피콩 리스트 조회에 성공", content = @Content(array = @ArraySchema(schema = @Schema(implementation = BeanGetResponseDto.class))))
     @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터")
     @ApiResponse(responseCode = "500", description = "서버 내부 오류")
-    @GetMapping
+    @GetMapping("/list")
     public ResponseEntity<List<BeanGetResponseDto>> getAllBeans() {
         List<BeanGetResponseDto> beans = beanService.getAllBeans();
         return ResponseEntity.status(HttpStatus.OK).body(beans);

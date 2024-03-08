@@ -5,6 +5,7 @@ import com.ssafy.coffee.domain.roasting.dto.RoastingPostRequestDto;
 import com.ssafy.coffee.domain.roasting.dto.RoastingUpdateRequestDto;
 import com.ssafy.coffee.domain.roasting.service.RoastingService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -46,11 +47,10 @@ public class RoastingController {
         return ResponseEntity.status(HttpStatus.OK).body(roastingGetResponseDto);
     }
 
-    // RoastingController 내에 추가
     @Operation(summary = "배전도 리스트 조회", description = "저장된 모든 배전도의 리스트를 페이지네이션으로 조회합니다.")
     @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터")
     @ApiResponse(responseCode = "500", description = "서버 내부 오류")
-    @ApiResponse(responseCode = "200", description = "배전도 리스트 조회에 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = RoastingGetResponseDto.class)))
+    @ApiResponse(responseCode = "200", description = "배전도 리스트 조회에 성공", content = @Content(array = @ArraySchema(schema = @Schema(implementation = RoastingGetResponseDto.class))))
     @GetMapping("/list")
     public ResponseEntity<List<RoastingGetResponseDto>> getAllRoastings() {
         List<RoastingGetResponseDto> roastingPage = roastingService.getAllRoastings();
