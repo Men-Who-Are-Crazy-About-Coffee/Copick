@@ -1,0 +1,89 @@
+package com.ssafy.coffee.global.auth.controller;
+
+import com.ssafy.coffee.domain.RefreshToken.entity.RefreshToken;
+import com.ssafy.coffee.domain.RefreshToken.repository.RefreshTokenRepository;
+import com.ssafy.coffee.global.auth.dto.*;
+import com.ssafy.coffee.global.auth.service.AuthService;
+import com.ssafy.coffee.global.auth.service.JwtService;
+
+import com.ssafy.coffee.global.util.JwtUtil;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@Slf4j
+@RequestMapping("/api/auth")
+@RequiredArgsConstructor
+public class AuthController {
+    private final AuthService authService;
+    private final JwtService jwtService;
+    private final RefreshTokenRepository refreshTokenRepository;
+    @PostMapping("/refresh")
+    public ResponseEntity<?> requestAccessToken(HttpServletResponse response, HttpServletRequest request) {
+        log.debug("엑세스토큰 재발급");
+
+        String refreshTokenCookie="";
+        Cookie[] cookies = request.getCookies();
+        if(cookies!=null) {
+            for (Cookie cookie : cookies) {
+                if("refresh_token".equals(cookie.getName())) {
+                    refreshTokenCookie=cookie.getValue();
+                }
+            }
+            if(StringUtils.hasText(refreshTokenCookie)
+                    && jwtService.validateRefreshToken(refreshTokenCookie)) {
+                RefreshToken refreshToken = jwtService.findRefreshToken(refreshTokenCookie);
+                AccessTokenDto accessTokenDto = AccessTokenDto.builder()
+                                .accessToken(jwtService.createAccessToken(refreshToken.getMemberIndex(), List.of(() -> refreshToken.getRole().toString()), refreshToken.getAuthType()))
+                                        .build();
+                response.setHeader(JwtUtil.AUTHORIZATION_HEADER, accessTokenDto.getAccessToken());
+                return new ResponseEntity<>(accessTokenDto, HttpStatus.CREATED);
+            }
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+    @PostMapping("/login")
+    public ResponseEntity<TokenInfoDto> authLogin(@RequestBody LoginDto loginDto, HttpServletResponse response) {
+        log.debug("인증 시작");
+
+        TokenInfoDto tokenInfoDto = authService.login(loginDto);
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        // response header에 jwt token에 넣어줌
+        httpHeaders.add(JwtUtil.AUTHORIZATION_HEADER, "Bearer " + tokenInfoDto.getAccessToken());
+        Cookie cookie = new Cookie("refresh_token", tokenInfoDto.getRefreshToken());
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge(JwtUtil.getRefreshTokenExpiredTime());
+        cookie.setPath("/");
+//        cookie.setSecure(true); // https가 아니므로 아직 안됨
+        response.addCookie(cookie);
+
+
+        // tokenDto를 이용해 response body에도 넣어서 리턴
+        return new ResponseEntity<>(tokenInfoDto, httpHeaders, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<? extends AccessTokenDto> authJoin(@RequestBody RegisterMemberRequestDto registerDto, HttpServletResponse response){
+        authService.registerMember(registerDto);
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+    }
+    @DeleteMapping("/logout")
+    public ResponseEntity<?> logout(@RequestParam String refreshToken){
+        refreshTokenRepository.delete(RefreshToken.builder().refreshToken(refreshToken).build());
+        return ResponseEntity.ok().build();
+    }
+
+
+}
