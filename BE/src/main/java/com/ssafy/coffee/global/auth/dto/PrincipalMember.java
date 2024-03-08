@@ -21,10 +21,14 @@ public class PrincipalMember implements OAuth2User, UserDetails   {
         this.member = member;
         this.attributes = attributes;
     }
+    @Builder
+    public PrincipalMember(Member member){
+        this.member=member;
+    }
 
     @Override
     public String getName() {
-        return member.getNickname();
+        return String.valueOf(member.getIndex());
     }
 
     @Override
@@ -73,4 +77,6 @@ public class PrincipalMember implements OAuth2User, UserDetails   {
     public Member toEntity() {
         return member;
     }
+
+    public String getNickname() { return member.getNickname();}
 }

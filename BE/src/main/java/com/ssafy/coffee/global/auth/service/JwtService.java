@@ -24,6 +24,7 @@ import com.ssafy.coffee.global.util.JwtUtil;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -67,11 +68,11 @@ public class JwtService {
     }
 
     public TokenInfoDto createToken(Authentication authentication) {
-        Member oAuth2User = (Member) authentication.getPrincipal();
+        Member member = (Member) authentication.getPrincipal();
 
-        String accessToken= createAccessToken(oAuth2User.getIndex(),authentication.getAuthorities(),oAuth2User.getAuthType());
+        String accessToken= createAccessToken(member.getIndex(),authentication.getAuthorities(),member.getAuthType());
 
-        String refreshToken= createRefreshToken(authentication.getName());
+        String refreshToken= createRefreshToken(String.valueOf(member.getIndex()));
 
         return TokenInfoDto.builder()
                 .accessToken(accessToken)
@@ -127,26 +128,46 @@ public class JwtService {
                 Arrays.stream(claims.get("hasGrade").toString().split(","))
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
-        if(claims.get("hasGrade").toString().equals(Role.GUEST.toString())){
-            PrincipalMember principal = PrincipalMember.builder()
-                    .member(Member.builder()
-                            .index(Long.valueOf(claims.get("userIndex").toString()))
-                            .role(Role.valueOf(claims.get("hasGrade").toString()))
-                            .build()
-                    )
-                    .build();
-            return new OAuth2AuthenticationToken(principal, authorities, claims.get("authType").toString());
+
+        switch (AuthType.valueOf(claims.get("authType").toString())) {
+            case GUEST -> {
+                PrincipalMember principal = PrincipalMember.builder()
+                        .member(Member.builder()
+                                .nickname("GUEST")
+                                .role(Role.valueOf(claims.get("hasGrade").toString()))
+                                .build()
+                        )
+                        .build();
+                return new OAuth2AuthenticationToken(principal, authorities, claims.get("authType").toString());
+            }
+            case LOCAL -> {
+                PrincipalMember principal = PrincipalMember.builder()
+                        .member(Member.builder()
+                                .index(Long.valueOf(claims.get("userIndex").toString()))
+                                .nickname(claims.get("userNickName").toString())
+                                .role(Role.valueOf(claims.get("hasGrade").toString()))
+                                .authType(AuthType.valueOf(claims.get("authType").toString()))
+                                .build()
+                        )
+                        .build();
+                return new UsernamePasswordAuthenticationToken(principal,token,authorities);
+            }
+            case KAKAO,NAVER -> {
+                PrincipalMember principal = PrincipalMember.builder()
+                        .member(Member.builder()
+                                .index(Long.valueOf(claims.get("userIndex").toString()))
+                                .nickname(claims.get("userNickName").toString())
+                                .role(Role.valueOf(claims.get("hasGrade").toString()))
+                                .authType(AuthType.valueOf(claims.get("authType").toString()))
+                                .build()
+                        )
+                        .build();
+
+                return new OAuth2AuthenticationToken(principal, authorities, claims.get("authType").toString());
+            }
         }
+        return null;
 
-        PrincipalMember principal = PrincipalMember.builder()
-                .member(Member.builder()
-                        .index(Long.valueOf(claims.get("userIndex").toString()))
-                        .role(Role.valueOf(claims.get("hasGrade").toString()))
-                        .build()
-                )
-                .build();
-
-        return new OAuth2AuthenticationToken(principal, authorities, claims.get("authType").toString());
     }
 
     public boolean validateAccessToken(String token) {
@@ -206,12 +227,12 @@ public class JwtService {
     }
 
 
-    public String createAndSaveRefreshToken(Member oAuth2User) {
+    public String createAndSaveRefreshToken(Member member) {
         LocalDateTime now = LocalDateTime.now(ZoneId.of(TIME_ZONE));
         LocalDateTime expireTime=now.plusSeconds(refreshTokenExpiredTime);
         String refreshToekn= Jwts.builder()
                 .subject("refreshToken")
-                .claim("userIndex",oAuth2User.getIndex())
+                .claim("userIndex",member.getIndex())
                 .issuedAt(Date.from(now.atZone(ZoneId.of(TIME_ZONE)).toInstant()))
                 .expiration(Date.from(expireTime.atZone(ZoneId.of(TIME_ZONE)).toInstant())) // set Expire Time
                 .signWith(key)
@@ -220,8 +241,8 @@ public class JwtService {
 
         tokenRepository.save(RefreshToken.builder()
                 .refreshToken(refreshToekn)
-                .authType(oAuth2User.getAuthType())
-                .role(oAuth2User.getRole())
+                .authType(member.getAuthType())
+                .role(member.getRole())
                 .expireTime(refreshTokenExpiredTime)
                 .build()
         );

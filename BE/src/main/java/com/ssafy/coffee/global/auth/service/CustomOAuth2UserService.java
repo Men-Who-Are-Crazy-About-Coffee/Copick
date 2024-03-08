@@ -51,6 +51,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         if(member==null){
             member=Member.builder()
+                    .id(memberId)
                     .authType(snsType)
                     .nickname(memberNickname)
                     .profileImage(memberProfileImageUrl)

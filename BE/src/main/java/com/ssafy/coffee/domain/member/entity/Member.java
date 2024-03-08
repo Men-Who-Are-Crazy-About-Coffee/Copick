@@ -10,6 +10,7 @@ import lombok.*;
 @Getter
 @ToString
 @NoArgsConstructor
+@ToString
 public class Member extends BaseObject {
 
     @Id
@@ -17,10 +18,10 @@ public class Member extends BaseObject {
     @Column(name = "member_index", nullable = false)
     private Long index;
 
-    @Column(name = "member_id", nullable = false, unique = true, length = 255)
+    @Column(name = "member_id", nullable = false, length = 255)
     private String id;
 
-    @Column(name = "member_password", nullable = false, length = 255)
+    @Column(name = "member_password", length = 255)
     private String password;
 
     @Enumerated(EnumType.STRING)
@@ -32,7 +33,7 @@ public class Member extends BaseObject {
     private AuthType authType;
 
     @Setter
-    @Column(name = "member_nickname", nullable = false, length = 255)
+    @Column(name = "member_nickname", length = 255)
     private String nickname;
 
     @Setter
