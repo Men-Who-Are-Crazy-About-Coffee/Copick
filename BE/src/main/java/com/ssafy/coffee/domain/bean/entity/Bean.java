@@ -19,5 +19,13 @@ public class Bean {
     @Column(name = "bean_type", nullable = false, length = 255)
     private String type;
 
+    @Setter
+    @Column(name = "bean_content", nullable = false, length = 255)
+    private String content;
+
+    @Setter
+    @Column(name = "bean_image", nullable = false, length = 255)
+    private String image;
+
     // Constructors
 }

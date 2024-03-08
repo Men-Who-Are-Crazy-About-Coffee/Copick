@@ -4,13 +4,11 @@ import com.ssafy.coffee.global.constant.AuthType;
 import com.ssafy.coffee.global.constant.Role;
 import com.ssafy.coffee.global.entity.BaseObject;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Getter
+@ToString
 @NoArgsConstructor
 public class Member extends BaseObject {
 
