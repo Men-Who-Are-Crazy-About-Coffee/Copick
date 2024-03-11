@@ -10,7 +10,6 @@ import lombok.*;
 @Getter
 @ToString
 @NoArgsConstructor
-@ToString
 public class Member extends BaseObject {
 
     @Id
