@@ -14,31 +14,31 @@ public class Member extends BaseObject {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_index", nullable = true)
+    @Column(name = "member_index", nullable = false)
     private Long index;
 
-    @Column(name = "member_id", nullable = true, length = 255)
+    @Column(name = "member_id", nullable = false, length = 255)
     private String id;
 
     @Setter
-    @Column(name = "member_password", nullable = true, length = 255)
+    @Column(name = "member_password", length = 255)
     private String password;
 
     @Setter
     @Enumerated(EnumType.STRING)
-    @Column(name = "member_role", nullable = true)
+    @Column(name = "member_role", nullable = false)
     private Role role = Role.USER;
 
     @Enumerated(EnumType.ORDINAL)
-    @Column(name = "member_auth_type", nullable = true)
+    @Column(name = "member_auth_type", nullable = false)
     private AuthType authType;
 
     @Setter
-    @Column(name = "member_nickname", nullable = true, length = 255)
+    @Column(name = "member_nickname", length = 255)
     private String nickname;
 
     @Setter
-    @Column(name = "member_profile_image", nullable = true, length = 255)
+    @Column(name = "member_profile_image", length = 255)
     private String profileImage;
 
     @Builder
