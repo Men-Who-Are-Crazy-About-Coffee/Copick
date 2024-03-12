@@ -1,4 +1,4 @@
-package com.ssafy.coffee.domain.flaw.entity;
+package com.ssafy.coffee.domain.result.entity;
 
 import com.ssafy.coffee.domain.result.entity.Result;
 import com.ssafy.coffee.global.entity.BaseObject;
@@ -17,11 +17,11 @@ public class Flaw extends BaseObject {
     private Long FlawIndex;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "result_index", nullable = false)
-    private Result result;
+    @JoinColumn(name = "case_index", nullable = false)
+    private Case aCase;
 
-    @Column(name = "flaw_image_path", nullable = false, length = 255)
-    private String imagePath;
+    @Column(name = "flaw_link", nullable = false, length = 255)
+    private String link;
 
     // Constructors, Setters
 }
