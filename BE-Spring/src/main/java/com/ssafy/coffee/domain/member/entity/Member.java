@@ -20,9 +20,11 @@ public class Member extends BaseObject {
     @Column(name = "member_id", nullable = true, length = 255)
     private String id;
 
+    @Setter
     @Column(name = "member_password", nullable = true, length = 255)
     private String password;
 
+    @Setter
     @Enumerated(EnumType.STRING)
     @Column(name = "member_role", nullable = true)
     private Role role = Role.USER;

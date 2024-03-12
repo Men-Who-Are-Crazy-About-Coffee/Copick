@@ -34,18 +34,41 @@ public class MemberService {
     }
 
     public MemberRequestGetDto getMember(Long memberIndex) {
-        Member member = memberRepository.findByIndex(memberIndex)
+        Member member = memberRepository.findByIndexAndDeletedNot(memberIndex)
                 .orElseThrow(() -> new EntityNotFoundException("Member not found with index: " + memberIndex));
 
         return toDto(member);
     }
 
+    @Transactional
     public void updateMember(Long memberIndex, MemberUpdateRequestDto memberUpdateRequestDto) {
+        Member member = memberRepository.findByIndexAndDeletedNot(memberIndex)
+                .orElseThrow(() -> new IllegalArgumentException("Member not found with index: " + memberIndex));
 
+        if (memberUpdateRequestDto.getNickname() != null)
+            member.setNickname(memberUpdateRequestDto.getNickname());
+
+        if (memberUpdateRequestDto.getProfileImage() != null)
+            member.setProfileImage(memberUpdateRequestDto.getProfileImage());
+
+        if (memberUpdateRequestDto.getPassword() != null)
+            member.setPassword(passwordEncoder.encode(memberUpdateRequestDto.getPassword()));
+
+        if (memberUpdateRequestDto.getRole() != null) {
+            try {
+                Role role = Role.valueOf(memberUpdateRequestDto.getRole().toUpperCase());
+                member.setRole(role);
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Invalid role value: " + memberUpdateRequestDto.getRole());
+            }
+        }
     }
 
     public void deleteMember(Long memberIndex) {
+        Member member = memberRepository.findByIndexAndDeletedNot(memberIndex)
+                .orElseThrow(() -> new IllegalArgumentException("Member not found with index: " + memberIndex));
 
+        member.setDeleted(true);
     }
 
     public MemberRequestGetDto toDto(Member member) {

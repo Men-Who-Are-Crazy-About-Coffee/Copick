@@ -1,6 +1,5 @@
 package com.ssafy.coffee.domain.result.entity;
 
-import com.ssafy.coffee.domain.result.entity.Result;
 import com.ssafy.coffee.global.entity.BaseObject;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -18,7 +17,7 @@ public class Flaw extends BaseObject {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_index", nullable = false)
-    private Case aCase;
+    private Sequence sequence;
 
     @Column(name = "flaw_link", nullable = false, length = 255)
     private String link;

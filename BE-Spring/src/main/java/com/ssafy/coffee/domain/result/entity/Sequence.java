@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class Case {
+public class Sequence {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
