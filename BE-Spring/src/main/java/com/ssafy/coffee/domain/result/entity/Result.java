@@ -30,10 +30,10 @@ public class Result extends BaseObject {
     @JoinColumn(name = "Rosting_index", nullable = false)
     private Roasting rosting;
 
-    @Column(name = "result_normal", nullable = false)
+    @Column(name = "result_normal")
     private int normalBeanCount;
 
-    @Column(name = "result_flaw", nullable = false)
+    @Column(name = "result_flaw")
     private int flawBeanCount;
 
     // Constructors, Setters
