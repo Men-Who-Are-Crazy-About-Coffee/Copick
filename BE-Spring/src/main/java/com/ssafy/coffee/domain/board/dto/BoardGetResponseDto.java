@@ -1,3 +1,18 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:b42a37df33c55c56f4b2627b5dfa279ea86ea8a07936c7a49b6c73fdfc20a43b
-size 456
+package com.ssafy.coffee.domain.board.dto;
+import com.ssafy.coffee.domain.board.entity.BoardDomain;
+import lombok.Data;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Data
+public class BoardGetResponseDto {
+    private Long boardIndex;
+    private Long userId;
+    private String userName;
+    private List<String> images;
+    private String title;
+    private String content;
+    private BoardDomain domain;
+    private LocalDateTime regDate;
+}

@@ -1,3 +1,11 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:2fa111834a4c3157d9eb11e0e0355d5eefef5af576faa6a8aaabc12df94f095f
-size 246
+package com.ssafy.coffee.domain.bean.dto;
+
+import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
+
+@Data
+public class BeanPostRequestDto {
+    private String type;
+    private String content;
+    private MultipartFile file;
+}
