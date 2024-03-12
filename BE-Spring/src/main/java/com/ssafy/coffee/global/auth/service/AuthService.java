@@ -28,11 +28,24 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
 
+    @Transactional
+    public void registerMember(RegisterMemberRequestDto memberRequestDto){
+        if(memberRepository.existsByIdAndAuthType(memberRequestDto.getId(), AuthType.LOCAL))
+            return;
+
+        memberRepository.save(Member.builder()
+                .id(memberRequestDto.getId())
+                .role(Role.USER)
+                .authType(AuthType.LOCAL)
+                .nickname(memberRequestDto.getNickname())
+                .password(passwordEncoder.encode(memberRequestDto.getPassword()))
+                .build());
+    }
 
     public TokenInfoDto login(LoginDto loginDto){
-
         return createAuthenticationToken(loginDto.getId(), loginDto.getPassword());
     }
+
     public TokenInfoDto createAuthenticationToken(String userName, String userPassword) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(userName,userPassword);
@@ -49,17 +62,6 @@ public class AuthService {
         }
         return tokenInfoDto;
     }
-    @Transactional
-    public void registerMember(RegisterMemberRequestDto memberRequestDto){
-        if(memberRepository.existsByIdAndAuthType(memberRequestDto.getId(), AuthType.LOCAL))
-            return;
-        memberRepository.save(Member.builder()
-                .id(memberRequestDto.getId())
-                .role(Role.USER)
-                .authType(AuthType.LOCAL)
-                .nickname(memberRequestDto.getNickname())
-                .password(passwordEncoder.encode(memberRequestDto.getPassword()))
-                .build());
-    }
+
 
 }

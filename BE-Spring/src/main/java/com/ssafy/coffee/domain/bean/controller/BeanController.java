@@ -4,6 +4,7 @@ import com.ssafy.coffee.domain.bean.dto.BeanGetResponseDto;
 import com.ssafy.coffee.domain.bean.dto.BeanPostRequestDto;
 import com.ssafy.coffee.domain.bean.dto.BeanUpdateRequestDto;
 import com.ssafy.coffee.domain.bean.service.BeanService;
+import com.ssafy.coffee.global.auth.dto.PrincipalMember;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -14,6 +15,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,7 +33,8 @@ public class BeanController {
     @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터")
     @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     @PostMapping
-    public ResponseEntity<Object> addBean(@RequestBody BeanPostRequestDto beanPostRequestDto) {
+    public ResponseEntity<Object> addBean(@ModelAttribute BeanPostRequestDto beanPostRequestDto) {
+
         beanService.addBean(beanPostRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body("Bean added successfully");
     }
@@ -64,7 +67,9 @@ public class BeanController {
     @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     @PutMapping("/{beanIndex}")
     public ResponseEntity<Object> updateBean(@PathVariable Long beanIndex,
-                                             @Valid @RequestBody BeanUpdateRequestDto beanUpdateRequestDto) {
+                                             @Valid @RequestBody BeanUpdateRequestDto beanUpdateRequestDto,
+                                             @AuthenticationPrincipal PrincipalMember principalMember) {
+
         beanService.updateBean(beanIndex, beanUpdateRequestDto);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Bean updated successfully");
     }
@@ -75,7 +80,9 @@ public class BeanController {
     @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터")
     @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     @DeleteMapping("/{beanIndex}")
-    public ResponseEntity<Object> deleteBean(@PathVariable Long beanIndex) {
+    public ResponseEntity<Object> deleteBean(@PathVariable Long beanIndex,
+                                             @AuthenticationPrincipal PrincipalMember principalMember) {
+
         beanService.deleteBean(beanIndex);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Bean deleted successfully");
     }
