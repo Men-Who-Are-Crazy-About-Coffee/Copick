@@ -1,10 +1,9 @@
 package com.ssafy.coffee.global.config;
 
-import com.ssafy.coffee.global.auth.service.CustomOAuth2UserService;
-import com.ssafy.coffee.global.auth.service.JwtService;
-import com.ssafy.coffee.global.auth.service.OAuth2LoginFailHandler;
-import com.ssafy.coffee.global.auth.service.OAuth2LoginSuccessHandler;
-import com.ssafy.coffee.global.config.CorsConfig;
+import com.ssafy.coffee.domain.auth.service.CustomOAuth2UserService;
+import com.ssafy.coffee.domain.auth.service.JwtService;
+import com.ssafy.coffee.domain.auth.service.OAuth2LoginFailHandler;
+import com.ssafy.coffee.domain.auth.service.OAuth2LoginSuccessHandler;
 import com.ssafy.coffee.global.filter.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

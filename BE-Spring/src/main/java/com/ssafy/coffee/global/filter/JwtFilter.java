@@ -1,8 +1,7 @@
 package com.ssafy.coffee.global.filter;
 
 import com.ssafy.coffee.domain.RefreshToken.entity.RefreshToken;
-import com.ssafy.coffee.domain.RefreshToken.repository.RefreshTokenRepository;
-import com.ssafy.coffee.global.auth.service.JwtService;
+import com.ssafy.coffee.domain.auth.service.JwtService;
 import com.ssafy.coffee.global.constant.AuthType;
 import com.ssafy.coffee.global.constant.Role;
 import com.ssafy.coffee.global.util.JwtUtil;

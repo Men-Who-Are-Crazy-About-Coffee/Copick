@@ -1,4 +1,4 @@
-package com.ssafy.coffee.global.auth.service;
+package com.ssafy.coffee.domain.auth.service;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
@@ -7,7 +7,6 @@ import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.crypto.SecretKey;
@@ -15,8 +14,8 @@ import javax.crypto.SecretKey;
 import com.ssafy.coffee.domain.RefreshToken.entity.RefreshToken;
 import com.ssafy.coffee.domain.member.entity.Member;
 import com.ssafy.coffee.domain.member.repository.MemberRepository;
-import com.ssafy.coffee.global.auth.dto.PrincipalMember;
-import com.ssafy.coffee.global.auth.dto.TokenInfoDto;
+import com.ssafy.coffee.domain.auth.dto.PrincipalMember;
+import com.ssafy.coffee.domain.auth.dto.TokenInfoDto;
 import com.ssafy.coffee.domain.RefreshToken.repository.RefreshTokenRepository;
 import com.ssafy.coffee.global.constant.AuthType;
 import com.ssafy.coffee.global.constant.Role;
@@ -28,7 +27,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Component;
 

@@ -1,9 +1,8 @@
-package com.ssafy.coffee.global.auth.service;
+package com.ssafy.coffee.domain.auth.service;
 
-import com.ssafy.coffee.domain.RefreshToken.repository.RefreshTokenRepository;
 import com.ssafy.coffee.domain.member.entity.Member;
 import com.ssafy.coffee.domain.member.repository.MemberRepository;
-import com.ssafy.coffee.global.auth.dto.PrincipalMember;
+import com.ssafy.coffee.domain.auth.dto.PrincipalMember;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

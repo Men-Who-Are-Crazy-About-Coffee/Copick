@@ -1,13 +1,9 @@
 package com.ssafy.coffee.domain.member.controller;
 
-import com.ssafy.coffee.domain.bean.dto.BeanGetResponseDto;
-import com.ssafy.coffee.domain.member.dto.MemberRegistRequestDto;
 import com.ssafy.coffee.domain.member.dto.MemberRequestGetDto;
 import com.ssafy.coffee.domain.member.dto.MemberUpdateRequestDto;
 import com.ssafy.coffee.domain.member.service.MemberService;
-import com.ssafy.coffee.global.auth.dto.AccessTokenDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
