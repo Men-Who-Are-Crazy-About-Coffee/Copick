@@ -29,9 +29,9 @@ public class AuthService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public void registerMember(RegisterMemberRequestDto memberRequestDto){
+    public void registerMember(RegisterMemberRequestDto memberRequestDto) throws Exception{
         if(memberRepository.existsByIdAndAuthType(memberRequestDto.getId(), AuthType.LOCAL))
-            return;
+            throw new Exception("회원 가입 실패");
 
         memberRepository.save(Member.builder()
                 .id(memberRequestDto.getId())

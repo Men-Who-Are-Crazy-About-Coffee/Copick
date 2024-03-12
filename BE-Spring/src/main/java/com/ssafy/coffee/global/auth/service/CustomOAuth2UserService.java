@@ -8,6 +8,7 @@ import com.ssafy.coffee.global.auth.dto.NaverUserInfo;
 import com.ssafy.coffee.global.auth.dto.OAuth2UserInfo;
 import com.ssafy.coffee.global.auth.dto.PrincipalMember;
 import com.ssafy.coffee.global.constant.AuthType;
+import com.ssafy.coffee.global.constant.Role;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -41,7 +42,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         AuthType snsType= switch (oAuth2UserInfo.getProvider()){
             case "naver" -> AuthType.NAVER;
             case "kakao" -> AuthType.KAKAO;
-            default -> throw new RuntimeException("에러");
+            default -> throw new RuntimeException("소셜로그인 Provider 에러");
         };
         log.debug("providerId {}, Objet : {}",memberId, oAuth2UserInfo.toString());
         Member member = memberRepository.findByIdAndAuthType(memberId,snsType).orElse(
@@ -53,6 +54,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             member=Member.builder()
                     .id(memberId)
                     .authType(snsType)
+                    .role(Role.USER)
                     .nickname(memberNickname)
                     .profileImage(memberProfileImageUrl)
                 .build();

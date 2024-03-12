@@ -7,17 +7,23 @@ import com.ssafy.coffee.global.auth.service.AuthService;
 import com.ssafy.coffee.global.auth.service.JwtService;
 
 import com.ssafy.coffee.global.util.JwtUtil;
+import io.jsonwebtoken.Jwt;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 
 @RestController
@@ -28,34 +34,47 @@ public class AuthController {
     private final AuthService authService;
     private final JwtService jwtService;
     private final RefreshTokenRepository refreshTokenRepository;
-
+    @Value("${app.baseurl.frontend}")
+    private String frontendBaseurl;
     @PostMapping("/register")
     public ResponseEntity<? extends AccessTokenDto> authJoin(@RequestBody RegisterMemberRequestDto registerDto, HttpServletResponse response) {
 
-        authService.registerMember(registerDto);
+        try {
+            authService.registerMember(registerDto);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
 
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenInfoDto> authLogin(@RequestBody LoginDto loginDto, HttpServletResponse response) {
+    public ResponseEntity<TokenInfoDto> authLogin(@RequestBody LoginDto loginDto, HttpServletResponse response) throws URISyntaxException {
         log.debug("인증 시작");
 
         TokenInfoDto tokenInfoDto = authService.login(loginDto);
-
+        URI cookieDomain=new URI(frontendBaseurl);
+        UriComponents uriComponent= UriComponentsBuilder.fromHttpUrl(frontendBaseurl)
+                .pathSegment("auth","login")
+                .queryParam("resultCode",200)
+                .queryParam("accessToken",tokenInfoDto.getAccessToken())
+                .queryParam("refreshToken", tokenInfoDto.getRefreshToken())
+                .encode()
+                .build();
         HttpHeaders httpHeaders = new HttpHeaders();
         // response header에 jwt token에 넣어줌
-        httpHeaders.add(JwtUtil.AUTHORIZATION_HEADER, "Bearer " + tokenInfoDto.getAccessToken());
+        httpHeaders.add(JwtUtil.AUTHORIZATION_HEADER, JwtUtil.JWT_TYPE + tokenInfoDto.getAccessToken());
         Cookie cookie = new Cookie("refresh_token", tokenInfoDto.getRefreshToken());
         cookie.setHttpOnly(true);
         cookie.setMaxAge(JwtUtil.getRefreshTokenExpiredTime());
         cookie.setPath("/");
-//        cookie.setSecure(true); // https가 아니므로 아직 안됨
+        cookie.setDomain(cookieDomain.getHost());
+        cookie.setSecure(true); // https가 아니므로 아직 안됨
         response.addCookie(cookie);
+        httpHeaders.setLocation(uriComponent.toUri());
 
-
-        // tokenDto를 이용해 response body에도 넣어서 리턴
-        return new ResponseEntity<>(tokenInfoDto, httpHeaders, HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY).headers(httpHeaders).build();
     }
 
 
@@ -84,10 +103,10 @@ public class AuthController {
                         .accessToken(jwtService.createAccessToken(refreshToken.getMemberIndex(), List.of(() -> refreshToken.getRole().toString()), refreshToken.getAuthType()))
                         .build();
                 response.setHeader(JwtUtil.AUTHORIZATION_HEADER, accessTokenDto.getAccessToken());
-                return new ResponseEntity<>(accessTokenDto, HttpStatus.CREATED);
+                return ResponseEntity.ok(accessTokenDto);
             }
         }
-        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
 
