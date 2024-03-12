@@ -28,30 +28,15 @@ public class AuthController {
     private final AuthService authService;
     private final JwtService jwtService;
     private final RefreshTokenRepository refreshTokenRepository;
-    @PostMapping("/refresh")
-    public ResponseEntity<?> requestAccessToken(HttpServletResponse response, HttpServletRequest request) {
-        log.debug("엑세스토큰 재발급");
 
-        String refreshTokenCookie="";
-        Cookie[] cookies = request.getCookies();
-        if(cookies!=null) {
-            for (Cookie cookie : cookies) {
-                if("refresh_token".equals(cookie.getName())) {
-                    refreshTokenCookie=cookie.getValue();
-                }
-            }
-            if(StringUtils.hasText(refreshTokenCookie)
-                    && jwtService.validateRefreshToken(refreshTokenCookie)) {
-                RefreshToken refreshToken = jwtService.findRefreshToken(refreshTokenCookie);
-                AccessTokenDto accessTokenDto = AccessTokenDto.builder()
-                                .accessToken(jwtService.createAccessToken(refreshToken.getMemberIndex(), List.of(() -> refreshToken.getRole().toString()), refreshToken.getAuthType()))
-                                        .build();
-                response.setHeader(JwtUtil.AUTHORIZATION_HEADER, accessTokenDto.getAccessToken());
-                return new ResponseEntity<>(accessTokenDto, HttpStatus.CREATED);
-            }
-        }
-        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    @PostMapping("/register")
+    public ResponseEntity<? extends AccessTokenDto> authJoin(@RequestBody RegisterMemberRequestDto registerDto, HttpServletResponse response) {
+
+        authService.registerMember(registerDto);
+
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
+
     @PostMapping("/login")
     public ResponseEntity<TokenInfoDto> authLogin(@RequestBody LoginDto loginDto, HttpServletResponse response) {
         log.debug("인증 시작");
@@ -73,16 +58,36 @@ public class AuthController {
         return new ResponseEntity<>(tokenInfoDto, httpHeaders, HttpStatus.CREATED);
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<? extends AccessTokenDto> authJoin(@RequestBody RegisterMemberRequestDto registerDto, HttpServletResponse response){
-        authService.registerMember(registerDto);
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
-    }
     @DeleteMapping("/logout")
-    public ResponseEntity<?> logout(@RequestParam String refreshToken){
+    public ResponseEntity<?> logout(@RequestParam String refreshToken) {
         refreshTokenRepository.delete(RefreshToken.builder().refreshToken(refreshToken).build());
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<?> requestAccessToken(HttpServletResponse response, HttpServletRequest request) {
+        log.debug("엑세스토큰 재발급");
+
+        String refreshTokenCookie = "";
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("refresh_token".equals(cookie.getName())) {
+                    refreshTokenCookie = cookie.getValue();
+                }
+            }
+            if (StringUtils.hasText(refreshTokenCookie)
+                    && jwtService.validateRefreshToken(refreshTokenCookie)) {
+                RefreshToken refreshToken = jwtService.findRefreshToken(refreshTokenCookie);
+                AccessTokenDto accessTokenDto = AccessTokenDto.builder()
+                        .accessToken(jwtService.createAccessToken(refreshToken.getMemberIndex(), List.of(() -> refreshToken.getRole().toString()), refreshToken.getAuthType()))
+                        .build();
+                response.setHeader(JwtUtil.AUTHORIZATION_HEADER, accessTokenDto.getAccessToken());
+                return new ResponseEntity<>(accessTokenDto, HttpStatus.CREATED);
+            }
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
 

@@ -27,5 +27,5 @@ public class Bean {
     @Column(name = "bean_image", nullable = false, length = 255)
     private String image;
 
-    // Constructors
+
 }
