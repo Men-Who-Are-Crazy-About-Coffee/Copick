@@ -1,3 +1,35 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:26d2622491cf0a7454a7dcbd637571d0cfcb200dc3ba5daf89870cc6452bb2d8
-size 1071
+package com.ssafy.coffee.domain.comment.service;
+
+import com.ssafy.coffee.domain.comment.dto.CommentGetListResponseDto;
+import com.ssafy.coffee.domain.comment.dto.CommentPostRequestDto;
+import com.ssafy.coffee.domain.comment.dto.CommentUpdateRequestDto;
+import com.ssafy.coffee.domain.comment.repository.CommentRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+public class CommentService {
+    private final CommentRepository commentRepository;
+
+    public void addComment(CommentPostRequestDto commentPostRequestDto) {
+
+    }
+
+    public void updateComment(Long commentIndex, CommentUpdateRequestDto commentUpdateRequestDto) {
+
+    }
+
+    public void deleteComment(Long commentIndex) {
+
+    }
+
+    public CommentGetListResponseDto getCommentsByBoard(Long boardIndex, Pageable pageable) {
+        return null;
+    }
+
+    public CommentGetListResponseDto getCommentsByUser(Long userIndex, Pageable pageable) {
+        return null;
+    }
+}
