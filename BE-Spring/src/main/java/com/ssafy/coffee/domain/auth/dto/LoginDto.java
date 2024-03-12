@@ -1,4 +1,4 @@
-package com.ssafy.coffee.global.auth.dto;
+package com.ssafy.coffee.domain.auth.dto;
 
 import lombok.Builder;
 import lombok.Getter;

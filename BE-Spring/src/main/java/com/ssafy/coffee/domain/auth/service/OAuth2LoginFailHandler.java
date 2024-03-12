@@ -1,4 +1,4 @@
-package com.ssafy.coffee.global.auth.service;
+package com.ssafy.coffee.domain.auth.service;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

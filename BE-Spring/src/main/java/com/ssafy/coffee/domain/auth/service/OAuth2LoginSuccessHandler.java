@@ -1,7 +1,7 @@
-package com.ssafy.coffee.global.auth.service;
+package com.ssafy.coffee.domain.auth.service;
 
 import com.ssafy.coffee.domain.member.entity.Member;
-import com.ssafy.coffee.global.auth.dto.PrincipalMember;
+import com.ssafy.coffee.domain.auth.dto.PrincipalMember;
 import com.ssafy.coffee.global.util.JwtUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;

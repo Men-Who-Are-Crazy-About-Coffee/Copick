@@ -1,4 +1,4 @@
-package com.ssafy.coffee.global.auth.dto;
+package com.ssafy.coffee.domain.auth.dto;
 
 /**
  * 소셜로그인 유저 정보 기본 인터페이스

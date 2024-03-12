@@ -1,12 +1,10 @@
-package com.ssafy.coffee.global.auth.service;
+package com.ssafy.coffee.domain.auth.service;
 
-import ch.qos.logback.core.Context;
-import com.ssafy.coffee.domain.RefreshToken.entity.RefreshToken;
+import com.ssafy.coffee.domain.auth.dto.RegisterMemberRequestDto;
+import com.ssafy.coffee.domain.auth.dto.TokenInfoDto;
 import com.ssafy.coffee.domain.member.entity.Member;
 import com.ssafy.coffee.domain.member.repository.MemberRepository;
-import com.ssafy.coffee.global.auth.dto.LoginDto;
-import com.ssafy.coffee.global.auth.dto.RegisterMemberRequestDto;
-import com.ssafy.coffee.global.auth.dto.TokenInfoDto;
+import com.ssafy.coffee.domain.auth.dto.LoginDto;
 import com.ssafy.coffee.global.constant.AuthType;
 import com.ssafy.coffee.global.constant.Role;
 import jakarta.transaction.Transactional;
@@ -17,8 +15,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.text.SimpleDateFormat;
 
 @Service
 @RequiredArgsConstructor

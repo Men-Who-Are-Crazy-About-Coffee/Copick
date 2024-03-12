@@ -1,12 +1,12 @@
-package com.ssafy.coffee.global.auth.service;
+package com.ssafy.coffee.domain.auth.service;
 
 
 import com.ssafy.coffee.domain.member.entity.Member;
 import com.ssafy.coffee.domain.member.repository.MemberRepository;
-import com.ssafy.coffee.global.auth.dto.KakaoUserInfo;
-import com.ssafy.coffee.global.auth.dto.NaverUserInfo;
-import com.ssafy.coffee.global.auth.dto.OAuth2UserInfo;
-import com.ssafy.coffee.global.auth.dto.PrincipalMember;
+import com.ssafy.coffee.domain.auth.dto.KakaoUserInfo;
+import com.ssafy.coffee.domain.auth.dto.NaverUserInfo;
+import com.ssafy.coffee.domain.auth.dto.OAuth2UserInfo;
+import com.ssafy.coffee.domain.auth.dto.PrincipalMember;
 import com.ssafy.coffee.global.constant.AuthType;
 import com.ssafy.coffee.global.constant.Role;
 import lombok.RequiredArgsConstructor;

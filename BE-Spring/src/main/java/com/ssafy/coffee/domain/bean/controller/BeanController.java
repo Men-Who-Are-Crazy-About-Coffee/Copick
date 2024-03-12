@@ -4,7 +4,7 @@ import com.ssafy.coffee.domain.bean.dto.BeanGetResponseDto;
 import com.ssafy.coffee.domain.bean.dto.BeanPostRequestDto;
 import com.ssafy.coffee.domain.bean.dto.BeanUpdateRequestDto;
 import com.ssafy.coffee.domain.bean.service.BeanService;
-import com.ssafy.coffee.global.auth.dto.PrincipalMember;
+import com.ssafy.coffee.domain.auth.dto.PrincipalMember;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;

@@ -1,13 +1,15 @@
-package com.ssafy.coffee.global.auth.controller;
+package com.ssafy.coffee.domain.auth.controller;
 
 import com.ssafy.coffee.domain.RefreshToken.entity.RefreshToken;
 import com.ssafy.coffee.domain.RefreshToken.repository.RefreshTokenRepository;
-import com.ssafy.coffee.global.auth.dto.*;
-import com.ssafy.coffee.global.auth.service.AuthService;
-import com.ssafy.coffee.global.auth.service.JwtService;
+import com.ssafy.coffee.domain.auth.dto.AccessTokenDto;
+import com.ssafy.coffee.domain.auth.dto.LoginDto;
+import com.ssafy.coffee.domain.auth.dto.RegisterMemberRequestDto;
+import com.ssafy.coffee.domain.auth.dto.TokenInfoDto;
+import com.ssafy.coffee.domain.auth.service.AuthService;
+import com.ssafy.coffee.domain.auth.service.JwtService;
 
 import com.ssafy.coffee.global.util.JwtUtil;
-import io.jsonwebtoken.Jwt;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
