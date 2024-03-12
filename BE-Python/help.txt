@@ -1,0 +1,9 @@
+requiremnets.txt 패키지 설치
+pip install -r requirements.txt
+
+실행코드
+uvicorn server:app --reload
+
+스웨거
+{주소}/docs
+ex)http://localhost:8000/docs
