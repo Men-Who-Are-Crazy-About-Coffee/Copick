@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 public abstract class BaseObject {
 
     @Setter
-    @Column(name = "is_deleted", nullable = false, columnDefinition = "TINYINT(1)")
+    @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false; // 데이터 삭제 여부, 기본값 false
 
     @CreatedDate
