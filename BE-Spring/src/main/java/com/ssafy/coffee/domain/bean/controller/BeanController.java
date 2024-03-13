@@ -34,7 +34,6 @@ public class BeanController {
     @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     @PostMapping
     public ResponseEntity<Object> addBean(@ModelAttribute BeanPostRequestDto beanPostRequestDto) {
-
         beanService.addBean(beanPostRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body("Bean added successfully");
     }
@@ -55,7 +54,7 @@ public class BeanController {
     @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터")
     @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     @GetMapping("/list")
-    public ResponseEntity<List<BeanGetResponseDto>> getAllBeans() {
+    public ResponseEntity<Object> getAllBeans() {
         List<BeanGetResponseDto> beans = beanService.getAllBeans();
         return ResponseEntity.status(HttpStatus.OK).body(beans);
     }
@@ -67,9 +66,7 @@ public class BeanController {
     @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     @PutMapping("/{beanIndex}")
     public ResponseEntity<Object> updateBean(@PathVariable Long beanIndex,
-                                             @Valid @RequestBody BeanUpdateRequestDto beanUpdateRequestDto,
-                                             @AuthenticationPrincipal PrincipalMember principalMember) {
-
+                                             @Valid @RequestBody BeanUpdateRequestDto beanUpdateRequestDto) {
         beanService.updateBean(beanIndex, beanUpdateRequestDto);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Bean updated successfully");
     }
@@ -80,9 +77,7 @@ public class BeanController {
     @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터")
     @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     @DeleteMapping("/{beanIndex}")
-    public ResponseEntity<Object> deleteBean(@PathVariable Long beanIndex,
-                                             @AuthenticationPrincipal PrincipalMember principalMember) {
-
+    public ResponseEntity<Object> deleteBean(@PathVariable Long beanIndex) {
         beanService.deleteBean(beanIndex);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Bean deleted successfully");
     }
