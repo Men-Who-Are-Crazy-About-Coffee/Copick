@@ -1,3 +1,17 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:dd8d048df8190696f8aa0c3261322561d60c8ad899fa52052a1455be936e9f97
-size 331
+package com.ssafy.coffee.domain.auth.dto;
+
+/**
+ * 소셜로그인 유저 정보 기본 인터페이스
+ */
+public interface OAuth2UserInfo {
+    String getProviderId();
+    String getProvider();
+    String getEmail();
+    String getName();
+
+    String getBirthYear();
+    String getNickname();
+
+    String getProfileImageUrl();
+}
+
