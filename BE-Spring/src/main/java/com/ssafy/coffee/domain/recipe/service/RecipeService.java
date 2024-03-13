@@ -1,3 +1,38 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:07c570acb7a7859f341675b4f39b810c5aa5b007263b564faeab17852d6eae1f
-size 1122
+package com.ssafy.coffee.domain.recipe.service;
+
+import com.ssafy.coffee.domain.recipe.dto.RecipeGetListResponseDto;
+import com.ssafy.coffee.domain.recipe.dto.RecipeGetResponseDto;
+import com.ssafy.coffee.domain.recipe.dto.RecipePostRequestDto;
+import com.ssafy.coffee.domain.recipe.dto.RecipeUpdateRequestDto;
+import com.ssafy.coffee.domain.recipe.repository.RecipeRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+public class RecipeService {
+    public final RecipeRepository recipeRepository;
+
+    public void addRecipe(RecipePostRequestDto recipePostRequestDto) {
+
+    }
+
+    public RecipeGetResponseDto getRecipe(Long recipeIndex) {
+        return null;
+    }
+
+    public RecipeGetListResponseDto searchRecipes(String keyword, Pageable pageable) {
+        return null;
+    }
+    public void updateRecipe(Long recipeIndex, RecipeUpdateRequestDto recipeUpdateRequestDto) {
+
+    }
+
+    public void deleteRecipe(Long recipeIndex) {
+
+    }
+
+
+}

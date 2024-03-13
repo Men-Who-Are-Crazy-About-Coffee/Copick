@@ -1,3 +1,12 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:74f58cbfaec473ceb6338c42f02816417ac8d8e4a40623361d781fd2734b95f3
-size 245
+package com.ssafy.coffee.domain.recipe.dto;
+
+import lombok.Data;
+
+@Data
+public class RecipeGetResponseDto {
+    private Long recipeId;
+    private Long beanId;
+    private Long roastingId;
+    private String title;
+    private String content;
+}

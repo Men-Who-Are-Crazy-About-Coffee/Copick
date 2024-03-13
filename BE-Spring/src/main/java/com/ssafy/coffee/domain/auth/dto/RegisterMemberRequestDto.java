@@ -1,3 +1,17 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:b18dc464af26995864a3c991b5bb6d2321244e70edf705fa0a47d33a09a6d3ec
-size 391
+package com.ssafy.coffee.domain.auth.dto;
+
+import com.ssafy.coffee.global.constant.AuthType;
+import com.ssafy.coffee.global.constant.Role;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+@Getter
+@ToString
+public class RegisterMemberRequestDto {
+    private String id;
+    @Setter
+    private String password;
+    private String nickname;
+}
