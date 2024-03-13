@@ -1,3 +1,19 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:ede3486d8c82db8d39ceecb3a54a26a2c1b139b270ec1cd01354601d3422c2ca
-size 217
+package com.ssafy.coffee.domain.roasting.dto;
+
+import com.ssafy.coffee.domain.roasting.entity.Roasting;
+import lombok.Data;
+
+@Data
+public class RoastingGetResponseDto {
+    private Long index;
+    private String type;
+    private String content;
+    private String image;
+
+    public RoastingGetResponseDto(Roasting roasting) {
+        this.index = roasting.getIndex();
+        this.type = roasting.getContent();
+        this.content = roasting.getContent();
+        this.image = roasting.getImage();
+    }
+}
