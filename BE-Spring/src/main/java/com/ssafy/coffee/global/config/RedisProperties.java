@@ -1,3 +1,13 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:7bcab78279bdd1b93099dd465cc070ec83ca9483cc3e58ceb20696a7bf656e62
-size 269
+package com.ssafy.coffee.global.config;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
+
+@ConfigurationProperties(prefix = "spring.redis")
+public record RedisProperties(
+        String host,
+        int port,
+        String password
+
+) {
+}

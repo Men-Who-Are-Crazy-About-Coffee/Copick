@@ -1,3 +1,14 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:8aa3d90c1cb64d132b32415230abd6b4a778b54b35ae3ffeaf88f2da697e3c24
-size 268
+package com.ssafy.coffee.global.constant;
+
+import lombok.Getter;
+
+@Getter
+public enum AuthType {
+    GUEST(0),LOCAL(1),KAKAO(2),NAVER(3);
+    private int authTypeNumber;
+
+    private AuthType(int autyTypeNumber){
+        this.authTypeNumber = autyTypeNumber;
+    }
+
+}

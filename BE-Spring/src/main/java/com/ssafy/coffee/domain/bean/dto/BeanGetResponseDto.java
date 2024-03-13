@@ -1,3 +1,11 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:97f53c2fbff774a113f52373581156b7d5eb6104cd01b070f0caa5fd10e76dfb
-size 208
+package com.ssafy.coffee.domain.bean.dto;
+
+import lombok.Data;
+
+@Data
+public class BeanGetResponseDto {
+    private Long index;
+    private String type;
+    private String content;
+    private String image;
+}
