@@ -66,24 +66,26 @@ async def first_get():
 async def analyze_image(accessToken: Optional[List[str]] = Header(None),resultIndex: Optional[List[str]] = Header(None)
                         ,file: UploadFile = File(...)):
     try:
-        # payload = await functions.check_token(accessToken[0])
-        # member_index = payload["userIndex"]
+        try:
+            # payload = await functions.check_token(accessToken[0])
+            # member_index = payload["userIndex"]
 
-        result_index = resultIndex[0]
-        
-        image_byte_stream,result_normal,result_flaw = await functions.manufacture_image(file)
-        file_name = str(uuid.uuid4())+".jpg"
-        file_path = "result/"+result_index+"/"+file_name
+            result_index = resultIndex[0]
+            
+            image_byte_stream,result_normal,result_flaw = await functions.manufacture_image(file)
+            file_name = str(uuid.uuid4())+".jpg"
+            file_path = "result/"+result_index+"/"+file_name
 
-        db_session = db_session_maker()
-        db_session.execute(text("INSERT INTO sequence(result_index,sequence_link,result_normal,result_flaw) VALUES(%s,\'%s\',%d,%d)"
-              %(result_index,file_path,result_normal,result_flaw)))
-                
-        s3.upload_fileobj(image_byte_stream,os.environ["AWS_S3_BUCKET"],file_path)
+            db_session = db_session_maker()
+            db_session.execute(text("INSERT INTO sequence(result_index,sequence_link,result_normal,result_flaw) VALUES(%s,\'%s\',%d,%d)"
+                %(result_index,file_path,result_normal,result_flaw)))
+                    
+            s3.upload_fileobj(image_byte_stream,os.environ["AWS_S3_BUCKET"],file_path)
 
-        db_session.commit()
-        db_session.close()
-        return image_byte_stream
+            db_session.commit()
+            return image_byte_stream
+        finally:
+            db_session.close()
     except JWTError:
         return("Invalid token")
     except TypeError:
