@@ -1,6 +1,7 @@
 package com.ssafy.coffee.domain.bean.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,5 +28,10 @@ public class Bean {
     @Column(name = "bean_image", nullable = false, length = 255)
     private String image;
 
-
+    @Builder
+    public Bean(String type, String content, String image) {
+        this.type = type;
+        this.content = content;
+        this.image = image;
+    }
 }

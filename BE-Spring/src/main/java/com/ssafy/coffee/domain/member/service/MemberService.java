@@ -36,13 +36,15 @@ public class MemberService {
             }
         }
 
-        memberRepository.save(Member.builder()
+        memberRepository.save(
+                Member.builder()
                 .id(memberRegistRequestDto.getId())
                 .role(Role.USER)
                 .authType(AuthType.LOCAL)
                 .nickname(memberRegistRequestDto.getNickname())
                 .password(passwordEncoder.encode(memberRegistRequestDto.getPassword()))
-                .build());
+                .build()
+        );
     }
 
     public MemberRequestGetDto getMember(Long memberIndex) {
