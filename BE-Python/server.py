@@ -1,30 +1,22 @@
 import os
 import shutil
-import utils
-from typing import Union,List,Optional
-from fastapi import FastAPI, File, UploadFile, Header
+from typing import List,Optional
+from fastapi import FastAPI, File, UploadFile, Header, HTTPException
 from dotenv import load_dotenv
 from jose import jwt,JWTError
 from sqlalchemy import text
+import functions, s3_utils, DB_utils
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 load_dotenv(os.path.join(BASE_DIR, ".env"))
 
 app = FastAPI()
-s3 = utils.s3_connection()
-db_session_maker = utils.posgreSQL_connection()
+s3 = s3_utils.s3_connection()
+db_session_maker = DB_utils.posgreSQL_connection()
 
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
-
-@app.get("/jwt/{token}")
-def valid_token(token: str):
-    try:
-        payload = jwt.decode(token,os.environ["JWT_SECRET_KEY"],algorithms=["HS512"])
-        return {"token": payload}
-    except JWTError:
-        return {"error"}
 
 @app.post("/image")
 async def upload_image(file: UploadFile = File(...)):
@@ -67,11 +59,21 @@ async def first_get():
     except Exception as e:
         print(e)
         return {"error"}
-
-@app.post("/header")
-async def read_items(x_token: Optional[List[str]] = Header(None),y_token: Optional[List[str]] = Header(None)):
+    
+@app.post("/api/analyze")
+async def analyze_image(accessToken: Optional[List[str]] = Header(None),resultIndex: Optional[List[str]] = Header(None)
+                        ,files: List[UploadFile] = File(...)):
     try:
-        return {"X-Token values": x_token + y_token}
+        payload = await functions.check_token(accessToken[0])
+        member_index = payload["userIndex"]
+        result_index = resultIndex[0]
+        # for file in files:
+        #     await functions.manufacture_image(file)
+        return {"success"}
+    except JWTError:
+        return("유효하지 않은 토큰입니다.")
+    except TypeError:
+        return("헤더에 필요 요소가 없습니다.")
     except Exception as e:
         print(e)
         return {"error"}
