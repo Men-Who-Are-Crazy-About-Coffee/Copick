@@ -8,8 +8,8 @@ import java.util.List;
 @Data
 public class BoardGetResponseDto {
     private Long boardIndex;
-    private Long userId;
-    private String userName;
+    private Long memberId;
+    private String memberName;
     private List<String> images;
     private String title;
     private String content;
