@@ -1,11 +1,13 @@
 import os
 import shutil
+import uuid
 from typing import List,Optional
-from fastapi import FastAPI, File, UploadFile, Header, HTTPException
+from fastapi import FastAPI, File, UploadFile, Header
 from dotenv import load_dotenv
-from jose import jwt,JWTError
+from jose import JWTError
 from sqlalchemy import text
 import functions, s3_utils, DB_utils
+from PIL import Image
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 load_dotenv(os.path.join(BASE_DIR, ".env"))
@@ -62,18 +64,30 @@ async def first_get():
     
 @app.post("/api/analyze")
 async def analyze_image(accessToken: Optional[List[str]] = Header(None),resultIndex: Optional[List[str]] = Header(None)
-                        ,files: List[UploadFile] = File(...)):
+                        ,file: UploadFile = File(...)):
     try:
-        payload = await functions.check_token(accessToken[0])
-        member_index = payload["userIndex"]
+        # payload = await functions.check_token(accessToken[0])
+        # member_index = payload["userIndex"]
+
         result_index = resultIndex[0]
-        # for file in files:
-        #     await functions.manufacture_image(file)
-        return {"success"}
+        
+        image_byte_stream,result_normal,result_flaw = await functions.manufacture_image(file)
+        file_name = str(uuid.uuid4())+".jpg"
+        file_path = "result/"+result_index+"/"+file_name
+
+        db_session = db_session_maker()
+        db_session.execute(text("INSERT INTO sequence(result_index,case_link,result_normal,result_flaw) VALUES(%s,\'%s\',%d,%d)"
+              %(result_index,file_path,result_normal,result_flaw)))
+                
+        s3.upload_fileobj(image_byte_stream,os.environ["AWS_S3_BUCKET"],file_path)
+
+        db_session.commit()
+        db_session.close()
+        return image_byte_stream
     except JWTError:
-        return("유효하지 않은 토큰입니다.")
+        return("Invalid token")
     except TypeError:
-        return("헤더에 필요 요소가 없습니다.")
+        return("No header attribute") 
     except Exception as e:
-        print(e)
+        print("Error:",e)
         return {"error"}

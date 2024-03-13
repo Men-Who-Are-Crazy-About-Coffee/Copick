@@ -13,9 +13,3 @@ def s3_connection():    # s3 클라이언트 생성
         return s3
     except Exception as e:
         print("Error:",e)
-
-def s3_insert():
-    try:
-        return {"success"}
-    except Exception as e:
-        print("Error:",e)

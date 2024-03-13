@@ -16,5 +16,13 @@ async def manufacture_image(file: UploadFile = File(...)):
     image_data = await file.read()
     image = Image.open(io.BytesIO(image_data))
     image = image.resize((300, 280)) 
-    image.save("./image/test.png",format='PNG')
+
+    #flaw 생성됨
+
+    # 바이트 스트림으로 이미지 저장
+    img_byte_arr = io.BytesIO()
+    image.save(img_byte_arr, format='JPEG')
     await file.close()
+    # 바이트 스트림을 반환
+    img_byte_arr.seek(0)  # Seek to the start of the stream
+    return img_byte_arr,10,20
