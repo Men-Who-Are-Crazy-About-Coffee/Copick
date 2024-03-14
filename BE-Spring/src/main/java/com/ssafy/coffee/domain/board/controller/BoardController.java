@@ -1,5 +1,6 @@
 package com.ssafy.coffee.domain.board.controller;
 
+import com.ssafy.coffee.domain.auth.dto.PrincipalMember;
 import com.ssafy.coffee.domain.board.dto.BoardGetListResponseDto;
 import com.ssafy.coffee.domain.board.dto.BoardGetResponseDto;
 import com.ssafy.coffee.domain.board.dto.BoardPostRequestDto;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -33,8 +35,9 @@ public class BoardController {
     @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터")
     @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     @PostMapping
-    public ResponseEntity<Object> addBoard(@ModelAttribute BoardPostRequestDto boardPostRequestDto) {
-        boardService.addBoard(boardPostRequestDto);
+    public ResponseEntity<Object> addBoard(@ModelAttribute BoardPostRequestDto boardPostRequestDto,
+                                           @AuthenticationPrincipal PrincipalMember principalMember) {
+        boardService.addBoard(boardPostRequestDto, principalMember.toEntity());
         return ResponseEntity.status(HttpStatus.CREATED).body("Board added successfully");
     }
 

@@ -79,4 +79,6 @@ public class PrincipalMember implements OAuth2User, UserDetails   {
     }
 
     public String getNickname() { return member.getNickname();}
+
+    public Long getIndex() {return member.getIndex();}
 }
