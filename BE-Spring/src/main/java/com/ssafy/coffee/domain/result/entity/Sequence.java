@@ -1,32 +1,3 @@
-package com.ssafy.coffee.domain.result.entity;
-
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
-@Entity
-@Getter
-@NoArgsConstructor
-public class Sequence {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "case_index", nullable = false)
-    private Long index;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "result_index", nullable = false)
-    private Result result;
-
-    @Column(name = "case_link", nullable = false, length = 255)
-    private String link;
-
-    @Column(name = "result_normal", nullable = false)
-    private int normal = 0;
-
-    @Column(name = "result_flaw", nullable = false)
-    private int flaw = 0;
-
-    // Constructors, Setters
-
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:c60f3025e7b5e5e7e7465398f1b2228e5dd627e547a9f5ec3ce4f1cab0e0ea44
+size 750
