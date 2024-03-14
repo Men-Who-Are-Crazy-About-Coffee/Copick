@@ -1,3 +1,37 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:e4aba934896654e538f6140a488c7253ce0dff8cf8941e034992f7274dbf2f0f
-size 883
+package com.ssafy.coffee.domain.roasting.entity;
+
+import jakarta.persistence.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Entity
+@Getter
+@NoArgsConstructor
+public class Roasting {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "roasting_index", nullable = false)
+    private Long index;
+
+    @Setter
+    @Column(name = "roasting_type", nullable = false, length = 255)
+    private String type;
+
+    @Setter
+    @Column(name = "roasting_content", nullable = false, length = 255)
+    private String content;
+
+    @Setter
+    @Column(name = "roasting_image", nullable = false, length = 255)
+    private String image;
+
+    @Builder
+    public Roasting(String type, String content, String image) {
+        this.type = type;
+        this.content = content;
+        this.image = image;
+    }
+}
