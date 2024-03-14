@@ -1,5 +1,9 @@
 package com.ssafy.coffee.domain.board.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ssafy.coffee.domain.board.dto.BoardGetListResponseDto;
 import com.ssafy.coffee.domain.board.dto.BoardGetResponseDto;
 import com.ssafy.coffee.domain.board.dto.BoardPostRequestDto;
@@ -8,26 +12,58 @@ import com.ssafy.coffee.domain.board.entity.Board;
 import com.ssafy.coffee.domain.board.entity.BoardDomain;
 import com.ssafy.coffee.domain.board.repository.BoardRepository;
 import com.ssafy.coffee.domain.member.entity.Member;
+import com.ssafy.coffee.domain.s3.service.S3Service;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class BoardService {
     private final BoardRepository boardRepository;
+    private final S3Service s3Service;
 
     public void addBoard(BoardPostRequestDto boardPostRequestDto, Member member) {
 
-        Board board = Board.builder()
-                .title(boardPostRequestDto.getTitle())
-                .content(boardPostRequestDto.getContent())
-                .domain(BoardDomain.valueOf(boardPostRequestDto.getDomain().toUpperCase()))
-                .createdBy(member)
-                .build();
 
+        Board board = boardRepository.save(
+                Board.builder()
+                        .title(boardPostRequestDto.getTitle())
+                        .content("")
+                        .domain(BoardDomain.valueOf(boardPostRequestDto.getDomain().toUpperCase()))
+                        .createdBy(member)
+                        .build()
+        );
+
+        String filePath = "board/" + board.getIndex();
+        List<String> urls = s3Service.uploadMultipleFiles(filePath, boardPostRequestDto.getUpfiles());
+
+        ObjectMapper mapper = new ObjectMapper();
+        ArrayNode contentArray = mapper.createArrayNode();
+
+        for (String url : urls) {
+            ObjectNode imageNode = mapper.createObjectNode();
+            imageNode.put("type", "image");
+            imageNode.put("content", url);
+            contentArray.add(imageNode);
+        }
+
+        ObjectNode textNode = mapper.createObjectNode();
+        textNode.put("type", "content");
+        textNode.put("content", boardPostRequestDto.getContent());
+        contentArray.add(textNode);
+
+        String jsonContent = null;
+        try {
+            jsonContent = mapper.writeValueAsString(contentArray);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        board.setContent(jsonContent);
         boardRepository.save(board);
     }
 
@@ -36,19 +72,17 @@ public class BoardService {
         Board board = boardRepository.findById(boardIndex)
                 .orElseThrow(() -> new IllegalArgumentException("Board with id " + boardIndex + " not found"));
 
-        //return new BoardGetResponseDto(board);
-        return null;
+        return new BoardGetResponseDto(board);
     }
 
 
     public BoardGetListResponseDto searchBoard(String keyword, String domain, Pageable pageable) {
-//        Page<Board> boards = boardRepository.findByKeywordAndDomain(keyword, domain, pageable);
-//        List<BoardGetResponseDto> content = boards.getContent().stream()
-//                .map(BoardGetResponseDto::new)
-//                .collect(Collectors.toList());
-//
-//        return new BoardGetListResponseDto(content, boards.getNumber(), boards.getSize(), boards.getTotalElements());
-        return null;
+        Page<Board> boards = boardRepository.findByKeywordAndDomain(keyword, domain, pageable);
+        List<BoardGetResponseDto> content = boards.getContent().stream()
+                .map(BoardGetResponseDto::new)
+                .collect(Collectors.toList());
+
+        return new BoardGetListResponseDto(content, boards.getTotalPages(), boards.getTotalElements());
     }
 
 
@@ -60,7 +94,6 @@ public class BoardService {
             board.setTitle(boardUpdateRequestDto.getTitle());
         if (boardUpdateRequestDto.getContent() != null)
             board.setContent(boardUpdateRequestDto.getContent());
-        // 필요한 다른 필드들에 대한 업데이트 로직도 여기에 추가
 
         boardRepository.save(board);
     }

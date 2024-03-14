@@ -12,13 +12,12 @@ public class BoardGetResponseDto {
     private Long index;
     private Long id;
     private String nickname;
-    private List<String> images;
     private String title;
     private String content;
     private BoardDomain domain;
     private LocalDateTime regDate;
 
-    public BoardGetResponseDto(Board board, List<String> images) {
+    public BoardGetResponseDto(Board board) {
         this.index = board.getIndex();
         this.id = board.getCreatedBy().getIndex();
         this.nickname = board.getCreatedBy().getNickname();

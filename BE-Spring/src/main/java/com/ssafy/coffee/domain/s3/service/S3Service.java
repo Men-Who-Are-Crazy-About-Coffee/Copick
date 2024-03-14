@@ -11,10 +11,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -32,6 +31,19 @@ public class S3Service {
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
+    public List<String> uploadMultipleFiles(String directory, MultipartFile[] files) {
+        List<String> fileUrls = new ArrayList<>();
+
+        for (MultipartFile file : files) {
+            String fileUrl = uploadFile(directory, file);
+            if (fileUrl != null)
+                fileUrls.add(fileUrl);
+            else
+                logger.error("Failed to upload file: {}", file.getOriginalFilename());
+        }
+
+        return fileUrls;
+    }
 
     public String uploadFile(String directory, MultipartFile file) {
 
