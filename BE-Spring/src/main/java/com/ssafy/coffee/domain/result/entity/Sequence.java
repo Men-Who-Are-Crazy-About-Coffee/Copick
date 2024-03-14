@@ -11,14 +11,14 @@ public class Sequence {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "case_index", nullable = false)
+    @Column(name = "sequence_index", nullable = false)
     private Long index;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "result_index", nullable = false)
     private Result result;
 
-    @Column(name = "case_link", nullable = false, length = 255)
+    @Column(name = "sequence_link", nullable = false, length = 255)
     private String link;
 
     @Column(name = "result_normal", nullable = false)
