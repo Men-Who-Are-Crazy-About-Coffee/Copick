@@ -16,8 +16,8 @@ public class Flaw extends BaseObject {
     private Long FlawIndex;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sequence_index", nullable = false)
-    private Sequence sequence;
+    @JoinColumn(name = "result_index", nullable = false)
+    private Result result;
 
     @Column(name = "flaw_link", nullable = false, length = 255)
     private String link;
