@@ -1,7 +1,9 @@
 package com.ssafy.coffee.domain.board.entity;
 
+import com.ssafy.coffee.domain.member.entity.Member;
 import com.ssafy.coffee.global.entity.AuditableBaseObject;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -28,5 +30,11 @@ public class Board extends AuditableBaseObject {
     @Column(name = "board_domain", nullable = false, length = 255)
     private BoardDomain domain;
 
-    // Setters and Constructer
+    @Builder
+    public Board(String title, String content, BoardDomain domain, Member createdBy) {
+        this.title = title;
+        this.content = content;
+        this.domain = domain;
+        this.setCreatedBy(createdBy);
+    }
 }

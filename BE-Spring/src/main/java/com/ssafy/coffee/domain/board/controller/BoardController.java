@@ -1,5 +1,6 @@
 package com.ssafy.coffee.domain.board.controller;
 
+import com.ssafy.coffee.domain.auth.dto.PrincipalMember;
 import com.ssafy.coffee.domain.board.dto.BoardGetListResponseDto;
 import com.ssafy.coffee.domain.board.dto.BoardGetResponseDto;
 import com.ssafy.coffee.domain.board.dto.BoardPostRequestDto;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -28,17 +30,18 @@ public class BoardController {
 
     private final BoardService boardService;
 
-    @Operation(summary = "식당 게시판 작성", description = "식당 게시판에 새로운 글을 추가합니다.")
+    @Operation(summary = "게시판 작성", description = "게시판에 새로운 글을 추가합니다.")
     @ApiResponse(responseCode = "201", description = "게시판이 성공적으로 작성됨")
     @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터")
     @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     @PostMapping
-    public ResponseEntity<Object> addBoard(@ModelAttribute BoardPostRequestDto boardPostRequestDto) {
-        boardService.addBoard(boardPostRequestDto);
+    public ResponseEntity<Object> addBoard(@ModelAttribute BoardPostRequestDto boardPostRequestDto,
+                                           @AuthenticationPrincipal PrincipalMember principalMember) {
+        boardService.addBoard(boardPostRequestDto, principalMember.toEntity());
         return ResponseEntity.status(HttpStatus.CREATED).body("Board added successfully");
     }
 
-    @Operation(summary = "식당 게시판 조회", description = "게시판을 조회합니다.")
+    @Operation(summary = "게시판 조회", description = "게시판을 조회합니다.")
     @ApiResponse(responseCode = "200", description = "게시판 조회에 성공", content = @Content(schema = @Schema(implementation = BoardGetResponseDto.class)))
     @ApiResponse(responseCode = "404", description = "제공된 boardIndex로 게시판을 찾을 수 없음")
     @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터")
@@ -63,7 +66,7 @@ public class BoardController {
         return ResponseEntity.status(HttpStatus.OK).body(boardGetListResponseDto);
     }
 
-    @Operation(summary = "식당 게시판 수정", description = "기존 게시판을 수정합니다.")
+    @Operation(summary = "게시판 수정", description = "기존 게시판을 수정합니다.")
     @ApiResponse(responseCode = "204", description = "게시판이 성공적으로 업데이트됨")
     @ApiResponse(responseCode = "404", description = "제공된 boardIndex로 게시판을 찾을 수 없음")
     @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터")
@@ -75,7 +78,7 @@ public class BoardController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Board updated successfully");
     }
 
-    @Operation(summary = "식당 게시판 삭제", description = "게시판을 삭제합니다.")
+    @Operation(summary = "게시판 삭제", description = "게시판을 삭제합니다.")
     @ApiResponse(responseCode = "204", description = "게시판이 성공적으로 삭제됨")
     @ApiResponse(responseCode = "404", description = "제공된 boardIndex로 게시판을 찾을 수 없음")
     @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터")
