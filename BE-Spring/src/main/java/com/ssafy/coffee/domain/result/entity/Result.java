@@ -5,6 +5,7 @@ import com.ssafy.coffee.domain.member.entity.Member;
 import com.ssafy.coffee.domain.roasting.entity.Roasting;
 import com.ssafy.coffee.global.entity.BaseObject;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -28,7 +29,7 @@ public class Result extends BaseObject {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "Rosting_index", nullable = false)
-    private Roasting rosting;
+    private Roasting roasting;
 
     @Column(name = "result_normal")
     private int normalBeanCount;
@@ -36,5 +37,13 @@ public class Result extends BaseObject {
     @Column(name = "result_flaw")
     private int flawBeanCount;
 
-    // Constructors, Setters
+    @Builder
+    public Result(Long index,Member member,Bean bean, Roasting roasting, int normalBeanCount,int flawBeanCount){
+        this.index=index;
+        this.member=member;
+        this.bean=bean;
+        this.roasting=roasting;
+        this.normalBeanCount=normalBeanCount;
+        this.flawBeanCount=flawBeanCount;
+    }
 }

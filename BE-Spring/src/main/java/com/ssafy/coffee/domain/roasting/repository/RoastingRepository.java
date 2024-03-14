@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface RoastingRepository extends JpaRepository<Roasting, Long> {
-
+    <Optional> Roasting findByIndex(Long index);
 }
