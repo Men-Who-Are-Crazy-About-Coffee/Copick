@@ -1,30 +1,24 @@
 import os
 import shutil
-import utils
-from typing import Union,List,Optional
+import uuid
+from typing import List,Optional
 from fastapi import FastAPI, File, UploadFile, Header
 from dotenv import load_dotenv
-from jose import jwt,JWTError
+from jose import JWTError
 from sqlalchemy import text
+import functions, s3_utils, DB_utils
+from PIL import Image
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 load_dotenv(os.path.join(BASE_DIR, ".env"))
 
 app = FastAPI()
-s3 = utils.s3_connection()
-db_session_maker = utils.posgreSQL_connection()
+s3 = s3_utils.s3_connection()
+db_session_maker = DB_utils.posgreSQL_connection()
 
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
-
-@app.get("/jwt/{token}")
-def valid_token(token: str):
-    try:
-        payload = jwt.decode(token,os.environ["JWT_SECRET_KEY"],algorithms=["HS512"])
-        return {"token": payload}
-    except JWTError:
-        return {"error"}
 
 @app.post("/image")
 async def upload_image(file: UploadFile = File(...)):
@@ -67,11 +61,35 @@ async def first_get():
     except Exception as e:
         print(e)
         return {"error"}
-
-@app.post("/header")
-async def read_items(x_token: Optional[List[str]] = Header(None),y_token: Optional[List[str]] = Header(None)):
+    
+@app.post("/api/analyze")
+async def analyze_image(accessToken: Optional[List[str]] = Header(None),resultIndex: Optional[List[str]] = Header(None)
+                        ,file: UploadFile = File(...)):
     try:
-        return {"X-Token values": x_token + y_token}
+        try:
+            # payload = await functions.check_token(accessToken[0])
+            # member_index = payload["userIndex"]
+
+            result_index = resultIndex[0]
+            
+            image_byte_stream,result_normal,result_flaw = await functions.manufacture_image(file)
+            file_name = str(uuid.uuid4())+".jpg"
+            file_path = "result/"+result_index+"/"+file_name
+
+            db_session = db_session_maker()
+            db_session.execute(text("INSERT INTO sequence(result_index,sequence_link,result_normal,result_flaw) VALUES(%s,\'%s\',%d,%d)"
+                %(result_index,file_path,result_normal,result_flaw)))
+                    
+            s3.upload_fileobj(image_byte_stream,os.environ["AWS_S3_BUCKET"],file_path)
+
+            db_session.commit()
+            return image_byte_stream
+        finally:
+            db_session.close()
+    except JWTError:
+        return("Invalid token")
+    except TypeError:
+        return("No header attribute") 
     except Exception as e:
-        print(e)
+        print("Error:",e)
         return {"error"}
