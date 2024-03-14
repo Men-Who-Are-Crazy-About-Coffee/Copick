@@ -1,19 +1,3 @@
-package com.ssafy.coffee.domain.roasting.dto;
-
-import com.ssafy.coffee.domain.roasting.entity.Roasting;
-import lombok.Data;
-
-@Data
-public class RoastingGetResponseDto {
-    private Long index;
-    private String type;
-    private String content;
-    private String image;
-
-    public RoastingGetResponseDto(Roasting roasting) {
-        this.index = roasting.getIndex();
-        this.type = roasting.getContent();
-        this.content = roasting.getContent();
-        this.image = roasting.getImage();
-    }
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:4673722d8ad48375383ebb88ca83cb7a210a7a2108633479c894346fd4fad0e8
+size 509
