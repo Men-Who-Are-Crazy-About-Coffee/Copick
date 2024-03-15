@@ -4,8 +4,8 @@ import lombok.Data;
 
 @Data
 public class RecipeUpdateRequestDto {
-    private Long beanId;
-    private Long roastingId;
+    private Long beanIndex;
+    private Long roastingIndex;
     private String title;
     private String content;
 }
