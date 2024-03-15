@@ -1,3 +1,47 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:3d5a693775fc28681a0af5905239db90cbd86daf520f96eb7d77a91540ede92e
-size 1319
+import 'package:flutter/material.dart';
+
+class DateRangePicker extends StatefulWidget {
+  @override
+  _DateRangePickerState createState() => _DateRangePickerState();
+}
+
+class _DateRangePickerState extends State<DateRangePicker> {
+  DateTime? _startDate;
+  DateTime? _endDate;
+
+  Future<void> _selectDateRange(BuildContext context) async {
+    final DateTimeRange? picked = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2025),
+      initialDateRange: _startDate != null && _endDate != null
+          ? DateTimeRange(start: _startDate!, end: _endDate!)
+          : null,
+    );
+    if (picked != null) {
+      setState(() {
+        _startDate = picked.start;
+        _endDate = picked.end;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          ElevatedButton(
+            onPressed: () => _selectDateRange(context),
+            child: Text(_startDate == null || _endDate == null
+                ? '기간 선택'
+                : '${_startDate!.toLocal()}'.split(' ')[0] +
+                    ' ~ ' +
+                    '${_endDate!.toLocal()}'.split(' ')[0]),
+          ),
+        ],
+      ),
+    );
+  }
+}

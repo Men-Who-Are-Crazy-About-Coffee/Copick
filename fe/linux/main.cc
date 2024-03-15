@@ -1,3 +1,6 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:ea23f7cdf74091d63bba29ef60486370b766157b848f0cfe62bd8b1c1695a0c1
-size 180
+#include "my_application.h"
+
+int main(int argc, char** argv) {
+  g_autoptr(MyApplication) app = my_application_new();
+  return g_application_run(G_APPLICATION(app), argc, argv);
+}

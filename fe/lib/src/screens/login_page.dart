@@ -1,3 +1,156 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:c65e99191deaabd28e64a73dfd029ca2aa71d0db18e4f49aa1eacfef47146dc7
-size 5373
+// ignore_for_file: avoid_print
+
+import 'package:dio/dio.dart';
+import 'package:fe/constants.dart';
+import 'package:fe/src/screens/pages.dart';
+import 'package:fe/src/screens/register_page.dart';
+import 'package:fe/src/widgets/button1.dart';
+import 'package:fe/src/widgets/inputfield.dart';
+import 'package:flutter/material.dart';
+
+class Login extends StatefulWidget {
+  const Login({super.key});
+
+  @override
+  State<Login> createState() => _LoginState();
+}
+
+class _LoginState extends State<Login> {
+  final TextEditingController idController = TextEditingController();
+  final TextEditingController pwController = TextEditingController();
+
+  Future<void> login(String id, String password) async {
+    var dio = Dio();
+    try {
+      Response response = await dio.post(
+        'https://your-api-url.com/login',
+        data: {
+          'id': id,
+          'password': password,
+        },
+      );
+      // 로그인 성공 처리
+      print(response.data);
+
+      if (!mounted) return; // 여기에서 mounted를 확인
+
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const Pages()),
+      );
+    } catch (e) {
+      // 오류 처리
+      print(e);
+      if (!mounted) return; // 필요하다면 여기에서도 mounted를 확인할 수 있습니다.
+      // 오류 메시지 표시 등의 UI 관련 작업을 수행
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    ThemeColors themeColors = ThemeColors();
+
+    void navigateToSignUp() {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const Register()),
+      );
+    }
+
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const SizedBox(
+              height: 50,
+            ),
+            const Center(
+              child: Text(
+                '로그인',
+                style: TextStyle(
+                  fontSize: 40,
+                ),
+              ),
+            ),
+            Form(
+              child: Theme(
+                data: ThemeData(
+                    primaryColor: Colors.grey,
+                    inputDecorationTheme: const InputDecorationTheme(
+                        labelStyle:
+                            TextStyle(color: Colors.grey, fontSize: 15.0))),
+                child: Container(
+                    width: 500,
+                    padding: const EdgeInsets.all(40.0),
+                    // 키보드가 올라와서 만약 스크린 영역을 차지하는 경우 스크롤이 되도록
+                    // SingleChildScrollView으로 감싸 줌
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          InputField(
+                            controller: idController,
+                            label: 'Id',
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          InputField(
+                            label: 'password',
+                            controller: pwController,
+                          ),
+                          const SizedBox(
+                            height: 40.0,
+                          ),
+                          Button1(
+                            maintext: '로그인',
+                            bgcolor: themeColors.color1,
+                            onPressed: () {
+                              login(idController.text, pwController.text);
+                            },
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          Button1(
+                            maintext: '회원가입',
+                            bgcolor: themeColors.color2,
+                            onPressed: navigateToSignUp,
+                          ),
+                          const SizedBox(
+                            height: 30,
+                          ),
+                          const Divider(),
+                          const SizedBox(
+                            height: 30,
+                          ),
+                          Card(
+                            elevation: 18,
+                            clipBehavior: Clip.antiAlias,
+                            child: Ink.image(
+                              image:
+                                  const AssetImage('assets/images/kakao.png'),
+                              fit: BoxFit.cover, // 이미지 채우기 방식 지정
+                              width: 300,
+                              height: 60,
+                              child: InkWell(
+                                onTap: () {},
+
+                                // InkWell이 꽉 찬 영역에 반응하도록 Container 등으로 감싸거나 크기를 지정
+                                child: const SizedBox(
+                                  width: 500, // InkWell의 크기를 지정
+                                  height: 60,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
