@@ -1,24 +1,3 @@
-package com.ssafy.coffee.global.entity;
-
-import com.ssafy.coffee.domain.member.entity.Member;
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-@MappedSuperclass
-@NoArgsConstructor
-@EntityListeners(AuditingEntityListener.class)
-@Setter
-@Getter
-public abstract class AuditableBaseObject extends BaseObject {
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "created_by", updatable = false)
-    private Member createdBy;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "last_modified_by")
-    private Member lastModifiedBy;
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:618552ba78f5c521350c4321b98a7d2432507c2cd8658a7a7011ba91211e9071
+size 686
