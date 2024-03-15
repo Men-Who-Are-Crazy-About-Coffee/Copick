@@ -66,7 +66,7 @@ public class JwtService {
     }
 
     public TokenInfoDto createToken(Authentication authentication) {
-        Member member = (Member) authentication.getPrincipal();
+        Member member = ((PrincipalMember) authentication.getPrincipal()).toEntity();
 
         String accessToken= createAccessToken(member.getIndex(),authentication.getAuthorities(),member.getAuthType());
 
@@ -89,8 +89,8 @@ public class JwtService {
         Member member= memberRepository.findById(memberIndex).orElseThrow(()->new RuntimeException(""));
         return Jwts.builder()
                 .subject("access_token")
-                .claim("userIndex",member.getIndex())
-                .claim("userNickName",member.getNickname())
+                .claim("memberIndex",member.getIndex())
+                .claim("memberNickName",member.getNickname())
                 .issuedAt(Date.from(now.atZone(ZoneId.of(TIME_ZONE)).toInstant()))
                 .claim("hasGrade", authoritiesString)
                 .claim("authType",authType)
@@ -100,13 +100,13 @@ public class JwtService {
     }
 
 
-    public String createRefreshToken(String userIndex) {
+    public String createRefreshToken(String memberIndex) {
 
         LocalDateTime now = LocalDateTime.now(ZoneId.of(TIME_ZONE));
 
         return Jwts.builder()
                 .subject("refreshToken")
-                .claim("userIndex",userIndex)
+                .claim("memberIndex",memberIndex)
                 .issuedAt(Date.from(now.atZone(ZoneId.of(TIME_ZONE)).toInstant()))
                 .expiration(Date.from(now.plusSeconds(refreshTokenExpiredTime).atZone(ZoneId.of(TIME_ZONE)).toInstant())) // set Expire Time
                 .signWith(key)
@@ -141,8 +141,8 @@ public class JwtService {
             case LOCAL -> {
                 PrincipalMember principal = PrincipalMember.builder()
                         .member(Member.builder()
-                                .index(Long.valueOf(claims.get("userIndex").toString()))
-                                .nickname(claims.get("userNickName").toString())
+                                .index(Long.valueOf(claims.get("memberIndex").toString()))
+                                .nickname(claims.get("memberNickName").toString())
                                 .role(Role.valueOf(claims.get("hasGrade").toString()))
                                 .authType(AuthType.valueOf(claims.get("authType").toString()))
                                 .build()
@@ -153,8 +153,8 @@ public class JwtService {
             case KAKAO,NAVER -> {
                 PrincipalMember principal = PrincipalMember.builder()
                         .member(Member.builder()
-                                .index(Long.valueOf(claims.get("userIndex").toString()))
-                                .nickname(claims.get("userNickName").toString())
+                                .index(Long.valueOf(claims.get("memberIndex").toString()))
+                                .nickname(claims.get("memberNickName").toString())
                                 .role(Role.valueOf(claims.get("hasGrade").toString()))
                                 .authType(AuthType.valueOf(claims.get("authType").toString()))
                                 .build()
@@ -230,7 +230,7 @@ public class JwtService {
         LocalDateTime expireTime=now.plusSeconds(refreshTokenExpiredTime);
         String refreshToekn= Jwts.builder()
                 .subject("refreshToken")
-                .claim("userIndex",member.getIndex())
+                .claim("memberIndex",member.getIndex())
                 .issuedAt(Date.from(now.atZone(ZoneId.of(TIME_ZONE)).toInstant()))
                 .expiration(Date.from(expireTime.atZone(ZoneId.of(TIME_ZONE)).toInstant())) // set Expire Time
                 .signWith(key)
@@ -254,7 +254,7 @@ public class JwtService {
         LocalDateTime now = LocalDateTime.now(ZoneId.of(TIME_ZONE));
         return Jwts.builder()
                 .subject("access_token")
-                .claim("userNickName",guestMemberName)
+                .claim("memberNickName",guestMemberName)
                 .issuedAt(Date.from(now.atZone(ZoneId.of(TIME_ZONE)).toInstant()))
                 .claim("hasGrade", authoritiesString)
                 .claim("authType",authType)

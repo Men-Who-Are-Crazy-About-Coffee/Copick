@@ -3,6 +3,7 @@ package com.ssafy.coffee.domain.auth.dto;
 
 import com.ssafy.coffee.domain.member.entity.Member;
 import lombok.Builder;
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -10,7 +11,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
-
+@ToString
 public class PrincipalMember implements OAuth2User, UserDetails   {
 
     private Member member;
@@ -55,17 +56,17 @@ public class PrincipalMember implements OAuth2User, UserDetails   {
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
