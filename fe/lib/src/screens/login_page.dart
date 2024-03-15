@@ -47,6 +47,8 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
+    ThemeColors themeColors = ThemeColors();
+
     void navigateToSignUp() {
       Navigator.push(
         context,
@@ -101,7 +103,7 @@ class _LoginState extends State<Login> {
                           ),
                           Button1(
                             maintext: '로그인',
-                            bgcolor: AppColors.color1,
+                            bgcolor: themeColors.color1,
                             onPressed: () {
                               login(idController.text, pwController.text);
                             },
@@ -111,7 +113,7 @@ class _LoginState extends State<Login> {
                           ),
                           Button1(
                             maintext: '회원가입',
-                            bgcolor: AppColors.color2,
+                            bgcolor: themeColors.color2,
                             onPressed: navigateToSignUp,
                           ),
                           const SizedBox(

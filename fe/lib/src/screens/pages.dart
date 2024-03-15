@@ -1,5 +1,4 @@
 import 'package:fe/constants.dart';
-import 'package:fe/src/screens/home.dart';
 import 'package:fe/src/widgets/bottomnavbar.dart';
 import 'package:flutter/material.dart';
 
@@ -15,9 +14,8 @@ class _PagesState extends State<Pages> {
 
   @override
   Widget build(BuildContext context) {
-    const List<Widget> widgetOptions = [
-      Home(),
-    ];
+    ThemeColors themeColors = ThemeColors();
+    const List<Widget> widgetOptions = [];
     // 로그인되지 않았을 경우 로그인 페이지를 리스트에 추가
     return Scaffold(
       body: widgetOptions.elementAt(_selectedIndex),
@@ -25,7 +23,7 @@ class _PagesState extends State<Pages> {
         width: 80,
         height: 80,
         child: FloatingActionButton(
-          backgroundColor: AppColors.color5,
+          backgroundColor: themeColors.color5,
           child: const Icon(Icons.camera, size: 40),
           onPressed: () {},
         ),

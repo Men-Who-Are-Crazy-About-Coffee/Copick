@@ -14,6 +14,7 @@ class BottomNavbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ThemeColors themeColors = ThemeColors();
     return Material(
       child: BottomNavigationBar(
         currentIndex: currentIndex,
@@ -51,7 +52,7 @@ class BottomNavbar extends StatelessWidget {
             label: 'Settings',
           ),
         ],
-        selectedItemColor: AppColors.color5,
+        selectedItemColor: themeColors.color5,
         unselectedItemColor: Colors.grey,
         showUnselectedLabels: true,
         type: BottomNavigationBarType.fixed,

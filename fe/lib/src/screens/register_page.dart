@@ -27,6 +27,7 @@ class _RegisterState extends State<Register> {
 
   @override
   Widget build(BuildContext context) {
+    ThemeColors themeColors = ThemeColors();
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -124,16 +125,16 @@ class _RegisterState extends State<Register> {
                           const SizedBox(
                             height: 15,
                           ),
-                          const Button1(
+                          Button1(
                             maintext: '회원가입',
-                            bgcolor: AppColors.color2,
+                            bgcolor: themeColors.color2,
                           ),
                           const SizedBox(
                             height: 30,
                           ),
                           Button1(
                             maintext: '돌아가기',
-                            bgcolor: AppColors.color2,
+                            bgcolor: themeColors.color2,
                             onPressed: () => Navigator.pop(context),
                           ),
                         ],
