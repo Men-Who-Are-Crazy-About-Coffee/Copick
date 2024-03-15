@@ -41,7 +41,7 @@ public class AuthController {
     @Value("${app.baseurl.frontend}")
     private String frontendBaseurl;
 
-    @PostMapping("/register")
+    @PostMapping("/regist")
     public ResponseEntity<Object> authJoin(@RequestBody MemberRegistRequestDto registerMemberRequestDto) {
         authService.registerMember(registerMemberRequestDto);
         return ResponseEntity.ok().build();
