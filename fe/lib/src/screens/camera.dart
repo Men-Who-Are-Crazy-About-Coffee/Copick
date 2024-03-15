@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:dio/dio.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
 
 Future<void> uploadFile() async {
   // 이미지 선택
@@ -124,23 +123,11 @@ class TakePictureScreenState extends State<TakePictureScreen> {
         onPressed: () async {
           try {
             await _initializeControllerFuture;
-
             // 사진을 찍습니다.
             final image = await _controller.takePicture();
-
             await sendImage(image);
-            print(image.path);
-
-            // 사진을 다른 화면에 표시합니다.
-            await Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) =>
-                    DisplayPictureScreen(imagePath: image.path),
-              ),
-            );
           } catch (e) {
-            print("오류입니다 ::  ");
-            print(e); // 오류 출력
+            const Text("에러");
           }
         },
       ),

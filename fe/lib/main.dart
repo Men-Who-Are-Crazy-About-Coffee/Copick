@@ -1,8 +1,6 @@
 import 'package:camera/camera.dart';
+import 'package:fe/routes.dart';
 import 'package:fe/src/camera_provider.dart';
-import 'package:fe/src/screens/board_list.dart';
-import 'package:fe/src/screens/camera.dart';
-import 'package:fe/src/screens/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -20,8 +18,7 @@ void main() async {
             create: (context) => CameraProvider()..setCamera(firstCamera)),
       ],
       child: MaterialApp(
-        theme: ThemeData.dark(),
-        home: const FirstPage(),
+        routes: routes,
       ),
     ),
   );
@@ -33,8 +30,6 @@ class FirstPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cameraProvider = Provider.of<CameraProvider>(context);
-    final camera = cameraProvider.camera;
     return Scaffold(
       appBar: AppBar(
         title: const Text('메인'),
@@ -45,34 +40,19 @@ class FirstPage extends StatelessWidget {
             ElevatedButton(
               child: const Text('게시판 이동'),
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => BoardListPage()),
-                );
+                Navigator.pushNamed(context, '/board_list');
               },
             ),
             ElevatedButton(
               child: const Text('프로필 이동'),
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => MyProfile()),
-                );
+                Navigator.pushNamed(context, '/profile');
               },
             ),
             ElevatedButton(
               child: const Text('카메라페이지 이동'),
               onPressed: () {
-                if (camera != null) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            TakePictureScreen(camera: camera)),
-                  );
-                } else {
-                  print("선택가능한 카메라 없음");
-                }
+                Navigator.pushNamed(context, '/camera');
               },
             ),
           ],

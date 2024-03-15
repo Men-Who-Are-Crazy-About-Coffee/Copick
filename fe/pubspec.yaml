@@ -39,6 +39,9 @@ dependencies:
   provider: ^6.1.2
   dio: ^5.4.1
   image_picker: ^1.0.7
+  multi_image_picker: ^4.8.0 # 이 버전은 예시로 제공되며, 사용 시 최신 버전을 확인해주세요.
+
+
 
 
 

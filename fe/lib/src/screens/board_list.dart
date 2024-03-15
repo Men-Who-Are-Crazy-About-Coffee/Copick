@@ -1,4 +1,5 @@
 import 'package:fe/src/screens/board_container.dart';
+import 'package:fe/src/screens/board_write.dart';
 import 'package:flutter/material.dart';
 
 class BoardListPage extends StatelessWidget {
@@ -15,39 +16,40 @@ class BoardListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(height: 30),
-              const Row(
-                children: [
-                  SizedBox(width: 20),
-                  Text(
-                    "자유 게시판",
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              BoardContainer(
-                coffeeImg: coffeeImg,
-                memberNickName: memberNickName,
-                memberImg: memberImg,
-                comment: comment,
-                like: like,
-                isLiked: isLiked,
-              ),
-              BoardContainer(
-                coffeeImg: coffeeImg,
-                memberImg: memberImg,
-                memberNickName: memberNickName,
-                comment: comment,
-                like: like,
-                isLiked: isLiked,
-              ),
-            ],
+    return Scaffold(
+      appBar: AppBar(title: const Text('자유 게시판')),
+      body: SingleChildScrollView(
+        child: Center(
+          child: SizedBox(
+            width: 500,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                const SizedBox(height: 20),
+                IconButton(
+                    onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const BoardWritePage())),
+                    icon: const Icon(Icons.post_add)),
+                BoardContainer(
+                  coffeeImg: coffeeImg,
+                  memberNickName: memberNickName,
+                  memberImg: memberImg,
+                  comment: comment,
+                  like: like,
+                  isLiked: isLiked,
+                ),
+                BoardContainer(
+                  coffeeImg: coffeeImg,
+                  memberImg: memberImg,
+                  memberNickName: memberNickName,
+                  comment: comment,
+                  like: like,
+                  isLiked: isLiked,
+                ),
+              ],
+            ),
           ),
         ),
       ),

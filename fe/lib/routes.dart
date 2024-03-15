@@ -1,10 +1,24 @@
 import 'package:fe/main.dart';
+import 'package:fe/src/camera_provider.dart';
+import 'package:fe/src/screens/board_write.dart';
+import 'package:fe/src/screens/camera.dart';
 import 'package:fe/src/screens/profile_page.dart';
-import 'package:flutter/material.dart';
-
 import 'package:fe/src/screens/board_list.dart';
+import 'package:provider/provider.dart';
 
 final routes = {
-  '/': (BuildContext context) => MyProfile(),
-  '/board': (BuildContext context) => BoardListPage(),
+  "/": (context) => const FirstPage(),
+  "/first": (context) => const FirstPage(),
+  "/board_list": (context) => BoardListPage(),
+  "/board_write": (context) => const BoardWritePage(),
+  "/profile": (context) => MyProfile(),
+  "/camera": (context) {
+    final cameraProvider = Provider.of<CameraProvider>(context);
+    final camera = cameraProvider.camera;
+    if (camera != null) {
+      return TakePictureScreen(camera: camera);
+    } else {
+      return const FirstPage();
+    }
+  }
 };
