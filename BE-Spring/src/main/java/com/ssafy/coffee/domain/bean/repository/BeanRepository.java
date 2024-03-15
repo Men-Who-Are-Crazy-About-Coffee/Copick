@@ -1,12 +1,3 @@
-package com.ssafy.coffee.domain.bean.repository;
-
-import com.ssafy.coffee.domain.bean.entity.Bean;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
-import java.util.Optional;
-
-@Repository
-public interface BeanRepository extends JpaRepository<Bean, Long> {
-
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:f8da73db2bff346cedde9b77b423d0d050d7a2219a8f8d0202b92672b874416c
+size 367
