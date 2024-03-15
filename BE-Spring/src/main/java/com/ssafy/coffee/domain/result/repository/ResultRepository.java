@@ -1,3 +1,14 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:b2fd9058633448d41c72b19bd1ee33ef15580e7ebe8a70720c6e27fded329895
-size 480
+package com.ssafy.coffee.domain.result.repository;
+
+import com.ssafy.coffee.domain.member.entity.Member;
+import com.ssafy.coffee.domain.result.entity.Result;
+import com.ssafy.coffee.global.constant.AuthType;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
+
+@Repository
+public interface ResultRepository extends JpaRepository<Result, Long> {
+    Optional<Result> findByIndex(Long index);
+}
