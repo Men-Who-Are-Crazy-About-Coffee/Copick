@@ -19,8 +19,8 @@ public class Flaw extends BaseObject {
     @JoinColumn(name = "result_index", nullable = false)
     private Result result;
 
-    @Column(name = "flaw_link", nullable = false, length = 255)
-    private String link;
+    @Column(name = "flaw_image", nullable = false, length = 255)
+    private String image;
 
     // Constructors, Setters
 }
