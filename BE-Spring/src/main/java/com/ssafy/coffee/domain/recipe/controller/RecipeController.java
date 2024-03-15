@@ -32,7 +32,7 @@ public class RecipeController {
     @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터")
     @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     @PostMapping
-    public ResponseEntity<Object> addRecipe(@RequestBody RecipePostRequestDto recipePostRequestDto) {
+    public ResponseEntity<Object> addRecipe(@ModelAttribute RecipePostRequestDto recipePostRequestDto) {
         recipeService.addRecipe(recipePostRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body("Recipe added successfully");
     }

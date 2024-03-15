@@ -1,3 +1,101 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:e87a6bbfda26f5568842900bb624c01c7f53e9dc601dfbe14db314177df92e3d
-size 4167
+package com.ssafy.coffee.domain.member.service;
+
+import com.ssafy.coffee.domain.auth.dto.MemberRegistRequestDto;
+import com.ssafy.coffee.domain.member.dto.MemberRequestGetDto;
+import com.ssafy.coffee.domain.member.dto.MemberUpdateRequestDto;
+import com.ssafy.coffee.domain.member.entity.Member;
+import com.ssafy.coffee.domain.member.repository.MemberRepository;
+import com.ssafy.coffee.global.constant.AuthType;
+import com.ssafy.coffee.global.constant.Role;
+import com.ssafy.coffee.global.exception.EntityAlreadyExistsException;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.util.Optional;
+
+@Service
+@RequiredArgsConstructor
+public class MemberService {
+    private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    @Transactional
+    public void registerMember(MemberRegistRequestDto memberRegistRequestDto) {
+        Optional<Member> existingMember = memberRepository.findByIdAndAuthType(
+                memberRegistRequestDto.getId(), AuthType.LOCAL
+        );
+
+        if (existingMember.isPresent() && !existingMember.get().isDeleted()) {
+            throw new EntityAlreadyExistsException("Member with ID " + memberRegistRequestDto.getId() + " already exists.");
+        }
+
+        existingMember.ifPresent(member -> {
+            member.setDeleted(false);
+        });
+
+        // 새 멤버 등록
+        if (existingMember.isEmpty()) {
+            memberRepository.save(
+                    Member.builder()
+                            .id(memberRegistRequestDto.getId())
+                            .role(Role.USER)
+                            .authType(AuthType.LOCAL)
+                            .nickname(memberRegistRequestDto.getNickname())
+                            .password(passwordEncoder.encode(memberRegistRequestDto.getPassword()))
+                            .build()
+            );
+        }
+    }
+
+    public MemberRequestGetDto getMember(Long memberIndex) {
+        Member member = memberRepository.findByIndexAndIsDeletedFalse(memberIndex)
+                .orElseThrow(() -> new EntityNotFoundException("Member not found with index: " + memberIndex));
+
+        return toDto(member);
+    }
+
+    @Transactional
+    public void updateMember(Long memberIndex, MemberUpdateRequestDto memberUpdateRequestDto) {
+        Member member = memberRepository.findByIndexAndIsDeletedFalse(memberIndex)
+                .orElseThrow(() -> new IllegalArgumentException("Member not found with index: " + memberIndex));
+
+        if (memberUpdateRequestDto.getNickname() != null)
+            member.setNickname(memberUpdateRequestDto.getNickname());
+
+        if (memberUpdateRequestDto.getProfileImage() != null)
+            member.setProfileImage(memberUpdateRequestDto.getProfileImage());
+
+        if (memberUpdateRequestDto.getPassword() != null)
+            member.setPassword(passwordEncoder.encode(memberUpdateRequestDto.getPassword()));
+
+        if (memberUpdateRequestDto.getRole() != null) {
+            try {
+                Role role = Role.valueOf(memberUpdateRequestDto.getRole().toUpperCase());
+                member.setRole(role);
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Invalid role value: " + memberUpdateRequestDto.getRole());
+            }
+        }
+    }
+
+    public void deleteMember(Long memberIndex) {
+        Member member = memberRepository.findByIndexAndIsDeletedFalse(memberIndex)
+                .orElseThrow(() -> new IllegalArgumentException("Member not found with index: " + memberIndex));
+
+        member.setDeleted(true);
+    }
+
+    public MemberRequestGetDto toDto(Member member) {
+        MemberRequestGetDto dto = new MemberRequestGetDto();
+        dto.setIndex(member.getIndex());
+        dto.setId(member.getId());
+        dto.setRole(member.getRole().name());
+        dto.setNickname(member.getNickname());
+        dto.setProfileImage(member.getProfileImage());
+        return dto;
+    }
+
+}

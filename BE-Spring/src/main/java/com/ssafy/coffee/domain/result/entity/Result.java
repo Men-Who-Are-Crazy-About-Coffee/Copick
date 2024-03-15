@@ -1,3 +1,49 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:fc7a1b1c98607fdf9aab3a544aa7527a05aa90a4c65bd068011ebd77fa9f7d16
-size 1424
+package com.ssafy.coffee.domain.result.entity;
+
+import com.ssafy.coffee.domain.bean.entity.Bean;
+import com.ssafy.coffee.domain.member.entity.Member;
+import com.ssafy.coffee.domain.roasting.entity.Roasting;
+import com.ssafy.coffee.global.entity.BaseObject;
+import jakarta.persistence.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Getter
+@NoArgsConstructor
+public class Result extends BaseObject {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "result_index", nullable = false)
+    private Long index;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_index", nullable = false)
+    private Member member;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "bean_index", nullable = false)
+    private Bean bean;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "Rosting_index", nullable = false)
+    private Roasting roasting;
+
+    @Column(name = "result_normal")
+    private int normalBeanCount;
+
+    @Column(name = "result_flaw")
+    private int flawBeanCount;
+
+    @Builder
+    public Result(Long index,Member member,Bean bean, Roasting roasting, int normalBeanCount,int flawBeanCount){
+        this.index=index;
+        this.member=member;
+        this.bean=bean;
+        this.roasting=roasting;
+        this.normalBeanCount=normalBeanCount;
+        this.flawBeanCount=flawBeanCount;
+    }
+}
