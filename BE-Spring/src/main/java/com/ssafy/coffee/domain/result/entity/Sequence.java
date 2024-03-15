@@ -18,8 +18,8 @@ public class Sequence {
     @JoinColumn(name = "result_index", nullable = false)
     private Result result;
 
-    @Column(name = "sequence_link", nullable = false, length = 255)
-    private String link;
+    @Column(name = "sequence_image", nullable = false, length = 255)
+    private String image;
 
     @Column(name = "result_normal", nullable = false)
     private int normal = 0;

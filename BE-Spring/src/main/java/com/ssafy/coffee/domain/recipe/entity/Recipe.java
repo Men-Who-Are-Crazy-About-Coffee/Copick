@@ -34,5 +34,9 @@ public class Recipe extends AuditableBaseObject {
     @Column(name = "recipe_content", nullable = false, length = 255)
     private String content;
 
+    @Setter
+    @Column(name = "recipe_image", nullable = false, length = 255)
+    private String image;
+
     // Constructors, Setters
 }
