@@ -1,5 +1,6 @@
 package com.ssafy.coffee.domain.auth.service;
 
+import com.ssafy.coffee.domain.auth.dto.PrincipalMember;
 import com.ssafy.coffee.domain.auth.dto.RegisterMemberRequestDto;
 import com.ssafy.coffee.domain.auth.dto.TokenInfoDto;
 import com.ssafy.coffee.domain.member.entity.Member;
@@ -9,6 +10,7 @@ import com.ssafy.coffee.global.constant.AuthType;
 import com.ssafy.coffee.global.constant.Role;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthService {
     private final JwtService jwtService;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
@@ -52,7 +55,7 @@ public class AuthService {
         // authentication 객체를 createToken 메소드를 통해서 JWT Token을 생성
         TokenInfoDto tokenInfoDto = jwtService.createToken(authentication);
         try {
-            jwtService.createAndSaveRefreshToken((Member) authentication.getPrincipal());
+            jwtService.createAndSaveRefreshToken(((PrincipalMember) authentication.getPrincipal()).toEntity());
         } catch (Exception e) {
             e.printStackTrace();
         }
