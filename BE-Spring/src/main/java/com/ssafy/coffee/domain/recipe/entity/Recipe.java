@@ -17,12 +17,14 @@ public class Recipe extends AuditableBaseObject {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "recipe_index", nullable = false)
-    private Long recipeId;
+    private Long index;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bean_index", nullable = false)
     private Bean bean;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "roasting_index", nullable = false)
     private Roasting roasting;
