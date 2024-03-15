@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fe/src/widgets/bar_chart.dart';
 import 'package:fe/src/widgets/pie_chart.dart';
+import 'package:intl/intl.dart';
 
 class ChartPage extends StatefulWidget {
   const ChartPage({super.key});
