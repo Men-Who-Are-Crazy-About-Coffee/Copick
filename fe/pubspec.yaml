@@ -40,10 +40,8 @@ dependencies:
   dio: ^5.4.1
   image_picker: ^1.0.7
   multi_image_picker: ^4.8.0 # 이 버전은 예시로 제공되며, 사용 시 최신 버전을 확인해주세요.
-
-
-
-
+  fl_chart: ^0.66.2
+  intl: ^0.19.0
 
 dev_dependencies:
   flutter_test:
