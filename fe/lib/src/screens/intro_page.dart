@@ -1,18 +1,18 @@
 import 'package:fe/src/screens/login_page.dart';
 import 'package:flutter/material.dart';
 
-class Intro extends StatefulWidget {
+class IntroPage extends StatefulWidget {
   // final VoidCallback onLoginPressed;
-  const Intro({
+  const IntroPage({
     super.key,
     // required this.onLoginPressed,
   });
 
   @override
-  State<Intro> createState() => _MainState();
+  State<IntroPage> createState() => _MainState();
 }
 
-class _MainState extends State<Intro> with SingleTickerProviderStateMixin {
+class _MainState extends State<IntroPage> with SingleTickerProviderStateMixin {
   // AnimationController와 Animation 변수를 추가합니다.
   late AnimationController _controller;
   late Animation<double> _animation;
@@ -79,8 +79,7 @@ class _MainState extends State<Intro> with SingleTickerProviderStateMixin {
             ),
             InkWell(
               onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const Login()));
+                Navigator.pushNamed(context, '/login');
               },
               child: const Text(
                 '서비스 이용해보기',

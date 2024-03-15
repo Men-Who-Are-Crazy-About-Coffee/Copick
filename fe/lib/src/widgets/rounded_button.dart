@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-class Button1 extends StatefulWidget {
+class RoundedButton extends StatefulWidget {
   final String maintext;
   final Color bgcolor;
   final VoidCallback? onPressed;
-  const Button1({
+  const RoundedButton({
     super.key,
     required this.maintext,
     required this.bgcolor,
@@ -12,10 +12,10 @@ class Button1 extends StatefulWidget {
   });
 
   @override
-  State<Button1> createState() => _Button1State();
+  State<RoundedButton> createState() => _RoundedButtonState();
 }
 
-class _Button1State extends State<Button1> {
+class _RoundedButtonState extends State<RoundedButton> {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(

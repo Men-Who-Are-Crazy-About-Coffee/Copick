@@ -36,7 +36,7 @@ class BottomNavbar extends StatelessWidget {
                     width: 24,
                     height: 24,
                   ),
-            label: 'Saved',
+            label: 'Gallery',
           ),
           const BottomNavigationBarItem(
             // 이 항목은 실제 버튼이 아닌 여백을 만들기 위한 더미 항목입니다.
@@ -60,10 +60,3 @@ class BottomNavbar extends StatelessWidget {
     );
   }
 }
-
-List bodyItem = [
-  const Text("home"),
-  const Text("music"),
-  const Text("apps"),
-  const Text("settings"),
-];

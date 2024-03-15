@@ -68,16 +68,16 @@ Future<void> sendImage(XFile file) async {
 }
 
 // 사진 찍기 화면
-class TakePictureScreen extends StatefulWidget {
+class CameraPage extends StatefulWidget {
   final CameraDescription camera;
 
-  const TakePictureScreen({super.key, required this.camera});
+  const CameraPage({super.key, required this.camera});
 
   @override
-  TakePictureScreenState createState() => TakePictureScreenState();
+  CameraPageState createState() => CameraPageState();
 }
 
-class TakePictureScreenState extends State<TakePictureScreen> {
+class CameraPageState extends State<CameraPage> {
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
 
@@ -125,7 +125,13 @@ class TakePictureScreenState extends State<TakePictureScreen> {
             await _initializeControllerFuture;
             // 사진을 찍습니다.
             final image = await _controller.takePicture();
-            await sendImage(image);
+            // await sendImage(image);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      DisplayPictureScreen(imagePath: image.path)),
+            );
           } catch (e) {
             const Text("에러");
           }

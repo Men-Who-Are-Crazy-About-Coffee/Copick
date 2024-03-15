@@ -1,5 +1,5 @@
 import 'package:fe/constants.dart';
-import 'package:fe/src/widgets/button1.dart';
+import 'package:fe/src/widgets/rounded_button.dart';
 import 'package:fe/src/widgets/inputfield.dart';
 import 'package:flutter/material.dart';
 
@@ -125,14 +125,14 @@ class _RegisterState extends State<Register> {
                           const SizedBox(
                             height: 15,
                           ),
-                          Button1(
+                          RoundedButton(
                             maintext: '회원가입',
                             bgcolor: themeColors.color2,
                           ),
                           const SizedBox(
                             height: 30,
                           ),
-                          Button1(
+                          RoundedButton(
                             maintext: '돌아가기',
                             bgcolor: themeColors.color2,
                             onPressed: () => Navigator.pop(context),

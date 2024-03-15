@@ -6,14 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:image_picker/image_picker.dart';
 
-class BoardWritePage extends StatefulWidget {
-  const BoardWritePage({super.key});
+class CommunityWritePage extends StatefulWidget {
+  const CommunityWritePage({super.key});
 
   @override
-  _BoardWritePageState createState() => _BoardWritePageState();
+  _CommunityWritePageState createState() => _CommunityWritePageState();
 }
 
-class _BoardWritePageState extends State<BoardWritePage> {
+class _CommunityWritePageState extends State<CommunityWritePage> {
   String? _selectedDomain;
 
   XFile? image;

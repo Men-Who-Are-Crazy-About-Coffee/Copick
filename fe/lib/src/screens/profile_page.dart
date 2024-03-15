@@ -1,10 +1,10 @@
 import 'package:fe/constants.dart';
 import 'package:flutter/material.dart';
 
-class MyProfile extends StatelessWidget {
+class ProfilePage extends StatelessWidget {
   String memberImg =
       "https://cdn.ceomagazine.co.kr/news/photo/201802/1714_4609_1642.jpg";
-  MyProfile({super.key});
+  ProfilePage({super.key});
 
   @override
   Widget build(BuildContext context) {

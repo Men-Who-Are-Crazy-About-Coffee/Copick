@@ -4,7 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:fe/constants.dart';
 import 'package:fe/src/screens/pages.dart';
 import 'package:fe/src/screens/register_page.dart';
-import 'package:fe/src/widgets/button1.dart';
+import 'package:fe/src/widgets/rounded_button.dart';
 import 'package:fe/src/widgets/inputfield.dart';
 import 'package:flutter/material.dart';
 
@@ -20,29 +20,28 @@ class _LoginState extends State<Login> {
   final TextEditingController pwController = TextEditingController();
 
   Future<void> login(String id, String password) async {
-    var dio = Dio();
-    try {
-      Response response = await dio.post(
-        'https://your-api-url.com/login',
-        data: {
-          'id': id,
-          'password': password,
-        },
-      );
-      // 로그인 성공 처리
-      print(response.data);
+    // var dio = Dio();
+    // try {
+    //   Response response = await dio.post(
+    //     'https://your-api-url.com/login',
+    //     data: {
+    //       'id': id,
+    //       'password': password,
+    //     },
+    //   );
+    // 로그인 성공 처리
+    // print(response.data);
 
-      if (!mounted) return; // 여기에서 mounted를 확인
+    // if (!mounted) return; // 여기에서 mounted를 확인
 
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const Pages()),
-      );
-    } catch (e) {
-      // 오류 처리
-      print(e);
-      if (!mounted) return; // 필요하다면 여기에서도 mounted를 확인할 수 있습니다.
-      // 오류 메시지 표시 등의 UI 관련 작업을 수행
-    }
+    Navigator.pushNamed(context, '/pages');
+
+    // } catch (e) {
+    //   // 오류 처리
+    //   print(e);
+    //   if (!mounted) return; // 필요하다면 여기에서도 mounted를 확인할 수 있습니다.
+    //   // 오류 메시지 표시 등의 UI 관련 작업을 수행
+    // }
   }
 
   @override
@@ -50,10 +49,7 @@ class _LoginState extends State<Login> {
     ThemeColors themeColors = ThemeColors();
 
     void navigateToSignUp() {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const Register()),
-      );
+      Navigator.pushNamed(context, '/register');
     }
 
     return Scaffold(
@@ -101,7 +97,7 @@ class _LoginState extends State<Login> {
                           const SizedBox(
                             height: 40.0,
                           ),
-                          Button1(
+                          RoundedButton(
                             maintext: '로그인',
                             bgcolor: themeColors.color1,
                             onPressed: () {
@@ -111,7 +107,7 @@ class _LoginState extends State<Login> {
                           const SizedBox(
                             height: 20,
                           ),
-                          Button1(
+                          RoundedButton(
                             maintext: '회원가입',
                             bgcolor: themeColors.color2,
                             onPressed: navigateToSignUp,

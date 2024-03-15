@@ -3,14 +3,14 @@ import 'package:fe/src/widgets/bar_chart.dart';
 import 'package:fe/src/widgets/pie_chart.dart';
 import 'package:intl/intl.dart';
 
-class ChartPage extends StatefulWidget {
-  const ChartPage({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
   @override
-  _ChartPageState createState() => _ChartPageState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _ChartPageState extends State<ChartPage> {
+class _HomePageState extends State<HomePage> {
   DateTimeRange? dateRange; // 선택된 날짜 범위를 저장할 변수
 
   // 날짜 범위 선택기를 표시하는 함수
@@ -53,29 +53,25 @@ class _ChartPageState extends State<ChartPage> {
           ),
         ],
       ),
-      body: Container(
-        color: Colors.white,
-        child: Column(
-          children: [
-            // 날짜 선택기 대신 선택된 날짜 범위를 표시
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                _getFormattedDateRange(),
-                style: const TextStyle(fontSize: 20),
+      body: SingleChildScrollView(
+        child: Container(
+          color: Colors.white,
+          child: Column(
+            children: [
+              // 날짜 선택기 대신 선택된 날짜 범위를 표시
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  _getFormattedDateRange(),
+                  style: const TextStyle(fontSize: 20),
+                ),
               ),
-            ),
-            const PieChartSample2(),
-            const BarChartSample3(),
-          ],
+              const PieChartSample2(),
+              const BarChartSample3(),
+            ],
+          ),
         ),
       ),
     );
   }
-}
-
-void main() {
-  runApp(const MaterialApp(
-    home: ChartPage(),
-  ));
 }
