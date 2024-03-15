@@ -4,6 +4,7 @@ import com.ssafy.coffee.domain.bean.entity.Bean;
 import com.ssafy.coffee.domain.roasting.entity.Roasting;
 import com.ssafy.coffee.global.entity.AuditableBaseObject;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -34,9 +35,11 @@ public class Recipe extends AuditableBaseObject {
     @Column(name = "recipe_content", nullable = false, length = 255)
     private String content;
 
-    @Setter
-    @Column(name = "recipe_image", nullable = false, length = 255)
-    private String image;
-
-    // Constructors, Setters
+    @Builder
+    public Recipe(Bean bean, Roasting roasting, String title, String content) {
+        this.bean = bean;
+        this.roasting = roasting;
+        this.title = title;
+        this.content = content;
+    }
 }

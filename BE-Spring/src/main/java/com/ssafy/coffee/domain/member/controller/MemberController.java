@@ -17,15 +17,11 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
     private final MemberService memberService;
 
-    ////
-
 //    @PostMapping("/register")
 //    public ResponseEntity<Object> authJoin(@RequestBody MemberRegistRequestDto memberRegistRequestDto) {
 //        memberService.registerMember(memberRegistRequestDto);
 //        return ResponseEntity.status(HttpStatus.CREATED).body("Bean added successfully");
 //    }
-
-    ////
 
     @GetMapping("/{memberIndex}")
     public ResponseEntity<Object> getBean(@PathVariable Long memberIndex) {

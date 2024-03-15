@@ -1,4 +1,4 @@
-package com.ssafy.coffee.domain.member.dto;
+package com.ssafy.coffee.domain.auth.dto;
 
 import lombok.Data;
 

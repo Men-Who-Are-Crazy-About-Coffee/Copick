@@ -1,12 +1,13 @@
 package com.ssafy.coffee.domain.member.service;
 
-import com.ssafy.coffee.domain.member.dto.MemberRegistRequestDto;
+import com.ssafy.coffee.domain.auth.dto.MemberRegistRequestDto;
 import com.ssafy.coffee.domain.member.dto.MemberRequestGetDto;
 import com.ssafy.coffee.domain.member.dto.MemberUpdateRequestDto;
 import com.ssafy.coffee.domain.member.entity.Member;
 import com.ssafy.coffee.domain.member.repository.MemberRepository;
 import com.ssafy.coffee.global.constant.AuthType;
 import com.ssafy.coffee.global.constant.Role;
+import com.ssafy.coffee.global.exception.EntityAlreadyExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -24,27 +25,29 @@ public class MemberService {
     @Transactional
     public void registerMember(MemberRegistRequestDto memberRegistRequestDto) {
         Optional<Member> existingMember = memberRepository.findByIdAndAuthType(
-                memberRegistRequestDto.getId(), AuthType.LOCAL);
+                memberRegistRequestDto.getId(), AuthType.LOCAL
+        );
 
-        if (existingMember.isPresent()) {
-            Member member = existingMember.get();
-            if (!member.isDeleted()) {
-                return;
-            } else {
-                member.setDeleted(false);
-                return;
-            }
+        if (existingMember.isPresent() && !existingMember.get().isDeleted()) {
+            throw new EntityAlreadyExistsException("Member with ID " + memberRegistRequestDto.getId() + " already exists.");
         }
 
-        memberRepository.save(
-                Member.builder()
-                .id(memberRegistRequestDto.getId())
-                .role(Role.USER)
-                .authType(AuthType.LOCAL)
-                .nickname(memberRegistRequestDto.getNickname())
-                .password(passwordEncoder.encode(memberRegistRequestDto.getPassword()))
-                .build()
-        );
+        existingMember.ifPresent(member -> {
+            member.setDeleted(false);
+        });
+
+        // 새 멤버 등록
+        if (existingMember.isEmpty()) {
+            memberRepository.save(
+                    Member.builder()
+                            .id(memberRegistRequestDto.getId())
+                            .role(Role.USER)
+                            .authType(AuthType.LOCAL)
+                            .nickname(memberRegistRequestDto.getNickname())
+                            .password(passwordEncoder.encode(memberRegistRequestDto.getPassword()))
+                            .build()
+            );
+        }
     }
 
     public MemberRequestGetDto getMember(Long memberIndex) {

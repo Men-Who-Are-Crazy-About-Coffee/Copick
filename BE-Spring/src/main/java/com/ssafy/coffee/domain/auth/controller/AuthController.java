@@ -4,7 +4,7 @@ import com.ssafy.coffee.domain.RefreshToken.entity.RefreshToken;
 import com.ssafy.coffee.domain.RefreshToken.repository.RefreshTokenRepository;
 import com.ssafy.coffee.domain.auth.dto.AccessTokenDto;
 import com.ssafy.coffee.domain.auth.dto.LoginDto;
-import com.ssafy.coffee.domain.auth.dto.RegisterMemberRequestDto;
+import com.ssafy.coffee.domain.auth.dto.MemberRegistRequestDto;
 import com.ssafy.coffee.domain.auth.dto.TokenInfoDto;
 import com.ssafy.coffee.domain.auth.service.AuthService;
 import com.ssafy.coffee.domain.auth.service.JwtService;
@@ -33,22 +33,18 @@ import java.util.List;
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
+
     private final AuthService authService;
     private final JwtService jwtService;
     private final RefreshTokenRepository refreshTokenRepository;
+
     @Value("${app.baseurl.frontend}")
     private String frontendBaseurl;
-    @PostMapping("/register")
-    public ResponseEntity<? extends AccessTokenDto> authJoin(@RequestBody RegisterMemberRequestDto registerDto, HttpServletResponse response) {
 
-        try {
-            authService.registerMember(registerDto);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
-
-
+    @PostMapping("/regist")
+    public ResponseEntity<Object> authJoin(@RequestBody MemberRegistRequestDto registerMemberRequestDto) {
+        authService.registerMember(registerMemberRequestDto);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/login")
@@ -56,15 +52,16 @@ public class AuthController {
         log.debug("인증 시작");
 
         TokenInfoDto tokenInfoDto = authService.login(loginDto);
-        URI cookieDomain=new URI(frontendBaseurl);
-        UriComponents uriComponent= UriComponentsBuilder.fromHttpUrl(frontendBaseurl)
-                .pathSegment("auth","login")
-                .queryParam("resultCode",200)
-                .queryParam("accessToken",tokenInfoDto.getAccessToken())
+        URI cookieDomain = new URI(frontendBaseurl);
+        UriComponents uriComponent = UriComponentsBuilder.fromHttpUrl(frontendBaseurl)
+                .pathSegment("auth", "login")
+                .queryParam("resultCode", 200)
+                .queryParam("accessToken", tokenInfoDto.getAccessToken())
                 .queryParam("refreshToken", tokenInfoDto.getRefreshToken())
                 .encode()
                 .build();
         HttpHeaders httpHeaders = new HttpHeaders();
+
         // response header에 jwt token에 넣어줌
         httpHeaders.add(JwtUtil.AUTHORIZATION_HEADER, JwtUtil.JWT_TYPE + tokenInfoDto.getAccessToken());
         Cookie cookie = new Cookie("refresh_token", tokenInfoDto.getRefreshToken());
