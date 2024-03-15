@@ -4,11 +4,14 @@ import com.ssafy.coffee.domain.recipe.dto.RecipeGetListResponseDto;
 import com.ssafy.coffee.domain.recipe.dto.RecipeGetResponseDto;
 import com.ssafy.coffee.domain.recipe.dto.RecipePostRequestDto;
 import com.ssafy.coffee.domain.recipe.dto.RecipeUpdateRequestDto;
+import com.ssafy.coffee.domain.recipe.entity.Recipe;
 import com.ssafy.coffee.domain.recipe.repository.RecipeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +36,7 @@ public class RecipeService {
     public void deleteRecipe(Long recipeIndex) {
 
     }
-
-
+    public List<Recipe> selectListByBeanOrRoasting(long beanIndex,long roastingIndex){
+        return recipeRepository.findByBeanIndexOrRoastingIndex(beanIndex,roastingIndex);
+    }
 }

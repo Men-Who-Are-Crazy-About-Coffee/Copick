@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -23,17 +24,21 @@ public class Result extends BaseObject {
     @JoinColumn(name = "member_index", nullable = false)
     private Member member;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bean_index", nullable = false)
     private Bean bean;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "Rosting_index", nullable = false)
     private Roasting roasting;
 
+    @Setter
     @Column(name = "result_normal")
     private int normalBeanCount;
 
+    @Setter
     @Column(name = "result_flaw")
     private int flawBeanCount;
 
