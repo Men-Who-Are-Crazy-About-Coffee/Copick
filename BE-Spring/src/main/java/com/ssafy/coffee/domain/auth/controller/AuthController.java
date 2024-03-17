@@ -9,6 +9,7 @@ import com.ssafy.coffee.domain.auth.dto.TokenInfoDto;
 import com.ssafy.coffee.domain.auth.service.AuthService;
 import com.ssafy.coffee.domain.auth.service.JwtService;
 
+import com.ssafy.coffee.domain.member.service.MemberService;
 import com.ssafy.coffee.global.util.JwtUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,6 +35,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AuthController {
 
+    private final MemberService memberService;
     private final AuthService authService;
     private final JwtService jwtService;
     private final RefreshTokenRepository refreshTokenRepository;
@@ -41,10 +43,10 @@ public class AuthController {
     @Value("${app.baseurl.frontend}")
     private String frontendBaseurl;
 
-    @PostMapping("/regist")
-    public ResponseEntity<Object> authJoin(@RequestBody MemberRegistRequestDto registerMemberRequestDto) {
-        authService.registerMember(registerMemberRequestDto);
-        return ResponseEntity.ok().build();
+    @PostMapping("/register")
+    public ResponseEntity<Object> authJoin(@RequestBody MemberRegistRequestDto memberRegistRequestDto) {
+        memberService.registerMember(memberRegistRequestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body("register successfully");
     }
 
     @PostMapping("/login")
@@ -52,8 +54,10 @@ public class AuthController {
         log.debug("인증 시작");
 
         TokenInfoDto tokenInfoDto = authService.login(loginDto);
+
         URI cookieDomain = new URI(frontendBaseurl);
-        UriComponents uriComponent = UriComponentsBuilder.fromHttpUrl(frontendBaseurl)
+        UriComponents uriComponent = UriComponentsBuilder
+                .fromHttpUrl(frontendBaseurl)
                 .pathSegment("auth", "login")
                 .queryParam("resultCode", 200)
                 .queryParam("accessToken", tokenInfoDto.getAccessToken())

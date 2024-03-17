@@ -1,14 +1,9 @@
 package com.ssafy.coffee.domain.auth.dto;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.Data;
 
-@Getter
-@ToString
-@Builder
+@Data
 public class LoginDto {
 	private String id;
 	private String password;
-
 }
