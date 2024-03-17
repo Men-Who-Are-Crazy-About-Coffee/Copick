@@ -1,18 +1,3 @@
-package com.ssafy.coffee.domain.member.repository;
-
-import com.ssafy.coffee.domain.member.entity.Member;
-import com.ssafy.coffee.global.constant.AuthType;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
-import java.util.Optional;
-
-@Repository
-public interface MemberRepository extends JpaRepository<Member, Long> {
-    Optional<Member> findByIdAndAuthType(String id, AuthType authType);
-    Optional<Member> findById(String memberId);
-    boolean existsByIdAndAuthType(String memberId,AuthType authType);
-
-
-    Optional<Member> findByIndexAndIsDeletedFalse(Long index);
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:4254527a504024bf34bb45947d5f28aabb27ba55151ebda183d88c73219b6092
+size 565
