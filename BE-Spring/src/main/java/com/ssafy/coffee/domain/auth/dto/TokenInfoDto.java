@@ -9,9 +9,9 @@ import lombok.ToString;
 public class TokenInfoDto {
 	private String refreshToken;
 	private String accessToken;
+
 	@Builder
 	public TokenInfoDto(String refreshToken, String accessToken) {
-		super();
 		this.refreshToken = refreshToken;
 		this.accessToken = accessToken;
 	}
