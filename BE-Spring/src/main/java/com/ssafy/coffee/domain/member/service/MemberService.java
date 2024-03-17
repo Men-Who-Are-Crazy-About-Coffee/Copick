@@ -32,11 +32,8 @@ public class MemberService {
             throw new EntityAlreadyExistsException("Member with ID " + memberRegistRequestDto.getId() + " already exists.");
         }
 
-        existingMember.ifPresent(member -> {
-            member.setDeleted(false);
-        });
+        existingMember.ifPresent(member -> member.setDeleted(false));
 
-        // 새 멤버 등록
         if (existingMember.isEmpty()) {
             memberRepository.save(
                     Member.builder()
@@ -53,14 +50,13 @@ public class MemberService {
     public MemberRequestGetDto getMember(Long memberIndex) {
         Member member = memberRepository.findByIndexAndIsDeletedFalse(memberIndex)
                 .orElseThrow(() -> new EntityNotFoundException("Member not found with index: " + memberIndex));
-
-        return toDto(member);
+        return new MemberRequestGetDto(member);
     }
 
     @Transactional
     public void updateMember(Long memberIndex, MemberUpdateRequestDto memberUpdateRequestDto) {
         Member member = memberRepository.findByIndexAndIsDeletedFalse(memberIndex)
-                .orElseThrow(() -> new IllegalArgumentException("Member not found with index: " + memberIndex));
+                .orElseThrow(() -> new EntityNotFoundException("Member not found with index: " + memberIndex));
 
         if (memberUpdateRequestDto.getNickname() != null)
             member.setNickname(memberUpdateRequestDto.getNickname());
@@ -72,30 +68,15 @@ public class MemberService {
             member.setPassword(passwordEncoder.encode(memberUpdateRequestDto.getPassword()));
 
         if (memberUpdateRequestDto.getRole() != null) {
-            try {
-                Role role = Role.valueOf(memberUpdateRequestDto.getRole().toUpperCase());
-                member.setRole(role);
-            } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException("Invalid role value: " + memberUpdateRequestDto.getRole());
-            }
+            Role role = Role.valueOf(memberUpdateRequestDto.getRole().toUpperCase());
+            member.setRole(role);
         }
     }
 
+    @Transactional
     public void deleteMember(Long memberIndex) {
         Member member = memberRepository.findByIndexAndIsDeletedFalse(memberIndex)
-                .orElseThrow(() -> new IllegalArgumentException("Member not found with index: " + memberIndex));
-
+                .orElseThrow(() -> new EntityNotFoundException("Member not found with index: " + memberIndex));
         member.setDeleted(true);
     }
-
-    public MemberRequestGetDto toDto(Member member) {
-        MemberRequestGetDto dto = new MemberRequestGetDto();
-        dto.setIndex(member.getIndex());
-        dto.setId(member.getId());
-        dto.setRole(member.getRole().name());
-        dto.setNickname(member.getNickname());
-        dto.setProfileImage(member.getProfileImage());
-        return dto;
-    }
-
 }

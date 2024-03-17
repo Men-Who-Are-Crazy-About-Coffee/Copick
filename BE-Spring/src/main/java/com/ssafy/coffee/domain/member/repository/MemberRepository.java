@@ -11,8 +11,5 @@ import java.util.Optional;
 public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findByIdAndAuthType(String id, AuthType authType);
     Optional<Member> findById(String memberId);
-    boolean existsByIdAndAuthType(String memberId,AuthType authType);
-
-
     Optional<Member> findByIndexAndIsDeletedFalse(Long index);
 }
