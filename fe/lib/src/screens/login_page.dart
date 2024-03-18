@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:fe/constants.dart';
 import 'package:fe/src/screens/pages.dart';
 import 'package:fe/src/screens/register_page.dart';
+import 'package:fe/src/services/api_service.dart';
 import 'package:fe/src/widgets/rounded_button.dart';
 import 'package:fe/src/widgets/inputfield.dart';
 import 'package:flutter/material.dart';
@@ -19,22 +20,17 @@ class _LoginState extends State<Login> {
   final TextEditingController idController = TextEditingController();
   final TextEditingController pwController = TextEditingController();
 
+  late String nickname = "hoseong";
   Future<void> login(String id, String password) async {
-    // var dio = Dio();
-    // try {
-    //   Response response = await dio.post(
-    //     'https://your-api-url.com/login',
-    //     data: {
-    //       'id': id,
-    //       'password': password,
-    //     },
-    //   );
-    // 로그인 성공 처리
-    // print(response.data);
+    ApiService apiService = ApiService();
+    Response<dynamic> response =
+        await apiService.post('/api/auth/login', data: {
+      "id": id,
+      "password": password,
+    });
+    print(response.data);
 
     // if (!mounted) return; // 여기에서 mounted를 확인
-
-    Navigator.pushNamed(context, '/pages');
 
     // } catch (e) {
     //   // 오류 처리
@@ -42,6 +38,7 @@ class _LoginState extends State<Login> {
     //   if (!mounted) return; // 필요하다면 여기에서도 mounted를 확인할 수 있습니다.
     //   // 오류 메시지 표시 등의 UI 관련 작업을 수행
     // }
+    // Navigator.pushNamed(context, '/pages');
   }
 
   @override
