@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +33,7 @@ public class BeanController {
     @ApiResponse(responseCode = "201", description = "커피콩이 성공적으로 추가됨")
     @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터")
     @ApiResponse(responseCode = "500", description = "서버 내부 오류")
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Object> addBean(@ModelAttribute BeanPostRequestDto beanPostRequestDto) {
         beanService.addBean(beanPostRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body("Bean added successfully");
@@ -64,11 +65,11 @@ public class BeanController {
     @ApiResponse(responseCode = "404", description = "제공된 beanIndex로 커피콩을 찾을 수 없음")
     @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터")
     @ApiResponse(responseCode = "500", description = "서버 내부 오류")
-    @PutMapping("/{beanIndex}")
+    @PutMapping(path = "/{beanIndex}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Object> updateBean(@PathVariable Long beanIndex,
-                                             @Valid @RequestBody BeanUpdateRequestDto beanUpdateRequestDto) {
+                                             @ModelAttribute BeanUpdateRequestDto beanUpdateRequestDto) {
         beanService.updateBean(beanIndex, beanUpdateRequestDto);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Bean updated successfully");
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build(); // 본문을 비워 응답
     }
 
     @Operation(summary = "커피콩 삭제", description = "커피콩 정보를 삭제합니다.")

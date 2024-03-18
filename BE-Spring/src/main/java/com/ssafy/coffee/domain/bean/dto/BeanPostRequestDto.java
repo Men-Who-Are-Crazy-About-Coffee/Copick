@@ -7,5 +7,5 @@ import org.springframework.web.multipart.MultipartFile;
 public class BeanPostRequestDto {
     private String type;
     private String content;
-    private MultipartFile file;
+    private MultipartFile image;
 }
