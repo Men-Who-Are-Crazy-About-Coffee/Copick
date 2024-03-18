@@ -1,15 +1,3 @@
-package com.ssafy.coffee;
-
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
-
-@SpringBootApplication
-@EnableJpaAuditing
-public class CoffeeApplication {
-
-    public static void main(String[] args) {
-        SpringApplication.run(CoffeeApplication.class, args);
-    }
-
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:92c362d89960b3c6be0cd25a69c1ddab5763645b5b319cdf85b7c3eb09022a74
+size 495
