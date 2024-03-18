@@ -10,9 +10,9 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,8 +30,8 @@ public class RoastingController {
     @ApiResponse(responseCode = "201", description = "배전도가 성공적으로 추가됨")
     @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터")
     @ApiResponse(responseCode = "500", description = "서버 내부 오류")
-    @PostMapping
-    public ResponseEntity<Object> addRoasting(@RequestBody RoastingPostRequestDto roastingPostRequestDto) {
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Object> addRoasting(@ModelAttribute RoastingPostRequestDto roastingPostRequestDto) {
         roastingService.addRoasting(roastingPostRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body("Roasting added successfully");
     }
@@ -52,7 +52,7 @@ public class RoastingController {
     @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     @ApiResponse(responseCode = "200", description = "배전도 리스트 조회에 성공", content = @Content(array = @ArraySchema(schema = @Schema(implementation = RoastingGetResponseDto.class))))
     @GetMapping("/list")
-    public ResponseEntity<List<RoastingGetResponseDto>> getAllRoastings() {
+    public ResponseEntity<Object> getAllRoastings() {
         List<RoastingGetResponseDto> roastingPage = roastingService.getAllRoastings();
         return ResponseEntity.status(HttpStatus.OK).body(roastingPage);
     }
@@ -63,9 +63,9 @@ public class RoastingController {
     @ApiResponse(responseCode = "404", description = "제공된 roastingIndex로 배전도를 찾을 수 없음")
     @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터")
     @ApiResponse(responseCode = "500", description = "서버 내부 오류")
-    @PutMapping("/{roastingIndex}")
+    @PutMapping(path = "/{roastingIndex}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Object> updateRoasting(@PathVariable Long roastingIndex,
-                                                 @Valid @RequestBody RoastingUpdateRequestDto roastingUpdateRequestDto) {
+                                                 @ModelAttribute RoastingUpdateRequestDto roastingUpdateRequestDto) {
         roastingService.updateRoasting(roastingIndex, roastingUpdateRequestDto);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Roasting updated successfully");
     }

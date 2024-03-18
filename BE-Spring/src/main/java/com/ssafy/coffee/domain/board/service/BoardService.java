@@ -28,8 +28,7 @@ public class BoardService {
     private final S3Service s3Service;
 
     public void addBoard(BoardPostRequestDto boardPostRequestDto, Member member) {
-
-
+        
         Board board = boardRepository.save(
                 Board.builder()
                         .title(boardPostRequestDto.getTitle())
