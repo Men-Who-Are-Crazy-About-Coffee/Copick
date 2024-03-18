@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BoardRepository extends JpaRepository<Board, Long> {
 
-    @Query("SELECT b FROM Board b WHERE b.title LIKE %:keyword% AND b.domain = :domain")
+    @Query("SELECT b FROM Board b WHERE b.title LIKE %:keyword% AND b.domain = :domain ORDER BY b.index ASC")
     Page<Board> findByKeywordAndDomain(@Param("keyword") String keyword, @Param("domain") String domain, Pageable pageable);
 
 }
