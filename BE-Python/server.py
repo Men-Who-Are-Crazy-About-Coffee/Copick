@@ -32,6 +32,10 @@ db_session_maker = DB_utils.posgreSQL_connection()
 def read_root():
     return {"Hello": "World"}
 
+@app.get("api/test")
+def test_api():
+    return {"test success"}
+
 @app.post("/image")
 async def upload_image(file: UploadFile = File(...)):
     try:
@@ -77,7 +81,7 @@ async def first_get():
 @app.post("/api/analyze")
 async def analyze_image(accessToken: Optional[List[str]] = Header(None),resultIndex: Optional[List[str]] = Header(None)
                         ,file: UploadFile = File(...)):
-    try:
+        db_session = None
         try:
             # payload = await functions.check_token(accessToken[0])
             # member_index = payload["userIndex"]
@@ -88,20 +92,23 @@ async def analyze_image(accessToken: Optional[List[str]] = Header(None),resultIn
             file_name = str(uuid.uuid4())+".jpg"
             file_path = "result/"+result_index+"/"+file_name
 
+            print(file_path)
+
             db_session = db_session_maker()
-            db_session.execute(text("INSERT INTO sequence(result_index,sequence_link,result_normal,result_flaw) VALUES(%s,\'%s\',%d,%d)"
-                %(result_index,file_path,result_normal,result_flaw)))
+            db_session.execute(text("INSERT INTO sequence(result_index,sequence_image,result_normal,result_flaw) VALUES(%s,\'%s\',%d,%d)"
+                %(result_index,os.environ["AWS_S3_URL"]+"/"+file_path,result_normal,result_flaw)))
                     
             s3.upload_fileobj(image_byte_stream,os.environ["AWS_S3_BUCKET"],file_path)
 
             db_session.commit()
             return image_byte_stream
+        except JWTError:
+            return("Invalid token")
+        except TypeError:
+            return("No header attribute") 
+        except Exception as e:
+            print("Error:",e)
+            return {"error"}
         finally:
-            db_session.close()
-    except JWTError:
-        return("Invalid token")
-    except TypeError:
-        return("No header attribute") 
-    except Exception as e:
-        print("Error:",e)
-        return {"error"}
+            if db_session:
+                db_session.close()
