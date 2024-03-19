@@ -1,10 +1,40 @@
+import 'package:dio/dio.dart';
 import 'package:fe/constants.dart';
+import 'package:fe/src/services/api_service.dart';
 import 'package:flutter/material.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
+  const ProfilePage({super.key});
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
   String memberImg =
       "https://cdn.ceomagazine.co.kr/news/photo/201802/1714_4609_1642.jpg";
-  ProfilePage({super.key});
+
+  late Map<String, dynamic> userInfo;
+  String id = "";
+  String role = "";
+  String index = "";
+  String nickname = "";
+  ApiService apiService = ApiService();
+
+  @override
+  void initState() {
+    super.initState();
+    loadUser();
+  }
+
+  Future<void> loadUser() async {
+    Response response = await apiService.get('/api/member/my');
+    setState(() {
+      userInfo = response.data;
+      id = userInfo['id'];
+      nickname = userInfo['nickname'];
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +69,7 @@ class ProfilePage extends StatelessWidget {
               Navigator.pop(context);
             },
           ),
-          title: const Text('프로필')),
+          title: const Text("프로필")),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -83,18 +113,18 @@ class ProfilePage extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Expanded(
+                                Expanded(
                                   child: Row(
                                     children: [
                                       Column(
                                         children: [
                                           Text(
-                                            "백종원",
-                                            style: TextStyle(
+                                            id,
+                                            style: const TextStyle(
                                                 fontSize: 20,
                                                 fontWeight: FontWeight.w600),
                                           ),
-                                          Text("백종원두"),
+                                          Text(nickname),
                                         ],
                                       )
                                     ],

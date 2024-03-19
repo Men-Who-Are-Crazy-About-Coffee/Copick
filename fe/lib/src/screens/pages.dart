@@ -6,8 +6,10 @@ import 'package:fe/src/screens/community_page.dart';
 import 'package:fe/src/screens/gallery_page.dart';
 import 'package:fe/src/screens/home_page.dart';
 import 'package:fe/src/screens/profile_page.dart';
+import 'package:fe/src/services/api_service.dart';
 import 'package:fe/src/widgets/bottomnavbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
 
 class Pages extends StatefulWidget {
@@ -34,8 +36,16 @@ class _PagesState extends State<Pages> {
       const GalleryPage(),
       CameraPage(camera: camera!),
       CommunityPage(),
-      ProfilePage()
+      const ProfilePage()
     ];
+  }
+
+  final storage = const FlutterSecureStorage();
+  Future<void> getToken() async {
+    // String? token1 = await storage.read(key: 'REFRESH_TOKEN');
+    // String? token2 = await storage.read(key: 'ACCESS_TOKEN');
+    // print("token1 : $token1");
+    // print("token2 : $token2");
   }
 
   @override
@@ -43,6 +53,7 @@ class _PagesState extends State<Pages> {
     final cameraProvider = Provider.of<CameraProvider>(context);
     final camera = cameraProvider.camera;
     addWidgets(camera);
+
     ThemeColors themeColors = ThemeColors();
     // 로그인되지 않았을 경우 로그인 페이지를 리스트에 추가
     return Scaffold(

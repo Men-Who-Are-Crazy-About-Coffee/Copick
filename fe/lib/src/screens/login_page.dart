@@ -8,6 +8,7 @@ import 'package:fe/src/services/api_service.dart';
 import 'package:fe/src/widgets/rounded_button.dart';
 import 'package:fe/src/widgets/inputfield.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -25,20 +26,15 @@ class _LoginState extends State<Login> {
     ApiService apiService = ApiService();
     Response<dynamic> response =
         await apiService.post('/api/auth/login', data: {
-      "id": id,
-      "password": password,
+      "id": "luke1546",
+      "password": "1234",
     });
-    print(response.data);
+    Map<String, dynamic> responseMap = response.data;
+    const storage = FlutterSecureStorage();
+    storage.write(key: "ACCESS_TOKEN", value: responseMap["accessToken"]);
+    storage.write(key: "REFRESH_TOKEN", value: responseMap["refreshToken"]);
 
-    // if (!mounted) return; // 여기에서 mounted를 확인
-
-    // } catch (e) {
-    //   // 오류 처리
-    //   print(e);
-    //   if (!mounted) return; // 필요하다면 여기에서도 mounted를 확인할 수 있습니다.
-    //   // 오류 메시지 표시 등의 UI 관련 작업을 수행
-    // }
-    // Navigator.pushNamed(context, '/pages');
+    Navigator.pushNamed(context, '/pages');
   }
 
   @override
