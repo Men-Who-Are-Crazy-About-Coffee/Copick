@@ -49,36 +49,24 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body("register successfully");
     }
 
+//
+
     @PostMapping("/login")
-    public ResponseEntity<TokenInfoDto> authLogin(@RequestBody LoginDto loginDto, HttpServletResponse response) throws URISyntaxException {
+    public ResponseEntity<TokenInfoDto> authLogin(@RequestBody LoginDto loginDto, HttpServletResponse response) {
         log.debug("인증 시작");
 
         TokenInfoDto tokenInfoDto = authService.login(loginDto);
 
-        URI cookieDomain = new URI(frontendBaseurl);
-        UriComponents uriComponent = UriComponentsBuilder
-                .fromHttpUrl(frontendBaseurl)
-                .pathSegment("auth", "login")
-                .queryParam("resultCode", 200)
-                .queryParam("accessToken", tokenInfoDto.getAccessToken())
-                .queryParam("refreshToken", tokenInfoDto.getRefreshToken())
-                .encode()
-                .build();
-        HttpHeaders httpHeaders = new HttpHeaders();
-
-        // response header에 jwt token에 넣어줌
-        httpHeaders.add(JwtUtil.AUTHORIZATION_HEADER, JwtUtil.JWT_TYPE + tokenInfoDto.getAccessToken());
         Cookie cookie = new Cookie("refresh_token", tokenInfoDto.getRefreshToken());
         cookie.setHttpOnly(true);
         cookie.setMaxAge(JwtUtil.getRefreshTokenExpiredTime());
         cookie.setPath("/");
-        cookie.setDomain(cookieDomain.getHost());
-        cookie.setSecure(true); // https가 아니므로 아직 안됨
+        cookie.setSecure(true);
         response.addCookie(cookie);
-        httpHeaders.setLocation(uriComponent.toUri());
 
-        return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY).headers(httpHeaders).build();
+        return ResponseEntity.ok(tokenInfoDto);
     }
+
 
 
     @DeleteMapping("/logout")
