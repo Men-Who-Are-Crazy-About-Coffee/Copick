@@ -26,6 +26,7 @@ async def manufacture_image(file: UploadFile = File(...)):
     try:
         image_data = await file.read()
         image = Image.open(io.BytesIO(image_data))
+        image = image.convert("RGB") #for safe
         image = image.resize((300, 280)) 
 
         #flaw 생성됨
