@@ -2,7 +2,7 @@ import os
 import shutil
 import uuid
 from typing import List,Optional
-from fastapi import FastAPI, File, UploadFile, Header
+from fastapi import FastAPI, File, UploadFile, Header, Form, Request
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from jose import JWTError
@@ -32,7 +32,7 @@ db_session_maker = DB_utils.posgreSQL_connection()
 def read_root():
     return {"Hello": "World"}
 
-@app.get("api/test")
+@app.get("/api/test")
 def test_api():
     return {"test success"}
 
@@ -79,11 +79,14 @@ async def first_get():
         return {"error"}
     
 @app.post("/api/analyze")
-async def analyze_image(accessToken: Optional[List[str]] = Header(None),resultIndex: Optional[List[str]] = Header(None)
-                        ,file: UploadFile = File(...)):
+async def analyze_image(request: Request,
+                        resultIndex: str = Form(...), file: UploadFile = File(...)):
         db_session = None
         try:
-            # payload = await functions.check_token(accessToken[0])
+            authorization_header = request.headers.get('Authorization')
+            access_token = authorization_header[7:]
+
+            payload = await functions.check_token(access_token)
             # member_index = payload["userIndex"]
 
             result_index = resultIndex[0]
@@ -91,8 +94,6 @@ async def analyze_image(accessToken: Optional[List[str]] = Header(None),resultIn
             image_byte_stream,result_normal,result_flaw = await functions.manufacture_image(file)
             file_name = str(uuid.uuid4())+".jpg"
             file_path = "result/"+result_index+"/"+file_name
-
-            print(file_path)
 
             db_session = db_session_maker()
             db_session.execute(text("INSERT INTO sequence(result_index,sequence_image,result_normal,result_flaw) VALUES(%s,\'%s\',%d,%d)"
