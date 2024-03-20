@@ -1,3 +1,15 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:06313b1ee1e3682ecdead811f4be14f2a996990bcd68cbfc52f2880c5a7a1f2f
-size 606
+import 'package:fe/src/screens/community_write_page.dart';
+import 'package:fe/src/screens/intro_page.dart';
+import 'package:fe/src/screens/login_page.dart';
+import 'package:fe/src/screens/pages.dart';
+import 'package:fe/src/screens/redirect_page.dart';
+import 'package:fe/src/screens/register_page.dart';
+
+final routes = {
+  "/": (context) => const IntroPage(),
+  "/login": (context) => const Login(),
+  "/register": (context) => const Register(),
+  "/auth/login": (context) => const RedirectPage(),
+  "/pages": (context) => const Pages(),
+  "/community_write": (context) => const CommunityWritePage(),
+};

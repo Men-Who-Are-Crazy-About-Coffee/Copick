@@ -1,3 +1,23 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:1fa0ae9d84b38ace6624fe2c069262cdfe1f8dcfb8368263b1ec7cfe03c0cccf
-size 764
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'user.dart';
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+User _$UserFromJson(Map<String, dynamic> json) => User(
+      index: json['index'] as int?,
+      id: json['id'] as String?,
+      role: json['role'] as String?,
+      nickname: json['nickname'] as String?,
+      profileImage: json['profileImage'] as String?,
+    );
+
+Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
+      'index': instance.index,
+      'id': instance.id,
+      'role': instance.role,
+      'nickname': instance.nickname,
+      'profileImage': instance.profileImage,
+    };
