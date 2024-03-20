@@ -24,7 +24,7 @@ class _LoginState extends State<Login> {
   late String nickname = "hoseong";
   Future<void> login(String id, String password) async {
     ApiService apiService = ApiService();
-
+    const storage = FlutterSecureStorage();
     try {
       Response response = await apiService.post('/api/auth/login', data: {
         "id": id,

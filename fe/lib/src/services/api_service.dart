@@ -17,7 +17,6 @@ class ApiService {
         .add(InterceptorsWrapper(onRequest: (options, handler) async {
       // 기기에 저장된 AccessToken 로드
       String? accessToken = await storage.read(key: 'ACCESS_TOKEN');
-      print(accessToken);
       // 매 요청마다 헤더에 AccessToken을 포함
       options.headers['Authorization'] = 'Bearer $accessToken';
 

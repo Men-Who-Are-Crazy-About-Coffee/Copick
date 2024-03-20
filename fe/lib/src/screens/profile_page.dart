@@ -3,6 +3,7 @@ import 'package:fe/constants.dart';
 import 'package:fe/src/models/user.dart';
 import 'package:fe/src/services/api_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -14,11 +15,14 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   String memberImg =
       "https://cdn.ceomagazine.co.kr/news/photo/201802/1714_4609_1642.jpg";
+  final storage = const FlutterSecureStorage();
 
   ApiService apiService = ApiService();
+
   User _user = User();
 
   Future<void> fetchUserData() async {
+    print("1");
     Response response = await apiService.get('/api/member/my');
     if (response.statusCode == 200) {
       setState(() {
@@ -32,7 +36,10 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
+    print("여기는 프로필 페이지 입니다 ");
+    print(storage.read(key: 'ACCESS_TOKEN'));
     fetchUserData();
+    print("fetchUserData가 실행됐습니다.");
   }
 
   @override
