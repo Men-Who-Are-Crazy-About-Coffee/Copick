@@ -76,7 +76,7 @@ public class BoardService {
 
 
     public BoardGetListResponseDto searchBoard(String keyword, String domain, Pageable pageable) {
-        Page<Board> boards = boardRepository.findByKeywordAndDomain(keyword, domain, pageable);
+        Page<Board> boards = boardRepository.findByTitleContainingAndDomain(keyword, BoardDomain.valueOf(domain), pageable);
         List<BoardGetResponseDto> content = boards.getContent().stream()
                 .map(BoardGetResponseDto::new)
                 .collect(Collectors.toList());
