@@ -33,8 +33,10 @@ class _LoginState extends State<Login> {
 
       Map<String, dynamic> responseMap = response.data;
       const storage = FlutterSecureStorage();
-      storage.write(key: "ACCESS_TOKEN", value: responseMap["accessToken"]);
-      storage.write(key: "REFRESH_TOKEN", value: responseMap["refreshToken"]);
+      await storage.write(
+          key: "ACCESS_TOKEN", value: responseMap["accessToken"]);
+      await storage.write(
+          key: "REFRESH_TOKEN", value: responseMap["refreshToken"]);
       Navigator.pushNamed(context, '/pages');
     } catch (e) {
       print("로그인실패");
