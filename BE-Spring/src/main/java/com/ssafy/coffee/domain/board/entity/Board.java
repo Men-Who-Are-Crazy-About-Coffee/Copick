@@ -23,7 +23,7 @@ public class Board extends AuditableBaseObject {
     private String title;
 
     @Setter
-    @Column(name = "board_content", nullable = false, length = 255)
+    @Column(name = "board_content", nullable = false, length = 4095)
     private String content;
 
     @Setter
