@@ -27,6 +27,7 @@ public class Board extends AuditableBaseObject {
     private String content;
 
     @Setter
+    @Enumerated(EnumType.STRING)
     @Column(name = "board_domain", nullable = false, length = 255)
     private BoardDomain domain;
 
