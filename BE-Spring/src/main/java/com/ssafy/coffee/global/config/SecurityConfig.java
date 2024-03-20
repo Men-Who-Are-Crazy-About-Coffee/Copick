@@ -58,13 +58,13 @@ public class SecurityConfig {
                         .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()
 
                         .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/refresh", "/api/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.DELETE, "/api/auth/logout").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/auth/logout").hasAnyAuthority("ADMIN", "USER")
 
-                        .requestMatchers(HttpMethod.POST, "/api/roasting/**", "/api/bean/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/roasting/**", "/api/bean/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/roasting/**", "/api/bean/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/roasting/**", "/api/bean/**").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/roasting/**", "/api/bean/**").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/roasting/**", "/api/bean/**").hasAuthority("ADMIN")
 
-                        .requestMatchers("/api/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers("/api/**").hasAnyAuthority("ADMIN", "USER")
                         .anyRequest().authenticated())
                 .formLogin(AbstractHttpConfigurer::disable)
                 .oauth2Login((oauth2) -> oauth2
