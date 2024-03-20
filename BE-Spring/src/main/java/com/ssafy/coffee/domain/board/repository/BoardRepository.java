@@ -1,3 +1,17 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:4e4505d619c414d6a640c4d11ad39489b6e7c018354824b1cd7545b1c5f94f06
-size 740
+package com.ssafy.coffee.domain.board.repository;
+
+import com.ssafy.coffee.domain.board.entity.Board;
+import org.springframework.data.repository.query.Param;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface BoardRepository extends JpaRepository<Board, Long> {
+
+    @Query("SELECT b FROM Board b WHERE b.title LIKE %:keyword% AND b.domain = :domain ORDER BY b.index ASC")
+    Page<Board> findByKeywordAndDomain(@Param("keyword") String keyword, @Param("domain") String domain, Pageable pageable);
+
+}
