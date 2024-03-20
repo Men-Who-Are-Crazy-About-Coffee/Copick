@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:fe/constants.dart';
+import 'package:fe/src/models/user.dart';
 import 'package:fe/src/services/api_service.dart';
 import 'package:flutter/material.dart';
 
@@ -14,26 +15,24 @@ class _ProfilePageState extends State<ProfilePage> {
   String memberImg =
       "https://cdn.ceomagazine.co.kr/news/photo/201802/1714_4609_1642.jpg";
 
-  late Map<String, dynamic> userInfo;
-  String id = "";
-  String role = "";
-  String index = "";
-  String nickname = "";
   ApiService apiService = ApiService();
+  User _user = User();
+
+  Future<void> fetchUserData() async {
+    Response response = await apiService.get('/api/member/my');
+    if (response.statusCode == 200) {
+      setState(() {
+        _user = User.fromJson(response.data);
+      });
+    } else {
+      throw Exception('Failed to load user data');
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-    loadUser();
-  }
-
-  Future<void> loadUser() async {
-    Response response = await apiService.get('/api/member/my');
-    setState(() {
-      userInfo = response.data;
-      id = userInfo['id'];
-      nickname = userInfo['nickname'];
-    });
+    fetchUserData();
   }
 
   @override
@@ -118,13 +117,16 @@ class _ProfilePageState extends State<ProfilePage> {
                                     children: [
                                       Column(
                                         children: [
-                                          Text(
-                                            id,
-                                            style: const TextStyle(
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.w600),
-                                          ),
-                                          Text(nickname),
+                                          _user == null
+                                              ? const CircularProgressIndicator()
+                                              : Text(
+                                                  _user.id!,
+                                                  style: const TextStyle(
+                                                      fontSize: 20,
+                                                      fontWeight:
+                                                          FontWeight.w600),
+                                                ),
+                                          Text(_user.nickname!),
                                         ],
                                       )
                                     ],

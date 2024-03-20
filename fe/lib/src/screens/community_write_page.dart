@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:fe/constants.dart';
+import 'package:fe/src/services/api_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
@@ -16,7 +17,7 @@ class CommunityWritePage extends StatefulWidget {
 class _CommunityWritePageState extends State<CommunityWritePage> {
   String? _selectedDomain;
 
-  XFile? image;
+  XFile? _image;
 
   Future getImage() async {
     final pickedFile =
@@ -24,7 +25,7 @@ class _CommunityWritePageState extends State<CommunityWritePage> {
 
     setState(() {
       if (pickedFile != null) {
-        image = pickedFile;
+        _image = pickedFile;
       } else {
         print('이미지가 선택되지 않았습니다.');
       }
@@ -35,28 +36,32 @@ class _CommunityWritePageState extends State<CommunityWritePage> {
   final TextEditingController _contentController = TextEditingController();
   final TextEditingController _upfilesController = TextEditingController();
 
-  Future<void> _submitPost() async {
-    var dio = Dio();
-    const String apiUrl = "여기에_API_엔드포인트_URL을_입력하세요";
+  Future<void> write() async {
+    ApiService apiService = ApiService();
 
     try {
-      Response response = await dio.post(apiUrl, data: {
-        "domain": _selectedDomain,
-        "title": _titleController.text,
-        "content": _contentController.text,
-        "upfiles": [_upfilesController.text], // 리스트 형태로 전송
-      });
+      // FormData 객체 생성
+      FormData formData = FormData();
 
-      if (response.statusCode == 200) {
-        // 성공적으로 데이터를 보냈을 때의 처리
-        print("게시글이 성공적으로 업로드되었습니다.");
-      } else {
-        // 에러 처리
-        print("게시글 업로드에 실패했습니다.");
-      }
+      Uint8List fileBytes = await _image!.readAsBytes();
+      MultipartFile multipartFile =
+          MultipartFile.fromBytes(fileBytes, filename: "uploaded_file.jpg");
+
+      // 텍스트 필드 추가
+      formData.fields.add(const MapEntry("domain", "GENERAL"));
+      formData.fields.add(MapEntry("title", _titleController.text));
+      formData.fields.add(MapEntry("content", _contentController.text));
+      formData.files.add(MapEntry(
+        "upfiles",
+        multipartFile,
+      ));
+      await apiService.post('/api/board', data: formData);
+      Navigator.pushNamed(context, '/pages');
     } catch (e) {
-      print("에러 발생: $e");
+      print("글 작성 실패");
     }
+
+    // print(response.data);
   }
 
   @override
@@ -136,9 +141,9 @@ class _CommunityWritePageState extends State<CommunityWritePage> {
                     ),
                   ),
                   Center(
-                    child: image == null
+                    child: _image == null
                         ? const Text('갤러리에서 이미지를 선택하세요.')
-                        : ImageContainer(image: image),
+                        : ImageContainer(image: _image),
                   ),
                   FloatingActionButton(
                     onPressed: getImage,
@@ -147,7 +152,9 @@ class _CommunityWritePageState extends State<CommunityWritePage> {
                   ),
                   const SizedBox(height: 20),
                   ElevatedButton(
-                    onPressed: _submitPost,
+                    onPressed: () {
+                      write();
+                    },
                     child: const Text('게시글 업로드'),
                   ),
                 ],

@@ -24,17 +24,24 @@ class _LoginState extends State<Login> {
   late String nickname = "hoseong";
   Future<void> login(String id, String password) async {
     ApiService apiService = ApiService();
-    Response<dynamic> response =
-        await apiService.post('/api/auth/login', data: {
-      "id": "luke1546",
-      "password": "1234",
-    });
-    Map<String, dynamic> responseMap = response.data;
-    const storage = FlutterSecureStorage();
-    storage.write(key: "ACCESS_TOKEN", value: responseMap["accessToken"]);
-    storage.write(key: "REFRESH_TOKEN", value: responseMap["refreshToken"]);
 
-    Navigator.pushNamed(context, '/pages');
+    try {
+      Response<dynamic> response =
+          await apiService.post('/api/auth/login', data: {
+        "id": id,
+        "password": password,
+      });
+
+      Map<String, dynamic> responseMap = response.data;
+      const storage = FlutterSecureStorage();
+      storage.write(key: "ACCESS_TOKEN", value: responseMap["accessToken"]);
+      storage.write(key: "REFRESH_TOKEN", value: responseMap["refreshToken"]);
+      Navigator.pushNamed(context, '/pages');
+    } catch (e) {
+      print("로그인실패");
+    }
+
+    // print(response.data);
   }
 
   @override
