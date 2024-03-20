@@ -26,8 +26,7 @@ class _LoginState extends State<Login> {
     ApiService apiService = ApiService();
 
     try {
-      Response<dynamic> response =
-          await apiService.post('/api/auth/login', data: {
+      Response response = await apiService.post('/api/auth/login', data: {
         "id": id,
         "password": password,
       });
