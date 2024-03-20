@@ -1,31 +1,3 @@
-package com.ssafy.coffee.global.config;
-
-import com.ssafy.coffee.global.util.JwtUtil;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.List;
-
-@Configuration
-public class CorsConfig {
-    @Value("#{'${common.config.cors.allowed-origins}'.split(',')}")
-    private List<String> allowedOrigins;
-
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration config = new CorsConfiguration();
-
-        config.setAllowCredentials(true);
-        config.setAllowedOrigins(allowedOrigins);
-        config.setAllowedMethods(List.of("*"));
-        config.setAllowedHeaders(List.of("*"));
-        config.addExposedHeader(JwtUtil.AUTHORIZATION_HEADER);
-        config.addExposedHeader("Content-Disposition");
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-        return source;
-    }
-
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:3d25fcda03795ad8a6ab91bd28cd8afff5f70ec0d79be1e2bfb45c035f0f2227
+size 1174
