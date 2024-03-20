@@ -32,12 +32,12 @@ db_session_maker = DB_utils.posgreSQL_connection()
 def read_root():
     return {"Hello": "World"}
 
-@app.get("/api/test")
+@app.get("/api/python/test")
 def test_api():
     return {"test success"}
 
-@app.post("/api/analyze")
-async def analyze_image(request: Request,
+@app.post("/api/python/analyze")
+async def analyze_flaw(request: Request,
                         resultIndex: str = Form(...), file: UploadFile = File(...)):
         db_session = None
         try:
@@ -69,5 +69,18 @@ async def analyze_image(request: Request,
             print("Error:",e)
             return {"error"}
         finally:
+            if db_session:
+                db_session.close()
+
+@app.post("/api/python/roasting")
+async def analyze_roasting(resultIndex: str = Form(...), file: UploadFile = File(...)):
+    db_session = None
+    try:
+        await functions.extract_roasting(file)
+        return ("success")
+    except Exception as e:
+            print("Error:",e)
+            return {"error"}
+    finally:
             if db_session:
                 db_session.close()
