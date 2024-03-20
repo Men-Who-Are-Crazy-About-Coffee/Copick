@@ -97,10 +97,10 @@ public class BoardService {
         boardRepository.save(board);
     }
 
-    public void deleteBoard(Long boardId) {
-        if (!boardRepository.existsById(boardId))
-            throw new IllegalArgumentException("Board with id " + boardId + " does not exist");
+    public void deleteBoard(Long boardIndex) {
+        if (!boardRepository.existsById(boardIndex))
+            throw new IllegalArgumentException("Board with index " + boardIndex + " does not exist");
 
-        boardRepository.deleteById(boardId);
+        boardRepository.deleteById(boardIndex);
     }
 }
