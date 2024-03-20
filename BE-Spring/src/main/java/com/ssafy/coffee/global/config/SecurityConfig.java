@@ -1,5 +1,10 @@
 package com.ssafy.coffee.global.config;
 
+import com.ssafy.coffee.global.exception.CustomAccessDeniedHandler;
+import com.ssafy.coffee.global.exception.CustomAuthenticationEntryPoint;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpMethod;
 import com.ssafy.coffee.domain.auth.service.CustomOAuth2UserService;
 import com.ssafy.coffee.domain.auth.service.JwtService;
@@ -10,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.*;
@@ -17,8 +23,10 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.io.IOException;
 import java.util.List;
 
 
@@ -36,7 +44,6 @@ public class SecurityConfig {
     private static final String[] PERMIT_PATTERNS = List.of(
             "/login"
     ).toArray(String[]::new);
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(12);
@@ -74,6 +81,10 @@ public class SecurityConfig {
                                 userInfoEndpoint.userService(customOAuth2UserService))
 
                 )
+                .exceptionHandling(exceptionHandle->{
+                    exceptionHandle.accessDeniedHandler(new CustomAccessDeniedHandler())
+                            .authenticationEntryPoint(new CustomAuthenticationEntryPoint());
+                })
 
                 .addFilterBefore(new JwtFilter(jwtService), UsernamePasswordAuthenticationFilter.class);
 
