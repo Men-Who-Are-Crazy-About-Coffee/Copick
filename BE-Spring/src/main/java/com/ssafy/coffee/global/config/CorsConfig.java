@@ -19,7 +19,6 @@ public class CorsConfig {
 
         config.setAllowCredentials(true);
         config.setAllowedOrigins(allowedOrigins);
-        config.addAllowedOrigin("localhost:5173");
         config.setAllowedMethods(List.of("*"));
         config.setAllowedHeaders(List.of("*"));
         config.addExposedHeader(JwtUtil.AUTHORIZATION_HEADER);

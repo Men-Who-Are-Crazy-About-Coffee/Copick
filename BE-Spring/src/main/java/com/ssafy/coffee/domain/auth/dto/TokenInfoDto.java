@@ -1,3 +1,23 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:9ed962ea1f1beefa5a422e5b1be695f63b6453c27aa36c32dfa3527501ec6f3a
-size 459
+package com.ssafy.coffee.domain.auth.dto;
+
+import lombok.Builder;
+import lombok.Getter;
+import lombok.ToString;
+
+@ToString
+@Getter
+public class TokenInfoDto {
+	private String refreshToken;
+	private String accessToken;
+
+	@Builder
+	public TokenInfoDto(String refreshToken, String accessToken) {
+		this.refreshToken = refreshToken;
+		this.accessToken = accessToken;
+	}
+
+	@Builder
+	public TokenInfoDto(String accessToken) {
+		this.accessToken = accessToken;
+	}
+}

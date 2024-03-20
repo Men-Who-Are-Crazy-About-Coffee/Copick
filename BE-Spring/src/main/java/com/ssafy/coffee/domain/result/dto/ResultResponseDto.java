@@ -1,3 +1,18 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:391dec5b58fec805e3b904df1c2be5403832ae883e0e2d7543dfec99c94095b7
-size 412
+package com.ssafy.coffee.domain.result.dto;
+
+import com.ssafy.coffee.domain.recipe.entity.Recipe;
+import lombok.Builder;
+import lombok.Data;
+
+import java.util.List;
+
+@Data
+@Builder
+public class ResultResponseDto {
+    private List<String> sequenceLink;
+    private int resultNormal;
+    private int resultFlaw;
+    private String roastingType;
+    private String beanType;
+    private List<Recipe> recipeList;
+}

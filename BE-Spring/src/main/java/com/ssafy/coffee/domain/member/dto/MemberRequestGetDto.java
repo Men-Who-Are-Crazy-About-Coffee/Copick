@@ -1,3 +1,21 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:6eaf4acb26280fcd827eccceec76db7f9960c3b7ed870b0927aa43de0f80bbed
-size 570
+package com.ssafy.coffee.domain.member.dto;
+
+import com.ssafy.coffee.domain.member.entity.Member;
+import lombok.Data;
+
+@Data
+public class MemberRequestGetDto {
+    private Long index;
+    private String id;
+    private String role;
+    private String nickname;
+    private String profileImage;
+
+    public MemberRequestGetDto(Member member) {
+        this.index = member.getIndex();
+        this.id = member.getId();
+        this.role = member.getRole().name();
+        this.nickname = member.getNickname();
+        this.profileImage = member.getProfileImage();
+    }
+}
