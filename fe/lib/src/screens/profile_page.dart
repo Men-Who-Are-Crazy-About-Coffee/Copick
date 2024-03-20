@@ -23,6 +23,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<void> fetchUserData() async {
     print("1");
+    String? at = await storage.read(key: 'ACCESS_TOKEN');
+    print(at);
     Response response = await apiService.get('/api/member/my');
     if (response.statusCode == 200) {
       setState(() {
@@ -37,7 +39,6 @@ class _ProfilePageState extends State<ProfilePage> {
   void initState() {
     super.initState();
     print("여기는 프로필 페이지 입니다 ");
-    print(storage.read(key: 'ACCESS_TOKEN'));
     fetchUserData();
     print("fetchUserData가 실행됐습니다.");
   }
