@@ -1,8 +1,10 @@
 package com.ssafy.coffee.domain.comment.entity;
 
 import com.ssafy.coffee.domain.board.entity.Board;
+import com.ssafy.coffee.domain.member.entity.Member;
 import com.ssafy.coffee.global.entity.AuditableBaseObject;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -25,5 +27,10 @@ public class Comment extends AuditableBaseObject {
     @Column(name = "board_content", nullable = false, length = 255)
     private String content;
 
-    // Setters and Constructer
+    @Builder
+    public Comment(Board board, String content, Member createBy) {
+        this.board = board;
+        this.content = content;
+        this.setCreatedBy(createBy);
+    }
 }

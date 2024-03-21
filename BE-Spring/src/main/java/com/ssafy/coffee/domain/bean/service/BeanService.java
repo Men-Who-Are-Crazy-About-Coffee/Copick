@@ -29,7 +29,7 @@ public class BeanService {
         );
 
         String filePath = "bean/" + savedBean.getIndex();
-        String url = s3Service.uploadFile(filePath, beanPostRequestDto.getFile());
+        String url = s3Service.uploadFile(filePath, beanPostRequestDto.getImage());
 
         savedBean.setImage(url);
         beanRepository.save(savedBean);
@@ -58,8 +58,11 @@ public class BeanService {
             bean.setType(beanUpdateRequestDto.getType());
         if (beanUpdateRequestDto.getContent() != null)
             bean.setContent(beanUpdateRequestDto.getContent());
-        if (beanUpdateRequestDto.getImage() != null)
-            bean.setImage(beanUpdateRequestDto.getImage());
+        if (beanUpdateRequestDto.getImage() != null) {
+            String filePath = "bean/" + beanIndex;
+            String url = s3Service.uploadFile(filePath, beanUpdateRequestDto.getImage());
+            bean.setImage(url);
+        }
 
         beanRepository.save(bean);
     }

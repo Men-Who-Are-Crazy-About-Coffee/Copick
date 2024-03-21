@@ -1,11 +1,9 @@
 package com.ssafy.coffee.domain.auth.controller;
 
+import com.ssafy.coffee.domain.RefreshToken.dto.RefreshTokenDto;
 import com.ssafy.coffee.domain.RefreshToken.entity.RefreshToken;
 import com.ssafy.coffee.domain.RefreshToken.repository.RefreshTokenRepository;
-import com.ssafy.coffee.domain.auth.dto.AccessTokenDto;
-import com.ssafy.coffee.domain.auth.dto.LoginDto;
-import com.ssafy.coffee.domain.auth.dto.MemberRegistRequestDto;
-import com.ssafy.coffee.domain.auth.dto.TokenInfoDto;
+import com.ssafy.coffee.domain.auth.dto.*;
 import com.ssafy.coffee.domain.auth.service.AuthService;
 import com.ssafy.coffee.domain.auth.service.JwtService;
 
@@ -49,36 +47,24 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body("register successfully");
     }
 
+//
+
     @PostMapping("/login")
-    public ResponseEntity<TokenInfoDto> authLogin(@RequestBody LoginDto loginDto, HttpServletResponse response) throws URISyntaxException {
+    public ResponseEntity<TokenInfoDto> authLogin(@RequestBody LoginDto loginDto, HttpServletResponse response) {
         log.debug("인증 시작");
 
         TokenInfoDto tokenInfoDto = authService.login(loginDto);
 
-        URI cookieDomain = new URI(frontendBaseurl);
-        UriComponents uriComponent = UriComponentsBuilder
-                .fromHttpUrl(frontendBaseurl)
-                .pathSegment("auth", "login")
-                .queryParam("resultCode", 200)
-                .queryParam("accessToken", tokenInfoDto.getAccessToken())
-                .queryParam("refreshToken", tokenInfoDto.getRefreshToken())
-                .encode()
-                .build();
-        HttpHeaders httpHeaders = new HttpHeaders();
-
-        // response header에 jwt token에 넣어줌
-        httpHeaders.add(JwtUtil.AUTHORIZATION_HEADER, JwtUtil.JWT_TYPE + tokenInfoDto.getAccessToken());
         Cookie cookie = new Cookie("refresh_token", tokenInfoDto.getRefreshToken());
         cookie.setHttpOnly(true);
         cookie.setMaxAge(JwtUtil.getRefreshTokenExpiredTime());
         cookie.setPath("/");
-        cookie.setDomain(cookieDomain.getHost());
-        cookie.setSecure(true); // https가 아니므로 아직 안됨
+        cookie.setSecure(true);
         response.addCookie(cookie);
-        httpHeaders.setLocation(uriComponent.toUri());
 
-        return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY).headers(httpHeaders).build();
+        return ResponseEntity.ok(tokenInfoDto);
     }
+
 
 
     @DeleteMapping("/logout")
@@ -88,20 +74,23 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<?> requestAccessToken(HttpServletResponse response, HttpServletRequest request) {
+    public ResponseEntity<?> requestAccessToken(HttpServletResponse response, HttpServletRequest request,@RequestBody RefreshTokenRequestDto refreshTokenDto) {
         log.debug("엑세스토큰 재발급");
 
-        String refreshTokenCookie = "";
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if ("refresh_token".equals(cookie.getName())) {
-                    refreshTokenCookie = cookie.getValue();
+        String refreshTokenString = refreshTokenDto.getRefreshToken();
+        if(!StringUtils.hasText(refreshTokenString)){
+            Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if ("refresh_token".equals(cookie.getName())) {
+                        refreshTokenString = cookie.getValue();
+                    }
                 }
-            }
-            if (StringUtils.hasText(refreshTokenCookie)
-                    && jwtService.validateRefreshToken(refreshTokenCookie)) {
-                RefreshToken refreshToken = jwtService.findRefreshToken(refreshTokenCookie);
+        }
+
+            if (StringUtils.hasText(refreshTokenString)
+                    && jwtService.validateRefreshToken(refreshTokenString)) {
+                RefreshToken refreshToken = jwtService.findRefreshToken(refreshTokenString);
                 AccessTokenDto accessTokenDto = AccessTokenDto.builder()
                         .accessToken(jwtService.createAccessToken(refreshToken.getMemberIndex(), List.of(() -> refreshToken.getRole().toString()), refreshToken.getAuthType()))
                         .build();

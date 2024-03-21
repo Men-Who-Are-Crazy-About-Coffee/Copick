@@ -20,25 +20,19 @@ import org.springframework.context.annotation.Profile;
 @Configuration
 public class SwaggerConfig {
 
-    private static final String BEARER_TOKEN_PREFIX = "Bearer";
+    @Bean
+    public OpenAPI api() {
+        SecurityScheme apiKey = new SecurityScheme()
+                .type(SecurityScheme.Type.APIKEY)
+                .in(SecurityScheme.In.HEADER)
+                .name("Authorization");
 
-//    //운영 환경에는 Swagger를 비활성화하기 위해 추가
-//    @Bean
-//    @Profile("!Prod")
-//    public OpenAPI openAPI() {
-//        String jwtSchemeName = JwtTokenProvider.AUTHORIZATION_HEADER;
-//        SecurityRequirement securityRequirement = new SecurityRequirement().addList(jwtSchemeName);
-//        Components components = new Components()
-//                .addSecuritySchemes(jwtSchemeName, new SecurityScheme()
-//                        .name(jwtSchemeName)
-//                        .type(SecurityScheme.Type.HTTP)
-//                        .scheme(BEARER_TOKEN_PREFIX)
-//                        .bearerFormat(JwtTokenProvider.TYPE));
-//
-//        // Swagger UI 접속 후, 딱 한 번만 accessToken을 입력해주면 모든 API에 토큰 인증 작업이 적용됩니다.
-//        return new OpenAPI()
-//                .addSecurityItem(securityRequirement)
-//                .components(components);
-//    }
+        SecurityRequirement securityRequirement = new SecurityRequirement()
+                .addList("Bearer Token");
+
+        return new OpenAPI()
+                .components(new Components().addSecuritySchemes("Bearer Token", apiKey))
+                .addSecurityItem(securityRequirement);
+    }
 
 }

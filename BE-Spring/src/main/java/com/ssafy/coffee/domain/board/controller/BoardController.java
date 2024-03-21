@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +35,7 @@ public class BoardController {
     @ApiResponse(responseCode = "201", description = "게시판이 성공적으로 작성됨")
     @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터")
     @ApiResponse(responseCode = "500", description = "서버 내부 오류")
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Object> addBoard(@ModelAttribute BoardPostRequestDto boardPostRequestDto,
                                            @AuthenticationPrincipal PrincipalMember principalMember) {
         boardService.addBoard(boardPostRequestDto, principalMember.toEntity());
@@ -47,8 +48,9 @@ public class BoardController {
     @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터")
     @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     @GetMapping("/{boardIndex}")
-    public ResponseEntity<Object> getBoard(@PathVariable Long boardIndex) {
-        BoardGetResponseDto boardGetResponseDto = boardService.getBoard(boardIndex);
+    public ResponseEntity<Object> getBoard(@PathVariable Long boardIndex,
+                                           @AuthenticationPrincipal PrincipalMember principalMember) {
+        BoardGetResponseDto boardGetResponseDto = boardService.getBoard(boardIndex, principalMember.toEntity());
         return ResponseEntity.status(HttpStatus.OK).body(boardGetResponseDto);
     }
 
@@ -61,7 +63,8 @@ public class BoardController {
     public ResponseEntity<Object> searchBoard(
             @RequestParam(defaultValue = "") String keyword,
             @RequestParam(defaultValue = "") String domain,
-            @PageableDefault(page = 0, size = 10, sort = "index", direction = Sort.Direction.DESC) Pageable pageable) {
+            @PageableDefault(page = 0, size = 10, sort = "index", direction = Sort.Direction.DESC) Pageable pageable,
+            @AuthenticationPrincipal PrincipalMember principalMember) {
         BoardGetListResponseDto boardGetListResponseDto = boardService.searchBoard(keyword, domain, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(boardGetListResponseDto);
     }
@@ -73,8 +76,9 @@ public class BoardController {
     @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     @PutMapping("/{boardIndex}")
     public ResponseEntity<Object> updateBoard(@PathVariable Long boardIndex,
-                                              @Valid @RequestBody BoardUpdateRequestDto boardUpdateRequestDto) {
-        boardService.updateBoard(boardIndex, boardUpdateRequestDto);
+                                              @ModelAttribute BoardUpdateRequestDto boardUpdateRequestDto,
+                                              @AuthenticationPrincipal PrincipalMember principalMember) {
+        boardService.updateBoard(boardIndex, boardUpdateRequestDto, principalMember.toEntity());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Board updated successfully");
     }
 
@@ -84,8 +88,35 @@ public class BoardController {
     @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터")
     @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     @DeleteMapping("/{boardIndex}")
-    public ResponseEntity<Object> deleteBoard(@PathVariable Long boardIndex) {
-        boardService.deleteBoard(boardIndex);
+    public ResponseEntity<Object> deleteBoard(@PathVariable Long boardIndex,
+                                              @AuthenticationPrincipal PrincipalMember principalMember) {
+        boardService.deleteBoard(boardIndex, principalMember.toEntity());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Board deleted successfully");
     }
+
+    @PostMapping("/{boardIndex}/like")
+    @Operation(summary = "게시판 좋아요 추가", description = "특정 게시판 글에 좋아요를 추가합니다.")
+    @ApiResponse(responseCode = "200", description = "좋아요가 성공적으로 추가됨")
+    @ApiResponse(responseCode = "404", description = "제공된 boardIndex로 게시판을 찾을 수 없음")
+    @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터")
+    @ApiResponse(responseCode = "500", description = "서버 내부 오류")
+    public ResponseEntity<Object> addLike(@PathVariable Long boardIndex,
+                                          @AuthenticationPrincipal PrincipalMember principalMember) {
+        boardService.addLike(boardIndex, principalMember.toEntity());
+        return ResponseEntity.status(HttpStatus.OK).body("Like added successfully");
+    }
+
+    @DeleteMapping("/{boardIndex}/like")
+    @Operation(summary = "게시판 좋아요 제거", description = "특정 게시판 글에 대한 좋아요를 제거합니다.")
+    @ApiResponse(responseCode = "200", description = "좋아요가 성공적으로 제거됨")
+    @ApiResponse(responseCode = "404", description = "제공된 boardIndex로 게시판을 찾을 수 없음")
+    @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터")
+    @ApiResponse(responseCode = "500", description = "서버 내부 오류")
+    public ResponseEntity<Object> removeLike(@PathVariable Long boardIndex,
+                                             @AuthenticationPrincipal PrincipalMember principalMember) {
+        boardService.removeLike(boardIndex, principalMember.toEntity());
+        return ResponseEntity.status(HttpStatus.OK).body("Like removed successfully");
+    }
+
+
 }

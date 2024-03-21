@@ -5,6 +5,7 @@ import com.ssafy.coffee.domain.roasting.dto.RoastingPostRequestDto;
 import com.ssafy.coffee.domain.roasting.dto.RoastingUpdateRequestDto;
 import com.ssafy.coffee.domain.roasting.entity.Roasting;
 import com.ssafy.coffee.domain.roasting.repository.RoastingRepository;
+import com.ssafy.coffee.domain.s3.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,16 +16,25 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RoastingService {
     private final RoastingRepository roastingRepository;
+    private final S3Service s3Service;
 
     public void addRoasting(RoastingPostRequestDto roastingPostRequestDto) {
-        Roasting roasting = Roasting.builder()
-                .type(roastingPostRequestDto.getType())
-                .content(roastingPostRequestDto.getContent())
-                .image(roastingPostRequestDto.getImage())
-                .build();
 
-        roastingRepository.save(roasting);
+        Roasting savedRoasting = roastingRepository.save(
+                Roasting.builder()
+                        .image("")
+                        .type(roastingPostRequestDto.getType())
+                        .content(roastingPostRequestDto.getContent())
+                        .build()
+        );
+
+        String filePath = "roasting/" + savedRoasting.getIndex();
+        String url = s3Service.uploadFile(filePath, roastingPostRequestDto.getImage());
+
+        savedRoasting.setImage(url);
+        roastingRepository.save(savedRoasting);
     }
+
 
     public RoastingGetResponseDto getRoasting(Long roastingIndex) {
         Roasting roasting = roastingRepository.findById(roastingIndex)
@@ -49,8 +59,11 @@ public class RoastingService {
             roasting.setType(roastingUpdateRequestDto.getType());
         if (roastingUpdateRequestDto.getContent() != null)
             roasting.setContent(roastingUpdateRequestDto.getContent());
-        if (roastingUpdateRequestDto.getImage() != null)
-            roasting.setImage(roastingUpdateRequestDto.getImage());
+        if (roastingUpdateRequestDto.getImage() != null) {
+            String filePath = "roasting/" + roastingIndex;
+            String url = s3Service.uploadFile(filePath, roastingUpdateRequestDto.getImage());
+            roasting.setImage(url);
+        }
 
         roastingRepository.save(roasting);
     }

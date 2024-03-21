@@ -1,5 +1,6 @@
 package com.ssafy.coffee.domain.member.controller;
 
+import com.ssafy.coffee.domain.auth.dto.PrincipalMember;
 import com.ssafy.coffee.domain.member.dto.MemberRequestGetDto;
 import com.ssafy.coffee.domain.member.dto.MemberUpdateRequestDto;
 import com.ssafy.coffee.domain.member.service.MemberService;
@@ -11,6 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -28,6 +30,16 @@ public class MemberController {
     @GetMapping("/{memberIndex}")
     public ResponseEntity<Object> getMember(@PathVariable Long memberIndex) {
         MemberRequestGetDto memberRequestGetDto = memberService.getMember(memberIndex);
+        return ResponseEntity.status(HttpStatus.OK).body(memberRequestGetDto);
+    }
+
+    @Operation(summary = "내 정보 조회", description = "내 정보를 조회합니다.")
+    @ApiResponse(responseCode = "200", description = "내 정보 조회에 성공", content = @Content(schema = @Schema(implementation = MemberRequestGetDto.class)))
+    @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터")
+    @ApiResponse(responseCode = "500", description = "서버 내부 오류")
+    @GetMapping("/my")
+    public ResponseEntity<Object> getMy(@AuthenticationPrincipal PrincipalMember principalMember) {
+        MemberRequestGetDto memberRequestGetDto = memberService.getMember(principalMember.getIndex());
         return ResponseEntity.status(HttpStatus.OK).body(memberRequestGetDto);
     }
 

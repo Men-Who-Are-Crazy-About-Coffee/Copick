@@ -1,5 +1,6 @@
 package com.ssafy.coffee.domain.comment.controller;
 
+import com.ssafy.coffee.domain.auth.dto.PrincipalMember;
 import com.ssafy.coffee.domain.comment.dto.CommentGetListResponseDto;
 import com.ssafy.coffee.domain.comment.dto.CommentPostRequestDto;
 import com.ssafy.coffee.domain.comment.dto.CommentUpdateRequestDto;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Pageable;
 
@@ -31,8 +33,9 @@ public class CommentController {
     @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터")
     @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     @PostMapping
-    public ResponseEntity<Object> addComment(@RequestBody CommentPostRequestDto commentPostRequestDto) {
-        commentService.addComment(commentPostRequestDto);
+    public ResponseEntity<Object> addComment(@RequestBody CommentPostRequestDto commentPostRequestDto,
+                                             @AuthenticationPrincipal PrincipalMember principalMember) {
+        commentService.addComment(commentPostRequestDto, principalMember.toEntity());
         return ResponseEntity.status(HttpStatus.CREATED).body("Comment added successfully");
     }
 
@@ -69,8 +72,9 @@ public class CommentController {
     @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     @PutMapping("/{commentIndex}")
     public ResponseEntity<Object> updateComment(@PathVariable Long commentIndex,
-                                                @Valid @RequestBody CommentUpdateRequestDto commentUpdateRequestDto) {
-        commentService.updateComment(commentIndex, commentUpdateRequestDto);
+                                                @RequestBody CommentUpdateRequestDto commentUpdateRequestDto,
+                                                @AuthenticationPrincipal PrincipalMember principalMember) {
+        commentService.updateComment(commentIndex, commentUpdateRequestDto, principalMember.toEntity());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Comment updated successfully");
     }
 
@@ -80,8 +84,9 @@ public class CommentController {
     @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터")
     @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     @DeleteMapping("/{commentIndex}")
-    public ResponseEntity<Object> deleteComment(@PathVariable Long commentIndex) {
-        commentService.deleteComment(commentIndex);
+    public ResponseEntity<Object> deleteComment(@PathVariable Long commentIndex,
+                                                @AuthenticationPrincipal PrincipalMember principalMember) {
+        commentService.deleteComment(commentIndex, principalMember.toEntity());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Comment deleted successfully");
     }
 }

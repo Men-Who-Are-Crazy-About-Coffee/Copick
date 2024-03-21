@@ -1,5 +1,6 @@
 package com.ssafy.coffee.global.exception;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,4 +46,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An internal error occurred");
     }
 
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<String> handleExpiredJwtException(ExpiredJwtException ex) {
+        logger.error("JWT token is expired: ", ex);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token is expired");
+    }
 }

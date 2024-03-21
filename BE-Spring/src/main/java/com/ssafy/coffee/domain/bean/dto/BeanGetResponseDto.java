@@ -12,7 +12,7 @@ public class BeanGetResponseDto {
 
     public BeanGetResponseDto(Bean bean) {
         this.index = bean.getIndex();
-        this.type = bean.getContent();
+        this.type = bean.getType();
         this.content = bean.getContent();
         this.image = bean.getImage();
     }

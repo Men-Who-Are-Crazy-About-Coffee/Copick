@@ -91,7 +91,7 @@ public class JwtService {
                 .subject("access_token")
                 .claim("memberIndex",member.getIndex())
                 .claim("memberNickName",member.getNickname())
-                .issuedAt(Date.from(now.atZone(ZoneId.of(TIME_ZONE)).toInstant()))
+                .issuedAt(new Date())
                 .claim("hasGrade", authoritiesString)
                 .claim("authType",authType)
                 .expiration(Date.from(now.plusSeconds(accessTokenExpiredTime).atZone(ZoneId.of(TIME_ZONE)).toInstant())) // set Expire Time
@@ -170,22 +170,19 @@ public class JwtService {
 
     public boolean validateAccessToken(String token) {
         try {
-            LocalDateTime now = LocalDateTime.now(ZoneId.of(TIME_ZONE));
             Claims claims = parseClaims(token);
-            return claims.getExpiration().before(Date.from(now.plusSeconds(accessTokenExpiredTime).atZone(ZoneId.of(TIME_ZONE)).toInstant()));
+            return claims.getExpiration().before(new Date());
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             log.error("오류 내용 {} : aaa {}",e.getMessage(),e.toString());
             log.info("잘못된 JWT 서명입니다.");
-        } catch (ExpiredJwtException e) {
-
-            log.info("만료된 JWT 토큰입니다.");
-
-
-        } catch (UnsupportedJwtException e) {
-
+        }
+//        catch (ExpiredJwtException e) {
+//            log.info("만료된 JWT 토큰입니다.");
+//            throw ExpiredJwtException
+//        }
+        catch (UnsupportedJwtException e) {
             log.info("지원되지 않는 JWT 토큰입니다.");
         } catch (IllegalArgumentException e) {
-
             log.info("JWT 토큰이 잘못되었습니다.");
         }
         return false;
@@ -193,9 +190,8 @@ public class JwtService {
 
     public boolean validateRefreshToken(String token) {
         try {
-            LocalDateTime now = LocalDateTime.now(ZoneId.of(TIME_ZONE));
             Claims claims = parseClaims(token);
-            return claims.getExpiration().before(Date.from(now.plusSeconds(JwtUtil.getRefreshTokenExpiredTime()).atZone(ZoneId.of(TIME_ZONE)).toInstant()));
+            return claims.getExpiration().before(new Date());
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             log.error("오류 내용 {} : aaa {}",e.getMessage(),e.toString());
             log.info("잘못된 JWT 서명입니다.");
@@ -228,23 +224,23 @@ public class JwtService {
     public String createAndSaveRefreshToken(Member member) {
         LocalDateTime now = LocalDateTime.now(ZoneId.of(TIME_ZONE));
         LocalDateTime expireTime=now.plusSeconds(refreshTokenExpiredTime);
-        String refreshToekn= Jwts.builder()
+        String refreshToken= Jwts.builder()
                 .subject("refreshToken")
                 .claim("memberIndex",member.getIndex())
-                .issuedAt(Date.from(now.atZone(ZoneId.of(TIME_ZONE)).toInstant()))
+                .issuedAt(new Date())
                 .expiration(Date.from(expireTime.atZone(ZoneId.of(TIME_ZONE)).toInstant())) // set Expire Time
                 .signWith(key)
                 .compact();
 
 
         tokenRepository.save(RefreshToken.builder()
-                .refreshToken(refreshToekn)
+                .refreshToken(refreshToken)
                 .authType(member.getAuthType())
                 .role(member.getRole())
                 .expireTime(refreshTokenExpiredTime)
                 .build()
         );
-        return refreshToekn;
+        return refreshToken;
     }
 
     public String createGuestAccessToken(String guestMemberName, Collection<? extends GrantedAuthority> authorities, AuthType authType) {
