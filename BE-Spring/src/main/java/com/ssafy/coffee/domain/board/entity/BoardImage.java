@@ -1,3 +1,31 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:354f563ee7c16fe34eb22c029cfd410aef1e07c4defcaaa7a47b2a12a5372b3a
-size 688
+package com.ssafy.coffee.domain.board.entity;
+
+import jakarta.persistence.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Getter
+@NoArgsConstructor
+public class BoardImage {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "image_id", nullable = false)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "board_index", nullable = false)
+    private Board board;
+
+    @Column(name = "image_path", nullable = false, length = 500)
+    private String image;
+
+    @Builder
+    BoardImage(Board board, String image) {
+        this.board = board;
+        this.image = image;
+    }
+
+}
