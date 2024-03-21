@@ -34,7 +34,7 @@ def read_root():
 
 @app.get("/api/python/test")
 def test_api():
-    return {"test success"}
+    return "test success"
 
 @app.post("/api/python/analyze")
 async def analyze_flaw(request: Request,
@@ -62,25 +62,21 @@ async def analyze_flaw(request: Request,
             db_session.commit()
             return image_byte_stream
         except JWTError:
-            return("Invalid token")
+            return"Invalid token"
         except TypeError:
-            return("No header attribute") 
+            return "No header attribute"
         except Exception as e:
             print("Error:",e)
-            return {"error"}
+            return "error"
         finally:
             if db_session:
                 db_session.close()
 
 @app.post("/api/python/roasting")
 async def analyze_roasting(resultIndex: str = Form(...), file: UploadFile = File(...)):
-    db_session = None
     try:
-        await functions.extract_roasting(file)
-        return ("success")
+        roatsing_type = await functions.extract_roasting(file)
+        return roatsing_type
     except Exception as e:
             print("Error:",e)
-            return {"error"}
-    finally:
-            if db_session:
-                db_session.close()
+            return "error"

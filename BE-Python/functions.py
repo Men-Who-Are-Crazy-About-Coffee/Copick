@@ -43,7 +43,11 @@ async def extract_roasting(file: UploadFile = File(...)):
                 max(0, min(255, c[0][2] + b_gap))
             )
             # 수정된 색상을 classify_roasting 함수에 전달합니다.
-            print(await classify_roasting(adjusted_color))
+            roasting_type = await classify_roasting(adjusted_color)
+            print(roasting_type)
+            if(1<=roasting_type<=8):
+                return roasting_type
+        return "No matching roasting stage found"
     except Exception as e:
         print("Error:",e)
 
@@ -65,8 +69,10 @@ async def classify_roasting(rgb_color):
     
     for i, boundary_difference in enumerate(boundaries_difference):
         if color_difference >= boundary_difference:
-            return f"Roasting Stage {i}"
-    return f"Roasting Stage {len(boundaries_difference)}"
+            # return f"Roasting Stage {i}"
+            return i
+    # return f"Roasting Stage {len(boundaries_difference)}"
+    return len(boundaries_difference)
 
 async def manufacture_image(file: UploadFile = File(...)):
     try:
