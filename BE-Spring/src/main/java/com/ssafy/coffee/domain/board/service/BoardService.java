@@ -87,6 +87,28 @@ public class BoardService {
         return new BoardGetListResponseDto(content, boards.getTotalPages(), boards.getTotalElements());
     }
 
+    public BoardGetListResponseDto getPostsByMemebr(Long memberIndex, Pageable pageable) {
+        Page<Board> boards = boardRepository.findAllByCreatedByIndexAndIsDeletedFalse(memberIndex, pageable);
+        List<BoardGetResponseDto> content = boards.getContent().stream().map(board -> {
+            List<BoardImage> boardImages = boardImageRepository.findAllByBoard(board);
+            List<String> imageUrls = boardImages.stream().map(BoardImage::getImage).collect(Collectors.toList());
+            return new BoardGetResponseDto(board, imageUrls, false);
+        }).collect(Collectors.toList());
+
+        return new BoardGetListResponseDto(content, boards.getTotalPages(), boards.getTotalElements());
+    }
+
+    public BoardGetListResponseDto getLikedPostsByMember(Long memberIndex, Pageable pageable) {
+        Page<BoardLike> likes = boardLikeRepository.findAllByMemberIndex(memberIndex, pageable);
+        List<BoardGetResponseDto> content = likes.getContent().stream().map(like -> {
+            Board board = like.getBoard();
+            List<BoardImage> boardImages = boardImageRepository.findAllByBoard(board);
+            List<String> imageUrls = boardImages.stream().map(BoardImage::getImage).collect(Collectors.toList());
+            return new BoardGetResponseDto(board, imageUrls, true);
+        }).collect(Collectors.toList());
+
+        return new BoardGetListResponseDto(content, likes.getTotalPages(), likes.getTotalElements());
+    }
 
     public void updateBoard(Long boardId, BoardUpdateRequestDto boardUpdateRequestDto, Member member) {
         Board board = boardRepository.findByIndexAndIsDeletedFalse(boardId)
@@ -138,4 +160,6 @@ public class BoardService {
 
         boardLikeRepository.delete(boardLike);
     }
+
+
 }

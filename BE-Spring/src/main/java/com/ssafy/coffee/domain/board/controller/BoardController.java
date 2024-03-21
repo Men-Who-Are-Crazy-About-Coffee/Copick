@@ -69,6 +69,28 @@ public class BoardController {
         return ResponseEntity.status(HttpStatus.OK).body(boardGetListResponseDto);
     }
 
+    @GetMapping("/my/posts")
+    @Operation(summary = "사용자 게시글 조회", description = "사용자가 작성한 게시글을 조회합니다.")
+    @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(array = @ArraySchema(schema = @Schema(implementation = BoardGetResponseDto.class))))
+    @ApiResponse(responseCode = "400", description = "잘못된 요청")
+    @ApiResponse(responseCode = "500", description = "서버 오류")
+    public ResponseEntity<Object> getMyPosts(@AuthenticationPrincipal PrincipalMember principalMember,
+                                             @PageableDefault(sort = "index", direction = Sort.Direction.DESC) Pageable pageable) {
+        BoardGetListResponseDto myPosts = boardService.getPostsByMemebr(principalMember.toEntity().getIndex(), pageable);
+        return ResponseEntity.ok(myPosts);
+    }
+
+    @GetMapping("/my/likes")
+    @Operation(summary = "좋아요한 게시글 조회", description = "사용자가 좋아요를 누른 게시글을 조회합니다.")
+    @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(array = @ArraySchema(schema = @Schema(implementation = BoardGetResponseDto.class))))
+    @ApiResponse(responseCode = "400", description = "잘못된 요청")
+    @ApiResponse(responseCode = "500", description = "서버 오류")
+    public ResponseEntity<Object> getMyLikedPosts(@AuthenticationPrincipal PrincipalMember principalMember,
+                                                  @PageableDefault(sort = "index", direction = Sort.Direction.DESC) Pageable pageable) {
+        BoardGetListResponseDto likedPosts = boardService.getLikedPostsByMember(principalMember.toEntity().getIndex(), pageable);
+        return ResponseEntity.ok(likedPosts);
+    }
+
     @Operation(summary = "게시판 수정", description = "기존 게시판을 수정합니다.")
     @ApiResponse(responseCode = "204", description = "게시판이 성공적으로 업데이트됨")
     @ApiResponse(responseCode = "404", description = "제공된 boardIndex로 게시판을 찾을 수 없음")
