@@ -74,7 +74,7 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<?> requestAccessToken(HttpServletResponse response, HttpServletRequest request, RefreshTokenRequestDto refreshTokenDto) {
+    public ResponseEntity<?> requestAccessToken(HttpServletResponse response, HttpServletRequest request,@RequestBody RefreshTokenRequestDto refreshTokenDto) {
         log.debug("엑세스토큰 재발급");
 
         String refreshTokenString = refreshTokenDto.getRefreshToken();
