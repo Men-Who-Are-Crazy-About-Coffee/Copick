@@ -11,9 +11,12 @@ import com.ssafy.coffee.global.exception.EntityAlreadyExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -78,5 +81,12 @@ public class MemberService {
         Member member = memberRepository.findByIndexAndIsDeletedFalse(memberIndex)
                 .orElseThrow(() -> new EntityNotFoundException("Member not found with index: " + memberIndex));
         member.setDeleted(true);
+    }
+
+    @Scheduled(cron = "* * 0/1 * * *") // 테스트용 이므로 1시간
+    public void permanentDeleteMemberSchedule(){
+
+        List<Member> deleteMemberList= memberRepository.findByIsDeletedTrueAndModDateBefore(LocalDateTime.now().minusSeconds(10));
+        memberRepository.deleteAll(deleteMemberList);
     }
 }
