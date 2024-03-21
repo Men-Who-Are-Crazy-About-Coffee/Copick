@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -28,6 +29,7 @@ public class ResultService {
     private final RoastingRepository roastingRepository;
     private final BeanRepository beanRepository;
     private final SequenceRepository sequenceRepository;
+    private String pythonURL = "https://ai.copick.duckdns.org";
 
     @Transactional
     public Result insertEmptyResult(long memberIndex) {
@@ -49,10 +51,16 @@ public class ResultService {
                 .orElseThrow(() -> new EntityNotFoundException("Result not found with index: " + resultIndex));
         List<Sequence> sequenceList = sequenceRepository.findAllByResultIndex(resultIndex);
         int resultFlawCnt = 0;
-        for (Sequence s : sequenceList)
-            resultFlawCnt += s.getFlaw();
-        if(!sequenceList.isEmpty())
+        if(!sequenceList.isEmpty()) {
+            for (Sequence s : sequenceList)
+                resultFlawCnt += s.getFlaw();
             result.setNormalBeanCount(sequenceList.get(sequenceList.size() - 1).getNormal());
+            WebClient webClient = WebClient.builder().build();
+            String response = webClient.get()
+                    .uri(pythonURL+"/api/python/roasting?image_link="+sequenceList.get(sequenceList.size() - 1).getImage())
+                    .retrieve().bodyToMono(String.class).block();
+            log.info(response);
+        }
         result.setFlawBeanCount(resultFlawCnt);
         return result;
     }

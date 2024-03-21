@@ -5,6 +5,7 @@ import com.ssafy.coffee.domain.auth.dto.PrincipalMember;
 import com.ssafy.coffee.domain.recipe.entity.Recipe;
 import com.ssafy.coffee.domain.recipe.service.RecipeService;
 import com.ssafy.coffee.domain.result.dto.AnalyzeRequestDto;
+import com.ssafy.coffee.domain.result.dto.AnalyzeResponseDto;
 import com.ssafy.coffee.domain.result.dto.ResultResponseDto;
 import com.ssafy.coffee.domain.result.entity.Result;
 import com.ssafy.coffee.domain.result.entity.Sequence;
@@ -61,8 +62,8 @@ public class ResultController {
     }
 
     @PostMapping("/analyze")
-    public ResponseEntity<Object> getStatistic(@AuthenticationPrincipal PrincipalMember principalMember,
-                                               @RequestBody AnalyzeRequestDto analyzeRequestDto){
+    public ResponseEntity<AnalyzeResponseDto> getStatistic(@AuthenticationPrincipal PrincipalMember principalMember,
+                                                           @RequestBody AnalyzeRequestDto analyzeRequestDto){
         return ResponseEntity.status(HttpStatus.OK).body(
                 resultService.getResultByRegDate(principalMember.getIndex()
                 ,analyzeRequestDto.getStartDate().atStartOfDay()
