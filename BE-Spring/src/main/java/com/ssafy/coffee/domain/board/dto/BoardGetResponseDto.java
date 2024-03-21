@@ -18,7 +18,9 @@ public class BoardGetResponseDto {
     private BoardDomain domain;
     private LocalDateTime regDate;
 
-    public BoardGetResponseDto(Board board) {
+    private List<String> images;
+
+    public BoardGetResponseDto(Board board, List<String> images) {
         this.index = board.getIndex();
         this.userId = board.getCreatedBy().getIndex();
         this.userNickname = board.getCreatedBy().getNickname();
@@ -27,5 +29,7 @@ public class BoardGetResponseDto {
         this.content = board.getContent();
         this.domain = board.getDomain();
         this.regDate = board.getRegDate();
+
+        this.images = images;
     }
 }

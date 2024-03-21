@@ -1,9 +1,5 @@
 package com.ssafy.coffee.domain.board.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ssafy.coffee.domain.board.dto.BoardGetListResponseDto;
 import com.ssafy.coffee.domain.board.dto.BoardGetResponseDto;
 import com.ssafy.coffee.domain.board.dto.BoardPostRequestDto;
@@ -15,12 +11,15 @@ import com.ssafy.coffee.domain.board.repository.BoardImageRepository;
 import com.ssafy.coffee.domain.board.repository.BoardRepository;
 import com.ssafy.coffee.domain.member.entity.Member;
 import com.ssafy.coffee.domain.s3.service.S3Service;
+import com.ssafy.coffee.global.constant.Role;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,8 +29,9 @@ public class BoardService {
     private final BoardImageRepository boardImageRepository;
     private final S3Service s3Service;
 
+    @Transactional
     public void addBoard(BoardPostRequestDto boardPostRequestDto, Member member) {
-        
+        // 게시글 생성 및 저장
         Board board = boardRepository.save(
                 Board.builder()
                         .title(boardPostRequestDto.getTitle())
@@ -41,15 +41,15 @@ public class BoardService {
                         .build()
         );
 
-        String filePath = "board/" + board.getIndex();
-        List<String> urls = s3Service.uploadMultipleFiles(filePath, boardPostRequestDto.getUpfiles());
+        if (boardPostRequestDto.getImages() != null) {
+            String filePath = "board/" + board.getIndex();
+            List<String> urls = s3Service.uploadMultipleFiles(filePath, boardPostRequestDto.getImages());
 
-        for (String url : urls) {
-            BoardImage boardImage = BoardImage.builder().board(board).image(url).build();
-            boardImageRepository.save(boardImage);
+            for (String url : urls) {
+                BoardImage boardImage = BoardImage.builder().board(board).image(url).build();
+                boardImageRepository.save(boardImage);
+            }
         }
-
-        boardRepository.save(board);
     }
 
 
@@ -57,24 +57,40 @@ public class BoardService {
         Board board = boardRepository.findById(boardIndex)
                 .orElseThrow(() -> new IllegalArgumentException("Board with id " + boardIndex + " not found"));
 
-        return new BoardGetResponseDto(board);
+        List<BoardImage> boardImages = boardImageRepository.findAllByBoard(board);
+        List<String> images = boardImages.stream()
+                .map(BoardImage::getImage)
+                .collect(Collectors.toList());
+
+        return new BoardGetResponseDto(board, images);
     }
 
 
     public BoardGetListResponseDto searchBoard(String keyword, String domain, Pageable pageable) {
-        Page<Board> boards = boardRepository.findByTitleContainingAndDomain(keyword, BoardDomain.valueOf(domain), pageable);
-        List<BoardGetResponseDto> content = boards.getContent().stream()
-                .map(BoardGetResponseDto::new)
-                .collect(Collectors.toList());
+        Page<Board> boards = boardRepository.findByTitleContainingAndDomain(keyword, BoardDomain.valueOf(domain.toUpperCase()), pageable);
+
+        List<BoardGetResponseDto> content = boards.getContent().stream().map(board -> {
+            List<BoardImage> boardImages = boardImageRepository.findAllByBoard(board);
+            List<String> imageUrls = boardImages.stream()
+                    .map(BoardImage::getImage)
+                    .collect(Collectors.toList());
+
+            return new BoardGetResponseDto(board, imageUrls);
+        }).collect(Collectors.toList());
 
         return new BoardGetListResponseDto(content, boards.getTotalPages(), boards.getTotalElements());
     }
 
 
-    public void updateBoard(Long boardId, BoardUpdateRequestDto boardUpdateRequestDto) {
+    public void updateBoard(Long boardId, BoardUpdateRequestDto boardUpdateRequestDto, Member member) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("Board with id " + boardId + " not found"));
 
+        if (member.getRole() != Role.ADMIN && !Objects.equals(board.getCreatedBy().getIndex(), member.getIndex()))
+            throw new IllegalStateException("You do not have permission to update this board.");
+
+        if (boardUpdateRequestDto.getDomain() != null)
+            board.setDomain(BoardDomain.valueOf(boardUpdateRequestDto.getDomain()));
         if (boardUpdateRequestDto.getTitle() != null)
             board.setTitle(boardUpdateRequestDto.getTitle());
         if (boardUpdateRequestDto.getContent() != null)

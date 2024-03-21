@@ -74,8 +74,9 @@ public class BoardController {
     @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     @PutMapping("/{boardIndex}")
     public ResponseEntity<Object> updateBoard(@PathVariable Long boardIndex,
-                                              @Valid @RequestBody BoardUpdateRequestDto boardUpdateRequestDto) {
-        boardService.updateBoard(boardIndex, boardUpdateRequestDto);
+                                              @ModelAttribute BoardUpdateRequestDto boardUpdateRequestDto,
+                                              @AuthenticationPrincipal PrincipalMember principalMember) {
+        boardService.updateBoard(boardIndex, boardUpdateRequestDto, principalMember.toEntity());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Board updated successfully");
     }
 
