@@ -1,10 +1,3 @@
-requiremnets.txt 패키지 설치
-pip install -r requirements.txt
-
-실행코드
-uvicorn server:app --reload (로컬만 허용)
-uvicorn server:app --host 0.0.0.0 --reload (외부 접속 허용)
-
-스웨거
-{주소}/docs
-ex)http://localhost:8000/docs
+version https://git-lfs.github.com/spec/v1
+oid sha256:f9cc18b3004cde60b8d4c9d9833b9fc27ddd59f4f3c7e7b11d83a5bb62b3e7c5
+size 247

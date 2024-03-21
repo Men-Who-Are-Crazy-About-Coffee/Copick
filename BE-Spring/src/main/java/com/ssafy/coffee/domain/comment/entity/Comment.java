@@ -1,29 +1,3 @@
-package com.ssafy.coffee.domain.comment.entity;
-
-import com.ssafy.coffee.domain.board.entity.Board;
-import com.ssafy.coffee.global.entity.AuditableBaseObject;
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-@Entity
-@Getter
-@NoArgsConstructor
-public class Comment extends AuditableBaseObject {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "comment_index", nullable = false)
-    private Long index;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "board_index", nullable = false)
-    private Board board;
-
-    @Setter
-    @Column(name = "board_content", nullable = false, length = 255)
-    private String content;
-
-    // Setters and Constructer
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:d58723fb284a2d1e0b1e5cc142d43d0047ee7dd23dc7906271a24a95f7cc786c
+size 760
