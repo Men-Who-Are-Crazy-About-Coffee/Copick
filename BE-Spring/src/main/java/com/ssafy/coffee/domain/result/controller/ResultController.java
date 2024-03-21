@@ -1,7 +1,10 @@
 package com.ssafy.coffee.domain.result.controller;
 
+import com.amazonaws.Response;
+import com.ssafy.coffee.domain.auth.dto.PrincipalMember;
 import com.ssafy.coffee.domain.recipe.entity.Recipe;
 import com.ssafy.coffee.domain.recipe.service.RecipeService;
+import com.ssafy.coffee.domain.result.dto.AnalyzeRequestDto;
 import com.ssafy.coffee.domain.result.dto.ResultResponseDto;
 import com.ssafy.coffee.domain.result.entity.Result;
 import com.ssafy.coffee.domain.result.entity.Sequence;
@@ -12,10 +15,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,9 +38,9 @@ public class ResultController {
         return ResponseEntity.status(HttpStatus.OK).body("success");
     }
 
-    @GetMapping("/init/{memberIndex}")
-    public ResponseEntity<Object> getNewResultIndex(@PathVariable long memberIndex){
-        Result result = resultService.insertEmptyResult(memberIndex);
+    @GetMapping("/init")
+    public ResponseEntity<Object> getNewResultIndex(@AuthenticationPrincipal PrincipalMember principalMember){
+        Result result = resultService.insertEmptyResult(principalMember.getIndex());
         return ResponseEntity.status(HttpStatus.OK).body(result.getIndex());
     }
 
@@ -57,5 +58,14 @@ public class ResultController {
                 .beanType(result.getBean().getType())
                 .recipeList(recipeList)
                 .build());
+    }
+
+    @PostMapping("/analyze")
+    public ResponseEntity<Object> getStatistic(@AuthenticationPrincipal PrincipalMember principalMember,
+                                               @RequestBody AnalyzeRequestDto analyzeRequestDto){
+        return ResponseEntity.status(HttpStatus.OK).body(
+                resultService.getResultByRegDate(principalMember.getIndex()
+                ,analyzeRequestDto.getStartDate().atStartOfDay()
+                ,analyzeRequestDto.getEndDate().plusDays(1).atStartOfDay()));
     }
 }
