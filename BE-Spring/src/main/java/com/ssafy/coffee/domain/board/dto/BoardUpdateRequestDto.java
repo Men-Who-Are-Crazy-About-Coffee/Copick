@@ -8,5 +8,4 @@ public class BoardUpdateRequestDto {
     private String domain;
     private String title;
     private String content;
-    private MultipartFile[] images;
 }
