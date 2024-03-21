@@ -1,3 +1,6 @@
+requirements.txt 업데이트
+pip freeze > requirements.txt
+
 requiremnets.txt 패키지 설치
 pip install -r requirements.txt
 
