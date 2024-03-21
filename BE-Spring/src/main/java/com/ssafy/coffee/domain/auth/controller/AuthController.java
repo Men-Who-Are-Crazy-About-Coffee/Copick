@@ -76,9 +76,8 @@ public class AuthController {
     @PostMapping("/refresh")
     public ResponseEntity<?> requestAccessToken(HttpServletResponse response, HttpServletRequest request,@RequestBody RefreshTokenRequestDto refreshTokenDto) {
         log.debug("엑세스토큰 재발급");
-
         String refreshTokenString = refreshTokenDto.getRefreshToken();
-        if(!StringUtils.hasText(refreshTokenString)){
+        if (!StringUtils.hasText(refreshTokenString)) {
             Cookie[] cookies = request.getCookies();
             if (cookies != null) {
                 for (Cookie cookie : cookies) {
@@ -86,19 +85,20 @@ public class AuthController {
                         refreshTokenString = cookie.getValue();
                     }
                 }
+            }
         }
-
+            log.debug("토큰 {}",refreshTokenString);
             if (StringUtils.hasText(refreshTokenString)
                     && jwtService.validateRefreshToken(refreshTokenString)) {
                 RefreshToken refreshToken = jwtService.findRefreshToken(refreshTokenString);
+                if(refreshToken==null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
                 AccessTokenDto accessTokenDto = AccessTokenDto.builder()
                         .accessToken(jwtService.createAccessToken(refreshToken.getMemberIndex(), List.of(() -> refreshToken.getRole().toString()), refreshToken.getAuthType()))
                         .build();
                 response.setHeader(JwtUtil.AUTHORIZATION_HEADER, accessTokenDto.getAccessToken());
                 return ResponseEntity.ok(accessTokenDto);
             }
-        }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
 

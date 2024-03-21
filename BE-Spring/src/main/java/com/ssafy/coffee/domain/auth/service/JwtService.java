@@ -21,6 +21,7 @@ import com.ssafy.coffee.global.constant.AuthType;
 import com.ssafy.coffee.global.constant.Role;
 import com.ssafy.coffee.global.util.JwtUtil;
 import jakarta.annotation.PostConstruct;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -37,6 +38,7 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import org.springframework.util.StringUtils;
 
 /**
  * 토큰 관련 메소드 제공 유틸, 서비스 클래스
@@ -81,7 +83,11 @@ public class JwtService {
 
 
 
-    public String createAccessToken(Long memberIndex, Collection<? extends GrantedAuthority> authorities, AuthType authType) {
+    public String createAccessToken(Long memberIndex, Collection<? extends GrantedAuthority> authorities, AuthType authType) throws EntityNotFoundException {
+        if(memberIndex==null){
+            throw new EntityNotFoundException();
+        }
+
         String authoritiesString = authorities.stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
@@ -89,9 +95,9 @@ public class JwtService {
         Member member= memberRepository.findById(memberIndex).orElseThrow(()->new RuntimeException(""));
         return Jwts.builder()
                 .subject("access_token")
-                .claim("memberIndex",member.getIndex())
+                .claim("memberIndex",member.getIndex().toString())
                 .claim("memberNickName",member.getNickname())
-                .issuedAt(new Date())
+                .issuedAt(Date.from(now.atZone(ZoneId.of(TIME_ZONE)).toInstant()))
                 .claim("hasGrade", authoritiesString)
                 .claim("authType",authType)
                 .expiration(Date.from(now.plusSeconds(accessTokenExpiredTime).atZone(ZoneId.of(TIME_ZONE)).toInstant())) // set Expire Time
@@ -171,14 +177,14 @@ public class JwtService {
     public boolean validateAccessToken(String token) {
         try {
             Claims claims = parseClaims(token);
-            return claims.getExpiration().before(new Date());
+            return !claims.getExpiration().before(new Date());
+
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             log.error("오류 내용 {} : aaa {}",e.getMessage(),e.toString());
             log.info("잘못된 JWT 서명입니다.");
         }
 //        catch (ExpiredJwtException e) {
 //            log.info("만료된 JWT 토큰입니다.");
-//            throw ExpiredJwtException
 //        }
         catch (UnsupportedJwtException e) {
             log.info("지원되지 않는 JWT 토큰입니다.");
@@ -191,7 +197,7 @@ public class JwtService {
     public boolean validateRefreshToken(String token) {
         try {
             Claims claims = parseClaims(token);
-            return claims.getExpiration().before(new Date());
+            return !claims.getExpiration().before(new Date());
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             log.error("오류 내용 {} : aaa {}",e.getMessage(),e.toString());
             log.info("잘못된 JWT 서명입니다.");
@@ -211,6 +217,7 @@ public class JwtService {
 
     public RefreshToken findRefreshToken(String refreshToken) {
         try {
+            log.debug("토큰 값 {}",refreshToken);
             return tokenRepository.findById(refreshToken).orElseThrow(()->new RuntimeException("존재하지 않는 리프레시 토큰"));
         } catch (Exception e) {
 
@@ -226,8 +233,8 @@ public class JwtService {
         LocalDateTime expireTime=now.plusSeconds(refreshTokenExpiredTime);
         String refreshToken= Jwts.builder()
                 .subject("refreshToken")
-                .claim("memberIndex",member.getIndex())
-                .issuedAt(new Date())
+                .claim("memberIndex",member.getIndex().toString())
+                .issuedAt(Date.from(now.atZone(ZoneId.of(TIME_ZONE)).toInstant()))
                 .expiration(Date.from(expireTime.atZone(ZoneId.of(TIME_ZONE)).toInstant())) // set Expire Time
                 .signWith(key)
                 .compact();
@@ -236,6 +243,7 @@ public class JwtService {
         tokenRepository.save(RefreshToken.builder()
                 .refreshToken(refreshToken)
                 .authType(member.getAuthType())
+                .memberIndex(member.getIndex())
                 .role(member.getRole())
                 .expireTime(refreshTokenExpiredTime)
                 .build()
