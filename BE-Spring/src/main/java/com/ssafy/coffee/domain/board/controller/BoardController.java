@@ -62,7 +62,7 @@ public class BoardController {
     @GetMapping("/search")
     public ResponseEntity<Object> searchBoard(
             @RequestParam(defaultValue = "") String keyword,
-            @RequestParam(defaultValue = "") String domain,
+            @RequestParam(defaultValue = "GENERAL") String domain,
             @PageableDefault(page = 0, size = 10, sort = "index", direction = Sort.Direction.DESC) Pageable pageable,
             @AuthenticationPrincipal PrincipalMember principalMember) {
         BoardGetListResponseDto boardGetListResponseDto = boardService.searchBoard(keyword, domain, pageable);
@@ -76,7 +76,7 @@ public class BoardController {
     @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     @PutMapping("/{boardIndex}")
     public ResponseEntity<Object> updateBoard(@PathVariable Long boardIndex,
-                                              @ModelAttribute BoardUpdateRequestDto boardUpdateRequestDto,
+                                              @RequestBody BoardUpdateRequestDto boardUpdateRequestDto,
                                               @AuthenticationPrincipal PrincipalMember principalMember) {
         boardService.updateBoard(boardIndex, boardUpdateRequestDto, principalMember.toEntity());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Board updated successfully");
