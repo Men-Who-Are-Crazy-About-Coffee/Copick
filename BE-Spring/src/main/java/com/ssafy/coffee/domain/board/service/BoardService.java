@@ -105,9 +105,12 @@ public class BoardService {
         boardRepository.save(board);
     }
 
-    public void deleteBoard(Long boardIndex) {
+    public void deleteBoard(Long boardIndex, Member member) {
         Board board = boardRepository.findByIndexAndIsDeletedFalse(boardIndex)
                 .orElseThrow(() -> new IllegalArgumentException("Board with index " + boardIndex + " does not exist"));
+
+        if (member.getRole() != Role.ADMIN && !Objects.equals(board.getCreatedBy().getIndex(), member.getIndex()))
+            throw new IllegalStateException("You do not have permission to update this board.");
 
         board.setDeleted(true);
         boardRepository.save(board);

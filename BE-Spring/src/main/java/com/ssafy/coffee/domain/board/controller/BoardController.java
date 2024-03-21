@@ -88,8 +88,9 @@ public class BoardController {
     @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터")
     @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     @DeleteMapping("/{boardIndex}")
-    public ResponseEntity<Object> deleteBoard(@PathVariable Long boardIndex) {
-        boardService.deleteBoard(boardIndex);
+    public ResponseEntity<Object> deleteBoard(@PathVariable Long boardIndex,
+                                              @AuthenticationPrincipal PrincipalMember principalMember) {
+        boardService.deleteBoard(boardIndex, principalMember.toEntity());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Board deleted successfully");
     }
 
@@ -99,7 +100,8 @@ public class BoardController {
     @ApiResponse(responseCode = "404", description = "제공된 boardIndex로 게시판을 찾을 수 없음")
     @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터")
     @ApiResponse(responseCode = "500", description = "서버 내부 오류")
-    public ResponseEntity<Object> addLike(@PathVariable Long boardIndex, @AuthenticationPrincipal PrincipalMember principalMember) {
+    public ResponseEntity<Object> addLike(@PathVariable Long boardIndex,
+                                          @AuthenticationPrincipal PrincipalMember principalMember) {
         boardService.addLike(boardIndex, principalMember.toEntity());
         return ResponseEntity.status(HttpStatus.OK).body("Like added successfully");
     }
@@ -110,7 +112,8 @@ public class BoardController {
     @ApiResponse(responseCode = "404", description = "제공된 boardIndex로 게시판을 찾을 수 없음")
     @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터")
     @ApiResponse(responseCode = "500", description = "서버 내부 오류")
-    public ResponseEntity<Object> removeLike(@PathVariable Long boardIndex, @AuthenticationPrincipal PrincipalMember principalMember) {
+    public ResponseEntity<Object> removeLike(@PathVariable Long boardIndex,
+                                             @AuthenticationPrincipal PrincipalMember principalMember) {
         boardService.removeLike(boardIndex, principalMember.toEntity());
         return ResponseEntity.status(HttpStatus.OK).body("Like removed successfully");
     }
