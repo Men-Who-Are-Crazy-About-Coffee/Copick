@@ -10,6 +10,8 @@ import com.ssafy.coffee.domain.board.dto.BoardPostRequestDto;
 import com.ssafy.coffee.domain.board.dto.BoardUpdateRequestDto;
 import com.ssafy.coffee.domain.board.entity.Board;
 import com.ssafy.coffee.domain.board.entity.BoardDomain;
+import com.ssafy.coffee.domain.board.entity.BoardImage;
+import com.ssafy.coffee.domain.board.repository.BoardImageRepository;
 import com.ssafy.coffee.domain.board.repository.BoardRepository;
 import com.ssafy.coffee.domain.member.entity.Member;
 import com.ssafy.coffee.domain.s3.service.S3Service;
@@ -25,6 +27,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class BoardService {
     private final BoardRepository boardRepository;
+    private final BoardImageRepository boardImageRepository;
     private final S3Service s3Service;
 
     public void addBoard(BoardPostRequestDto boardPostRequestDto, Member member) {
@@ -32,7 +35,7 @@ public class BoardService {
         Board board = boardRepository.save(
                 Board.builder()
                         .title(boardPostRequestDto.getTitle())
-                        .content("")
+                        .content(boardPostRequestDto.getContent())
                         .domain(BoardDomain.valueOf(boardPostRequestDto.getDomain().toUpperCase()))
                         .createdBy(member)
                         .build()
@@ -41,28 +44,11 @@ public class BoardService {
         String filePath = "board/" + board.getIndex();
         List<String> urls = s3Service.uploadMultipleFiles(filePath, boardPostRequestDto.getUpfiles());
 
-        ObjectMapper mapper = new ObjectMapper();
-        ArrayNode contentArray = mapper.createArrayNode();
-
         for (String url : urls) {
-            ObjectNode imageNode = mapper.createObjectNode();
-            imageNode.put("type", "image");
-            imageNode.put("content", url);
-            contentArray.add(imageNode);
+            BoardImage boardImage = BoardImage.builder().board(board).image(url).build();
+            boardImageRepository.save(boardImage);
         }
 
-        ObjectNode textNode = mapper.createObjectNode();
-        textNode.put("type", "content");
-        textNode.put("content", boardPostRequestDto.getContent());
-        contentArray.add(textNode);
-
-        String jsonContent = null;
-        try {
-            jsonContent = mapper.writeValueAsString(contentArray);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-        board.setContent(jsonContent);
         boardRepository.save(board);
     }
 
@@ -102,5 +88,11 @@ public class BoardService {
             throw new IllegalArgumentException("Board with index " + boardIndex + " does not exist");
 
         boardRepository.deleteById(boardIndex);
+    }
+
+    public void addLike(Long boardIndex, Member entity) {
+    }
+
+    public void removeLike(Long boardIndex, Member entity) {
     }
 }

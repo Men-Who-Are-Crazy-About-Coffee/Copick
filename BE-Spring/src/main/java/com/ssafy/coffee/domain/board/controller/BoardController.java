@@ -89,4 +89,17 @@ public class BoardController {
         boardService.deleteBoard(boardIndex);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Board deleted successfully");
     }
+
+    @PostMapping("/{boardIndex}/like")
+    public ResponseEntity<Object> addLike(@PathVariable Long boardIndex, @AuthenticationPrincipal PrincipalMember principalMember) {
+        boardService.addLike(boardIndex, principalMember.toEntity());
+        return ResponseEntity.status(HttpStatus.OK).body("Like added successfully");
+    }
+
+    @DeleteMapping("/{boardIndex}/like")
+    public ResponseEntity<Object> removeLike(@PathVariable Long boardIndex, @AuthenticationPrincipal PrincipalMember principalMember) {
+        boardService.removeLike(boardIndex, principalMember.toEntity());
+        return ResponseEntity.status(HttpStatus.OK).body("Like removed successfully");
+    }
+
 }

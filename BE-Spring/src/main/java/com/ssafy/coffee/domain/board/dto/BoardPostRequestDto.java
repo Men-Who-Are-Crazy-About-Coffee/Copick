@@ -8,5 +8,5 @@ public class BoardPostRequestDto {
     private String domain;
     private String title;
     private String content;
-    private MultipartFile[] upfiles;
+    private MultipartFile[] images;
 }
