@@ -14,7 +14,7 @@ import java.util.Optional;
 @Repository
 public interface BoardRepository extends JpaRepository<Board, Long> {
 
-    Page<Board> findByTitleContainingAndDomainAndDeletedFalse(String title, BoardDomain domain, Pageable pageable);
+    Page<Board> findByTitleContainingAndDomainAndIsDeletedFalse(String title, BoardDomain domain, Pageable pageable);
 
-    Optional<Board> findByIdAndDeletedFalse(Long boardIndex);
+    Optional<Board> findByIndexAndIsDeletedFalse(Long boardIndex);
 }

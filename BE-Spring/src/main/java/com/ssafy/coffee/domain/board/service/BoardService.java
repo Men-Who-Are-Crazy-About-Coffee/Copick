@@ -57,7 +57,7 @@ public class BoardService {
 
 
     public BoardGetResponseDto getBoard(Long boardIndex) {
-        Board board = boardRepository.findByIdAndDeletedFalse(boardIndex)
+        Board board = boardRepository.findByIndexAndIsDeletedFalse(boardIndex)
                 .orElseThrow(() -> new IllegalArgumentException("Board with id " + boardIndex + " not found"));
 
         List<BoardImage> boardImages = boardImageRepository.findAllByBoard(board);
@@ -70,7 +70,7 @@ public class BoardService {
 
 
     public BoardGetListResponseDto searchBoard(String keyword, String domain, Pageable pageable) {
-        Page<Board> boards = boardRepository.findByTitleContainingAndDomainAndDeletedFalse(
+        Page<Board> boards = boardRepository.findByTitleContainingAndDomainAndIsDeletedFalse(
                 keyword, BoardDomain.valueOf(domain.toUpperCase()), pageable);
 
         List<BoardGetResponseDto> content = boards.getContent().stream().map(board -> {
@@ -87,7 +87,7 @@ public class BoardService {
 
 
     public void updateBoard(Long boardId, BoardUpdateRequestDto boardUpdateRequestDto, Member member) {
-        Board board = boardRepository.findByIdAndDeletedFalse(boardId)
+        Board board = boardRepository.findByIndexAndIsDeletedFalse(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("Board with id " + boardId + " not found"));
 
         if (member.getRole() != Role.ADMIN && !Objects.equals(board.getCreatedBy().getIndex(), member.getIndex()))
@@ -104,7 +104,7 @@ public class BoardService {
     }
 
     public void deleteBoard(Long boardIndex) {
-        Board board = boardRepository.findByIdAndDeletedFalse(boardIndex)
+        Board board = boardRepository.findByIndexAndIsDeletedFalse(boardIndex)
                 .orElseThrow(() -> new IllegalArgumentException("Board with index " + boardIndex + " does not exist"));
 
         board.setDeleted(true);
@@ -112,7 +112,7 @@ public class BoardService {
     }
 
     public void addLike(Long boardIndex, Member member) {
-        Board board = boardRepository.findByIdAndDeletedFalse(boardIndex)
+        Board board = boardRepository.findByIndexAndIsDeletedFalse(boardIndex)
                 .orElseThrow(() -> new IllegalArgumentException("Board with id " + boardIndex + " not found"));
 
         boardLikeRepository.findByBoardAndMember(board, member)
@@ -125,7 +125,7 @@ public class BoardService {
     }
 
     public void removeLike(Long boardIndex, Member member) {
-        Board board = boardRepository.findByIdAndDeletedFalse(boardIndex)
+        Board board = boardRepository.findByIndexAndIsDeletedFalse(boardIndex)
                 .orElseThrow(() -> new IllegalArgumentException("Board with id " + boardIndex + " not found"));
 
         BoardLike boardLike = boardLikeRepository.findByBoardAndMember(board, member)
