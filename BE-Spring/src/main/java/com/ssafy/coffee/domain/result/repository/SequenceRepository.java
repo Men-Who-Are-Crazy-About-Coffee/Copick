@@ -1,3 +1,14 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:418a75bbd777b1e4075b1dd949c1dc549a43a6671a54eda9f93212996e3c8977
-size 472
+package com.ssafy.coffee.domain.result.repository;
+
+import com.ssafy.coffee.domain.result.entity.Result;
+import com.ssafy.coffee.domain.result.entity.Sequence;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public interface SequenceRepository extends JpaRepository<Sequence, Long> {
+    List<Sequence> findAllByResultIndex(Long resultIndex);
+}
