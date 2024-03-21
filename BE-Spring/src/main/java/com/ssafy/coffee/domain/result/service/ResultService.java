@@ -12,8 +12,10 @@ import com.ssafy.coffee.domain.roasting.repository.RoastingRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -28,6 +30,8 @@ public class ResultService {
     private final RoastingRepository roastingRepository;
     private final BeanRepository beanRepository;
     private final SequenceRepository sequenceRepository;
+    @Value("${python.url}")
+    private String pythonURL;
 
     @Transactional
     public Result insertEmptyResult(long memberIndex) {
@@ -49,10 +53,16 @@ public class ResultService {
                 .orElseThrow(() -> new EntityNotFoundException("Result not found with index: " + resultIndex));
         List<Sequence> sequenceList = sequenceRepository.findAllByResultIndex(resultIndex);
         int resultFlawCnt = 0;
-        for (Sequence s : sequenceList)
-            resultFlawCnt += s.getFlaw();
-        if(!sequenceList.isEmpty())
+        if(!sequenceList.isEmpty()) {
+            for (Sequence s : sequenceList)
+                resultFlawCnt += s.getFlaw();
             result.setNormalBeanCount(sequenceList.get(sequenceList.size() - 1).getNormal());
+            WebClient webClient = WebClient.builder().build();
+            Long response = webClient.get()
+                    .uri(pythonURL+"/api/python/roasting?image_link="+sequenceList.get(sequenceList.size() - 1).getImage())
+                    .retrieve().bodyToMono(Long.class).block();
+            result.setRoasting(roastingRepository.findByIndex(response));
+        }
         result.setFlawBeanCount(resultFlawCnt);
         return result;
     }
@@ -70,7 +80,7 @@ public class ResultService {
             flawCount+=result.getFlawBeanCount();
         }
         double myNormalPercent = normalCount/(normalCount+flawCount);
-        myNormalPercent = Math.round(myNormalPercent*10)/10.0;
+        myNormalPercent = Math.round(myNormalPercent*1000)/10.0;
         return AnalyzeResponseDto.builder()
                 .myNormalPercent(myNormalPercent)
                 .myFlawPercent(100.0-myNormalPercent)
