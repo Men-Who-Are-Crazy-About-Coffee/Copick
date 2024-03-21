@@ -5,35 +5,35 @@ class InfinityScrollProvider extends ChangeNotifier {
   int currentIndex = 0;
   bool isMore = false;
 
-  Future<void> pageViewItems({
-    bool isStart = true,
-  }) async {
-    if (!isMore) {
-      isMore = true;
-      notifyListeners();
-      Future.delayed(Duration(milliseconds: isStart ? 0 : 2000), () {
-        for (int i = 0; i < 3; i++) {
-          items
-              .add('https://picsum.photos/id/${i + currentIndex + 50}/300/400');
-        }
-        currentIndex = currentIndex + 3;
-        isMore = false;
-        notifyListeners();
-      });
-    }
-  }
+  // Future<void> pageViewItems({
+  //   bool isStart = true,
+  // }) async {
+  //   if (!isMore) {
+  //     isMore = true;
+  //     notifyListeners();
+  //     Future.delayed(Duration(milliseconds: isStart ? 0 : 2000), () {
+  //       for (int i = 0; i < 3; i++) {
+  //         items
+  //             .add('https://picsum.photos/id/${i + currentIndex + 50}/300/400');
+  //       }
+  //       currentIndex = currentIndex + 3;
+  //       isMore = false;
+  //       notifyListeners();
+  //     });
+  //   }
+  // }
 
-  Future<void> changedPage(int index) async {
-    if (index == currentIndex) {
-      pageViewItems(isStart: false);
-    }
-  }
+  // Future<void> changedPage(int index) async {
+  //   if (index == currentIndex) {
+  //     pageViewItems(isStart: false);
+  //   }
+  // }
 
   Future<void> started() async {
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i < 2; i++) {
       items.add('https://picsum.photos/id/$i/200/200');
     }
-    currentIndex = 20;
+    currentIndex = 2;
   }
 
   Future<void> _addItem() async {
@@ -41,10 +41,10 @@ class InfinityScrollProvider extends ChangeNotifier {
       isMore = true;
       notifyListeners();
       Future.delayed(const Duration(milliseconds: 3000), () {
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 2; i++) {
           items.add('https://picsum.photos/id/${i + currentIndex}/200/200');
         }
-        currentIndex = currentIndex + 20;
+        currentIndex = currentIndex + 2;
         isMore = false;
         notifyListeners();
       });
