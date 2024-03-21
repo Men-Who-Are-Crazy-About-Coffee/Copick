@@ -7,7 +7,9 @@ import com.ssafy.coffee.domain.board.dto.BoardUpdateRequestDto;
 import com.ssafy.coffee.domain.board.entity.Board;
 import com.ssafy.coffee.domain.board.entity.BoardDomain;
 import com.ssafy.coffee.domain.board.entity.BoardImage;
+import com.ssafy.coffee.domain.board.entity.BoardLike;
 import com.ssafy.coffee.domain.board.repository.BoardImageRepository;
+import com.ssafy.coffee.domain.board.repository.BoardLikeRepository;
 import com.ssafy.coffee.domain.board.repository.BoardRepository;
 import com.ssafy.coffee.domain.member.entity.Member;
 import com.ssafy.coffee.domain.s3.service.S3Service;
@@ -27,6 +29,7 @@ import java.util.stream.Collectors;
 public class BoardService {
     private final BoardRepository boardRepository;
     private final BoardImageRepository boardImageRepository;
+    private final BoardLikeRepository boardLikeRepository;
     private final S3Service s3Service;
 
     @Transactional
@@ -106,9 +109,26 @@ public class BoardService {
         boardRepository.deleteById(boardIndex);
     }
 
-    public void addLike(Long boardIndex, Member entity) {
+    public void addLike(Long boardIndex, Member member) {
+        Board board = boardRepository.findById(boardIndex)
+                .orElseThrow(() -> new IllegalArgumentException("Board with id " + boardIndex + " not found"));
+
+        boardLikeRepository.findByBoardAndMember(board, member)
+                .ifPresent(like -> {
+                    throw new IllegalStateException("You already liked this board.");
+                });
+
+        BoardLike boardLike = BoardLike.builder().board(board).member(member).build();
+        boardLikeRepository.save(boardLike);
     }
 
-    public void removeLike(Long boardIndex, Member entity) {
+    public void removeLike(Long boardIndex, Member member) {
+        Board board = boardRepository.findById(boardIndex)
+                .orElseThrow(() -> new IllegalArgumentException("Board with id " + boardIndex + " not found"));
+
+        BoardLike boardLike = boardLikeRepository.findByBoardAndMember(board, member)
+                .orElseThrow(() -> new IllegalArgumentException("Like not found"));
+
+        boardLikeRepository.delete(boardLike);
     }
 }
