@@ -72,10 +72,10 @@ async def analyze_flaw(request: Request,
             if db_session:
                 db_session.close()
 
-@app.post("/api/python/roasting")
-async def analyze_roasting(resultIndex: str = Form(...), file: UploadFile = File(...)):
+@app.get("/api/python/roasting")
+async def analyze_roasting(image_link:str):
     try:
-        roatsing_type = await functions.extract_roasting(file)
+        roatsing_type = await functions.extract_roasting(image_link)
         return roatsing_type
     except Exception as e:
             print("Error:",e)

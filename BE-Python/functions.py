@@ -1,4 +1,5 @@
 import io
+from io import BytesIO
 import os
 import shutil
 from PIL import Image
@@ -8,6 +9,7 @@ import cv2
 import numpy as np
 from matplotlib import pyplot as plt
 import extcolors
+import requests
 
 async def check_token(token: str):
     try:
@@ -16,10 +18,11 @@ async def check_token(token: str):
     except JWTError:
         raise JWTError("Invalid token")
 
-async def extract_roasting(file: UploadFile = File(...)):
+async def extract_roasting(url:str):
     try:
-        image_data = await file.read()
-        image = Image.open(io.BytesIO(image_data))
+        response = requests.get(url)
+        image_data = BytesIO(response.content)
+        image = Image.open(image_data)
         image = image.convert("RGB") #for safe
         colors,pixel_count = extcolors.extract_from_image(image) 
         biggest = 0 
@@ -33,8 +36,6 @@ async def extract_roasting(file: UploadFile = File(...)):
                 r_gap=255-c[0][0] 
                 g_gap=255-c[0][1] 
                 b_gap=255-c[0][2] 
-        print(pixel_count) 
-        print(r_gap,g_gap,b_gap)
         for c in colors:
             # 색상에 gap 값을 더합니다.
             adjusted_color = (
@@ -44,7 +45,6 @@ async def extract_roasting(file: UploadFile = File(...)):
             )
             # 수정된 색상을 classify_roasting 함수에 전달합니다.
             roasting_type = await classify_roasting(adjusted_color)
-            print(roasting_type)
             if(1<=roasting_type<=8):
                 return roasting_type
         return "No matching roasting stage found"
