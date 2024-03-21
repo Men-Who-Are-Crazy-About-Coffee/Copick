@@ -1,11 +1,9 @@
 package com.ssafy.coffee.domain.auth.controller;
 
+import com.ssafy.coffee.domain.RefreshToken.dto.RefreshTokenDto;
 import com.ssafy.coffee.domain.RefreshToken.entity.RefreshToken;
 import com.ssafy.coffee.domain.RefreshToken.repository.RefreshTokenRepository;
-import com.ssafy.coffee.domain.auth.dto.AccessTokenDto;
-import com.ssafy.coffee.domain.auth.dto.LoginDto;
-import com.ssafy.coffee.domain.auth.dto.MemberRegistRequestDto;
-import com.ssafy.coffee.domain.auth.dto.TokenInfoDto;
+import com.ssafy.coffee.domain.auth.dto.*;
 import com.ssafy.coffee.domain.auth.service.AuthService;
 import com.ssafy.coffee.domain.auth.service.JwtService;
 
@@ -76,20 +74,23 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<?> requestAccessToken(HttpServletResponse response, HttpServletRequest request) {
+    public ResponseEntity<?> requestAccessToken(HttpServletResponse response, HttpServletRequest request, RefreshTokenRequestDto refreshTokenDto) {
         log.debug("엑세스토큰 재발급");
 
-        String refreshTokenCookie = "";
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if ("refresh_token".equals(cookie.getName())) {
-                    refreshTokenCookie = cookie.getValue();
+        String refreshTokenString = refreshTokenDto.getRefreshToken();
+        if(!StringUtils.hasText(refreshTokenString)){
+            Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if ("refresh_token".equals(cookie.getName())) {
+                        refreshTokenString = cookie.getValue();
+                    }
                 }
-            }
-            if (StringUtils.hasText(refreshTokenCookie)
-                    && jwtService.validateRefreshToken(refreshTokenCookie)) {
-                RefreshToken refreshToken = jwtService.findRefreshToken(refreshTokenCookie);
+        }
+
+            if (StringUtils.hasText(refreshTokenString)
+                    && jwtService.validateRefreshToken(refreshTokenString)) {
+                RefreshToken refreshToken = jwtService.findRefreshToken(refreshTokenString);
                 AccessTokenDto accessTokenDto = AccessTokenDto.builder()
                         .accessToken(jwtService.createAccessToken(refreshToken.getMemberIndex(), List.of(() -> refreshToken.getRole().toString()), refreshToken.getAuthType()))
                         .build();
