@@ -47,7 +47,8 @@ public class ResultService {
         int resultFlawCnt = 0;
         for (Sequence s : sequenceList)
             resultFlawCnt += s.getFlaw();
-        result.setNormalBeanCount(sequenceList.get(sequenceList.size() - 1).getNormal());
+        if(!sequenceList.isEmpty())
+            result.setNormalBeanCount(sequenceList.get(sequenceList.size() - 1).getNormal());
         result.setFlawBeanCount(resultFlawCnt);
         return result;
     }
