@@ -1,12 +1,3 @@
-package com.ssafy.coffee.domain.board.dto;
-
-import lombok.Data;
-import org.springframework.web.multipart.MultipartFile;
-
-@Data
-public class BoardPostRequestDto {
-    private String domain;
-    private String title;
-    private String content;
-    private MultipartFile[] upfiles;
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:13bda8947c588235bcf103c095ad614c4afff0b5c9ae48f1354cab056eda855f
+size 280
