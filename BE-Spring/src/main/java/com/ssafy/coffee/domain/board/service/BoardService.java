@@ -56,7 +56,7 @@ public class BoardService {
     }
 
 
-    public BoardGetResponseDto getBoard(Long boardIndex) {
+    public BoardGetResponseDto getBoard(Long boardIndex, Member member) {
         Board board = boardRepository.findByIndexAndIsDeletedFalse(boardIndex)
                 .orElseThrow(() -> new IllegalArgumentException("Board with id " + boardIndex + " not found"));
 
@@ -65,7 +65,9 @@ public class BoardService {
                 .map(BoardImage::getImage)
                 .collect(Collectors.toList());
 
-        return new BoardGetResponseDto(board, images);
+        boolean liked = boardLikeRepository.existsByBoardAndMember(board, member);
+
+        return new BoardGetResponseDto(board, images, liked);
     }
 
 
@@ -79,7 +81,7 @@ public class BoardService {
                     .map(BoardImage::getImage)
                     .collect(Collectors.toList());
 
-            return new BoardGetResponseDto(board, imageUrls);
+            return new BoardGetResponseDto(board, imageUrls, false);
         }).collect(Collectors.toList());
 
         return new BoardGetListResponseDto(content, boards.getTotalPages(), boards.getTotalElements());
