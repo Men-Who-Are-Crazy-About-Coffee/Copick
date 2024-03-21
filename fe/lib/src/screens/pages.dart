@@ -1,12 +1,13 @@
 import 'package:camera/camera.dart';
 import 'package:fe/constants.dart';
-import 'package:fe/src/camera_provider.dart';
+import 'package:fe/src/services/camera_provider.dart';
 import 'package:fe/src/screens/camera_page.dart';
 import 'package:fe/src/screens/community_page.dart';
 import 'package:fe/src/screens/gallery_page.dart';
 import 'package:fe/src/screens/home_page.dart';
 import 'package:fe/src/screens/profile_page.dart';
 import 'package:fe/src/services/api_service.dart';
+import 'package:fe/src/services/user_provider.dart';
 import 'package:fe/src/widgets/bottomnavbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -56,21 +57,24 @@ class _PagesState extends State<Pages> {
 
     ThemeColors themeColors = ThemeColors();
     // 로그인되지 않았을 경우 로그인 페이지를 리스트에 추가
-    return Scaffold(
-      body: widgetOptions.elementAt(_selectedIndex),
-      floatingActionButton: SizedBox(
-        width: 80,
-        height: 80,
-        child: FloatingActionButton(
-          backgroundColor: themeColors.color5,
-          child: const Icon(Icons.camera, size: 40),
-          onPressed: () => onItemTapped(2),
+    return ChangeNotifierProvider(
+      create: (context) => UserProvider()..fetchUserData(),
+      child: Scaffold(
+        body: widgetOptions.elementAt(_selectedIndex),
+        floatingActionButton: SizedBox(
+          width: 80,
+          height: 80,
+          child: FloatingActionButton(
+            backgroundColor: themeColors.color5,
+            child: const Icon(Icons.camera, size: 40),
+            onPressed: () => onItemTapped(2),
+          ),
         ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomNavbar(
-        currentIndex: _selectedIndex,
-        onItemTapped: onItemTapped,
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        bottomNavigationBar: BottomNavbar(
+          currentIndex: _selectedIndex,
+          onItemTapped: onItemTapped,
+        ),
       ),
     );
   }

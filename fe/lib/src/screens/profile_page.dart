@@ -2,8 +2,11 @@ import 'package:dio/dio.dart';
 import 'package:fe/constants.dart';
 import 'package:fe/src/models/user.dart';
 import 'package:fe/src/services/api_service.dart';
+import 'package:fe/src/services/delete_storage.dart';
+import 'package:fe/src/services/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:provider/provider.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -15,37 +18,19 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   String memberImg =
       "https://cdn.ceomagazine.co.kr/news/photo/201802/1714_4609_1642.jpg";
-  final storage = const FlutterSecureStorage();
 
   ApiService apiService = ApiService();
+  DeleteStorage deleteStorage = DeleteStorage();
 
-  User _user = User();
-
-  Future<void> fetchUserData() async {
-    print("1");
-    String? at = await storage.read(key: 'ACCESS_TOKEN');
-    print(at);
-    Response response = await apiService.get('/api/member/my');
-    if (response.statusCode == 200) {
-      setState(() {
-        _user = User.fromJson(response.data);
-      });
-    } else {
-      throw Exception('Failed to load user data');
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    print("여기는 프로필 페이지 입니다 ");
-    fetchUserData();
-    print("fetchUserData가 실행됐습니다.");
+  void logout() {
+    deleteStorage.deleteAll();
+    Navigator.pushNamed(context, '/');
   }
 
   @override
   Widget build(BuildContext context) {
     ThemeColors themeColors = ThemeColors();
+    var user = Provider.of<UserProvider>(context); // Counter 인스턴스에 접근
 
     void getDialog() {
       showDialog(
@@ -125,16 +110,16 @@ class _ProfilePageState extends State<ProfilePage> {
                                     children: [
                                       Column(
                                         children: [
-                                          _user == null
+                                          user.user == null
                                               ? const CircularProgressIndicator()
                                               : Text(
-                                                  _user.id!,
+                                                  user.user.id!,
                                                   style: const TextStyle(
                                                       fontSize: 20,
                                                       fontWeight:
                                                           FontWeight.w600),
                                                 ),
-                                          Text(_user.nickname!),
+                                          Text(user.user.nickname!),
                                         ],
                                       )
                                     ],
@@ -148,7 +133,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                       IconButton(
                                         icon: const Icon(Icons.edit),
                                         onPressed: () {
-                                          getDialog();
+                                          logout();
                                         },
                                       ),
                                     ],

@@ -2,8 +2,6 @@
 
 import 'package:dio/dio.dart';
 import 'package:fe/constants.dart';
-import 'package:fe/src/screens/pages.dart';
-import 'package:fe/src/screens/register_page.dart';
 import 'package:fe/src/services/api_service.dart';
 import 'package:fe/src/widgets/rounded_button.dart';
 import 'package:fe/src/widgets/inputfield.dart';
@@ -21,18 +19,21 @@ class _LoginState extends State<Login> {
   final TextEditingController idController = TextEditingController();
   final TextEditingController pwController = TextEditingController();
 
-  late String nickname = "hoseong";
+  final storage = const FlutterSecureStorage();
+
+  void isLogined() async {
+    String? token = await storage.read(key: 'ACCESS_TOKEN');
+    if (token != null) Navigator.pushNamed(context, '/pages');
+  }
+
   Future<void> login(String id, String password) async {
     ApiService apiService = ApiService();
-    const storage = FlutterSecureStorage();
     try {
       Response response = await apiService.post('/api/auth/login', data: {
         "id": id,
         "password": password,
       });
-
       Map<String, dynamic> responseMap = response.data;
-      const storage = FlutterSecureStorage();
       await storage.write(
           key: "ACCESS_TOKEN", value: responseMap["accessToken"]);
       await storage.write(
@@ -43,6 +44,12 @@ class _LoginState extends State<Login> {
     }
 
     // print(response.data);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    isLogined();
   }
 
   @override

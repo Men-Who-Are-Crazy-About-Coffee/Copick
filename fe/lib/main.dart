@@ -1,6 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:fe/routes.dart';
-import 'package:fe/src/camera_provider.dart';
+import 'package:fe/src/services/camera_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';

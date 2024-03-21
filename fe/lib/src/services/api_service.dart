@@ -11,20 +11,56 @@ class ApiService {
   final storage = const FlutterSecureStorage();
 
   ApiService() {
-    dio.options.followRedirects = true;
+    dio.interceptors.add(InterceptorsWrapper(
+      onRequest: (options, handler) async {
+        String? accessToken = await storage.read(key: 'ACCESS_TOKEN');
+        options.headers['Authorization'] = 'Bearer $accessToken';
+        return handler.next(options);
+      },
+      onError: (DioError error, handler) async {
+        // if (error.response?.statusCode == 401) {
+        //   // Access token expired, attempt to refresh it
+        //   String? refreshToken = await storage.read(key: 'REFRESH_TOKEN');
+        //   if (refreshToken != null) {
+        //     // Make a request to the token refresh endpoint
+        //     try {
+        //       Response refreshResponse = await dio.post(
+        //         '$baseUrl/refresh_token',
+        //         data: {'refresh_token': refreshToken},
+        //       );
 
-    dio.interceptors
-        .add(InterceptorsWrapper(onRequest: (options, handler) async {
-      // 기기에 저장된 AccessToken 로드
-      String? accessToken = await storage.read(key: 'ACCESS_TOKEN');
-      // 매 요청마다 헤더에 AccessToken을 포함
-      options.headers['Authorization'] = 'Bearer $accessToken';
+        //       print(refreshResponse.data);
+        //       String newAccessToken = refreshResponse.data['access_token'];
+        //       print(newAccessToken);
 
-      return handler.next(options); // 요청을 계속 진행
-    }, onError: (error, handler) {
-      // 오류 처리를 위한 코드를 여기에 작성할 수 있습니다.
-      return handler.next(error);
-    }));
+        //       // Update the access token in storage
+        //       await storage.write(key: 'ACCESS_TOKEN', value: newAccessToken);
+        //       // Update the request with the new access token and retry
+        //       error.requestOptions.headers['Authorization'] =
+        //           'Bearer $newAccessToken';
+        //       final opts = Options(
+        //         method: error.requestOptions.method,
+        //         headers: error.requestOptions.headers,
+        //       );
+        //       // Retry the original request with the new access token
+        //       return handler.resolve(await dio.request(
+        //         baseUrl + error.requestOptions.path,
+        //         options: opts,
+        //         data: error.requestOptions.data,
+        //         queryParameters: error.requestOptions.queryParameters,
+        //       ));
+        //     } catch (refreshError) {
+        //       throw Exception('Failed to refresh access token: $refreshError');
+        //     }
+        //   } else {
+        //     throw Exception('Refresh token not found');
+        //   }
+        // } else {
+        //   // For other errors, just pass the error as is
+        //   return handler.next(error);
+        // }
+      },
+    ));
   }
 
   Future<Response> get(String url) async {

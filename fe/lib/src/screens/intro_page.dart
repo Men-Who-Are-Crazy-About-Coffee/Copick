@@ -1,5 +1,6 @@
 import 'package:fe/src/screens/login_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class IntroPage extends StatefulWidget {
   // final VoidCallback onLoginPressed;
@@ -43,7 +44,11 @@ class _MainState extends State<IntroPage> with SingleTickerProviderStateMixin {
     super.dispose();
   }
 
-  void goLogin() {
+  final storage = const FlutterSecureStorage();
+  void goLogin() async {
+    String? refreshToken = await storage.read(key: 'REFRESH_TOKEN');
+    print(refreshToken);
+    Navigator.pushNamed(context, '/login');
     return;
   }
 
@@ -79,7 +84,7 @@ class _MainState extends State<IntroPage> with SingleTickerProviderStateMixin {
             ),
             InkWell(
               onTap: () {
-                Navigator.pushNamed(context, '/login');
+                goLogin();
               },
               child: const Text(
                 '서비스 이용해보기',

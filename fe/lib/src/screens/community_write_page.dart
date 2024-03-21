@@ -34,7 +34,6 @@ class _CommunityWritePageState extends State<CommunityWritePage> {
 
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
-  final TextEditingController _upfilesController = TextEditingController();
 
   Future<void> write() async {
     ApiService apiService = ApiService();
@@ -130,10 +129,11 @@ class _CommunityWritePageState extends State<CommunityWritePage> {
                         borderRadius: BorderRadius.circular(8),
                         shape: BoxShape.rectangle,
                       ),
-                      child: const TextField(
+                      child: TextField(
                         keyboardType: TextInputType.multiline,
+                        controller: _contentController,
                         maxLines: null,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           hintText: '내용 입력',
                           border: InputBorder.none,
                         ),

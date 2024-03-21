@@ -1,4 +1,5 @@
 import 'package:fe/constants.dart';
+import 'package:fe/src/services/api_service.dart';
 import 'package:fe/src/widgets/rounded_button.dart';
 import 'package:fe/src/widgets/inputfield.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +24,16 @@ class _RegisterState extends State<Register> {
     setState(() {
       _selectedGender = value;
     });
+  }
+
+  void join() {
+    ApiService apiService = ApiService();
+    apiService.post('/api/auth/register', data: {
+      "id": idController.text,
+      "password": pwController.text,
+      "nickname": nicknameController.text,
+    });
+    Navigator.pushNamed(context, '/login');
   }
 
   @override
@@ -128,6 +139,9 @@ class _RegisterState extends State<Register> {
                           RoundedButton(
                             maintext: '회원가입',
                             bgcolor: themeColors.color2,
+                            onPressed: () {
+                              join();
+                            },
                           ),
                           const SizedBox(
                             height: 30,
