@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fe/src/widgets/bar_chart.dart';
 import 'package:fe/src/widgets/pie_chart.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:intl/intl.dart';
 
 class HomePage extends StatefulWidget {
@@ -27,6 +28,18 @@ class _HomePageState extends State<HomePage> {
         dateRange = newDateRange;
       });
     }
+  }
+
+  final storage = const FlutterSecureStorage();
+  Future<void> isLogin() async {
+    String? accessToekn = await storage.read(key: "ACCESS_TOKEN");
+    if (accessToekn == null) Navigator.pushNamed(context, '/login');
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    isLogin();
   }
 
   // 선택된 날짜 범위를 문자열로 반환하는 함수

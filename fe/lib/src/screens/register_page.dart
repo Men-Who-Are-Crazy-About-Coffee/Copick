@@ -27,6 +27,12 @@ class _RegisterState extends State<Register> {
   }
 
   void join() {
+    if (idController.text == "" ||
+        pwController.text == "" ||
+        nicknameController.text == "") {
+      getDialog();
+      return;
+    }
     ApiService apiService = ApiService();
     apiService.post('/api/auth/register', data: {
       "id": idController.text,
@@ -34,6 +40,30 @@ class _RegisterState extends State<Register> {
       "nickname": nicknameController.text,
     });
     Navigator.pushNamed(context, '/login');
+  }
+
+  void getDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('안내메세지'),
+          content: idController.text == ""
+              ? const Text('아이디를 입력해주세요.')
+              : pwController.text == ""
+                  ? const Text("비밀번호를 입력해주세요.")
+                  : const Text("닉네임을 입력해주세요."),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('닫기'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -131,6 +161,7 @@ class _RegisterState extends State<Register> {
                               ),
                             ],
                           ),
+
                           // Text(
                           //     'Selected gender: ${_selectedGender.toString().split('.').last}'),
                           const SizedBox(

@@ -1,4 +1,3 @@
-import 'dart:ui';
 
 import 'package:fe/src/resources/app_resources.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -47,7 +46,7 @@ class _BarChart extends StatelessWidget {
       );
 
   Widget getTitles(double value, TitleMeta meta) {
-    final style = TextStyle(
+    const style = TextStyle(
       color: AppColors.contentColorBlack,
       fontWeight: FontWeight.bold,
       fontSize: 18,
@@ -101,7 +100,7 @@ class _BarChart extends StatelessWidget {
           barRods: [
             BarChartRodData(
               toY: 20,
-              color: Color(0xffD4A373),
+              color: const Color(0xffD4A373),
               width: 50,
               borderRadius: BorderRadius.circular(16),
             )
@@ -113,7 +112,7 @@ class _BarChart extends StatelessWidget {
           barRods: [
             BarChartRodData(
               toY: 15,
-              color: Color(0xffD9D9D9),
+              color: const Color(0xffD9D9D9),
               width: 50,
               borderRadius: BorderRadius.circular(16),
             )

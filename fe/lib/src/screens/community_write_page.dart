@@ -26,10 +26,32 @@ class _CommunityWritePageState extends State<CommunityWritePage> {
     setState(() {
       if (pickedFile != null) {
         _image = pickedFile;
-      } else {
-        print('이미지가 선택되지 않았습니다.');
       }
     });
+  }
+
+  void getDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('안내메세지'),
+          content: _titleController.text == ""
+              ? const Text('글의 제목을 입력해주세요.')
+              : _contentController.text == ""
+                  ? const Text("글의 내용을 입력해주세요.")
+                  : const Text("이미지를 추가해주세요."),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('닫기'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   final TextEditingController _titleController = TextEditingController();
@@ -51,13 +73,14 @@ class _CommunityWritePageState extends State<CommunityWritePage> {
       formData.fields.add(MapEntry("title", _titleController.text));
       formData.fields.add(MapEntry("content", _contentController.text));
       formData.files.add(MapEntry(
-        "upfiles",
+        "images",
         multipartFile,
       ));
       await apiService.post('/api/board', data: formData);
       Navigator.pushNamed(context, '/pages');
     } catch (e) {
-      print("글 작성 실패");
+      getDialog();
+      return;
     }
 
     // print(response.data);

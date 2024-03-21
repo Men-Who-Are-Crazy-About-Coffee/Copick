@@ -59,15 +59,15 @@ class PieChart2State extends State<PieChartSample2> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Indicator(
-                color: Color(0xffD4A373),
+                color: const Color(0xffD4A373),
                 text: '정상 원두 : ${values[0]}', // 값 동적으로 표시,
                 isSquare: true,
               ),
-              SizedBox(
+              const SizedBox(
                 width: 8, // Padding 대신 SizedBox의 width 사용
               ),
               Indicator(
-                color: Color(0xffD9D9D9),
+                color: const Color(0xffD9D9D9),
                 text: '결함 원두 : ${values[1]}', // 값 동적으로 표시
                 isSquare: true,
               ),
@@ -86,7 +86,7 @@ class PieChart2State extends State<PieChartSample2> {
       final isTouched = i == touchedIndex;
       final radius = isTouched ? 60.0 : 50.0;
       return PieChartSectionData(
-        color: i == 0 ? Color(0xffD4A373) : Color(0xffD9D9D9),
+        color: i == 0 ? const Color(0xffD4A373) : const Color(0xffD9D9D9),
         value: i == 0 ? 80 : 20,
         title: '', // 값을 표시하지 않음
         showTitle: false, // 타이틀 표시하지 않기

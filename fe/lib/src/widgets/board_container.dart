@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class BoardContainer extends StatefulWidget {
   final String memberImg;
   final String memberNickName;
-  final String coffeeImg;
+  final List<dynamic> coffeeImg;
   final String comment;
   final bool isLiked;
   final int like;
@@ -36,7 +36,7 @@ class _BoardContainerState extends State<BoardContainer> {
     super.initState();
     memberImg = widget.memberImg;
     memberNickName = widget.memberNickName;
-    coffeeImg = widget.coffeeImg;
+    coffeeImg = widget.coffeeImg[0];
     comment = widget.comment;
     isLiked = widget.isLiked;
     like = widget.like;
@@ -93,7 +93,7 @@ class _BoardContainerState extends State<BoardContainer> {
             ),
             const SizedBox(height: 10),
             Image.network(
-              widget.coffeeImg,
+              coffeeImg!,
               fit: BoxFit.scaleDown,
             ),
             Row(

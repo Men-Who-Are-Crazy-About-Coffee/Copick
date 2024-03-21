@@ -6,7 +6,6 @@ import 'package:fe/src/screens/community_page.dart';
 import 'package:fe/src/screens/gallery_page.dart';
 import 'package:fe/src/screens/home_page.dart';
 import 'package:fe/src/screens/profile_page.dart';
-import 'package:fe/src/services/api_service.dart';
 import 'package:fe/src/services/user_provider.dart';
 import 'package:fe/src/widgets/bottomnavbar.dart';
 import 'package:flutter/material.dart';
@@ -26,9 +25,13 @@ class _PagesState extends State<Pages> {
   @override
   void initState() {
     super.initState();
-    // if (로그인되지 않았다면) {
-    //   widgetOptions.add(Login());
-    // }
+    isLogin();
+  }
+
+  final storage = const FlutterSecureStorage();
+  Future<void> isLogin() async {
+    String? accessToekn = await storage.read(key: "ACCESS_TOKEN");
+    if (accessToekn == null) Navigator.pushNamed(context, '/login');
   }
 
   void addWidgets(CameraDescription? camera) {
@@ -41,7 +44,6 @@ class _PagesState extends State<Pages> {
     ];
   }
 
-  final storage = const FlutterSecureStorage();
   Future<void> getToken() async {
     // String? token1 = await storage.read(key: 'REFRESH_TOKEN');
     // String? token2 = await storage.read(key: 'ACCESS_TOKEN');

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class DateRangePicker extends StatefulWidget {
+  const DateRangePicker({super.key});
+
   @override
   _DateRangePickerState createState() => _DateRangePickerState();
 }
@@ -36,9 +38,7 @@ class _DateRangePickerState extends State<DateRangePicker> {
             onPressed: () => _selectDateRange(context),
             child: Text(_startDate == null || _endDate == null
                 ? '기간 선택'
-                : '${_startDate!.toLocal()}'.split(' ')[0] +
-                    ' ~ ' +
-                    '${_endDate!.toLocal()}'.split(' ')[0]),
+                : '${'${_startDate!.toLocal()}'.split(' ')[0]} ~ ${'${_endDate!.toLocal()}'.split(' ')[0]}'),
           ),
         ],
       ),
