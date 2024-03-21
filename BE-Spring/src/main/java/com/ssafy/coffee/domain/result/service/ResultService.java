@@ -75,15 +75,17 @@ public class ResultService {
             throw new EntityNotFoundException("Result not found with date between "+startDate+"and"+endDate);
         double normalCount = 0;
         double flawCount = 0;
+        double myNormalPercent = 0;
         for(Result result:resultList){
             normalCount+=result.getNormalBeanCount();
             flawCount+=result.getFlawBeanCount();
         }
-        double myNormalPercent = normalCount/(normalCount+flawCount);
+        if(normalCount + flawCount > 0)
+            myNormalPercent = normalCount/(normalCount+flawCount);
         myNormalPercent = Math.round(myNormalPercent*1000)/10.0;
         return AnalyzeResponseDto.builder()
                 .myNormalPercent(myNormalPercent)
-                .myFlawPercent(100.0-myNormalPercent)
+                .myFlawPercent((1000-myNormalPercent*10)/10.0)
                 .build();
     }
 }
