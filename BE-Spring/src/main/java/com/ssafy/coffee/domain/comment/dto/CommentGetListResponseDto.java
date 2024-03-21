@@ -1,3 +1,21 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:59dab10e2f6cf76369c7ea440dd11067060bf414ff8f60c53ce90da98e8bf051
-size 578
+package com.ssafy.coffee.domain.comment.dto;
+
+
+import lombok.Data;
+
+import java.util.List;
+
+@Data
+public class CommentGetListResponseDto {
+    List<CommentGetResponseDto> list;
+    private int totalPages;
+    private long totalElements;
+
+    public CommentGetListResponseDto(List<CommentGetResponseDto> commentGetResponseDtos,
+                                     int totalPages,
+                                     int numberOfElements) {
+        this.list = commentGetResponseDtos;
+        this.totalPages = totalPages;
+        this.totalElements = numberOfElements;
+    }
+}

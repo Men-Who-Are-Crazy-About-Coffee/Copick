@@ -1,3 +1,10 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:40a7b188a6a78b7deef86132747861da8cd23ce68e7ed7735dfe66dbb606ccbb
-size 201
+package com.ssafy.coffee.domain.result.dto;
+
+import lombok.Builder;
+import lombok.Data;
+
+@Data
+@Builder
+public class AnalyzeResponseDto {
+    Double myNormalPercent,myFlawPercent,totalNormalPercent;
+}

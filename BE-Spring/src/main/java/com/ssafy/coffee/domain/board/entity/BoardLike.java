@@ -1,3 +1,39 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:09553e4460f015806626ce181fe2ee53d4a6b3391bcc9a8d8611fe5f5f5e1fd4
-size 963
+package com.ssafy.coffee.domain.board.entity;
+
+import com.ssafy.coffee.domain.member.entity.Member;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Getter
+@NoArgsConstructor
+public class BoardLike {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JoinColumn(name = "like_index", nullable = false)
+    private Long index;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "board_id", nullable = false)
+    private Board board;
+
+    @Builder
+    public BoardLike(Member member, Board board) {
+        this.member = member;
+        this.board = board;
+    }
+
+}

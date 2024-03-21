@@ -1,3 +1,21 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:bf7f29acb211373c2d57d64797d0d51e07131090c3352f9972825604491a60cf
-size 583
+package com.ssafy.coffee.domain.board.repository;
+
+import com.ssafy.coffee.domain.board.entity.Board;
+import com.ssafy.coffee.domain.board.entity.BoardLike;
+import com.ssafy.coffee.domain.member.entity.Member;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
+
+@Repository
+public interface BoardLikeRepository extends JpaRepository<BoardLike, Long> {
+
+    Optional<BoardLike> findByBoardAndMember(Board board, Member member);
+
+    boolean existsByBoardAndMember(Board board, Member member);
+
+    Page<BoardLike> findAllByMemberIndex(Long memberIndex, Pageable pageable);
+}
