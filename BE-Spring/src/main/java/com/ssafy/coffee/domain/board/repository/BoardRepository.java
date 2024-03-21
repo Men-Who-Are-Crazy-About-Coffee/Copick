@@ -17,4 +17,6 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     Page<Board> findByTitleContainingAndDomainAndIsDeletedFalse(String title, BoardDomain domain, Pageable pageable);
 
     Optional<Board> findByIndexAndIsDeletedFalse(Long boardIndex);
+
+    Page<Board> findAllByCreatedByIndexAndIsDeletedFalse(Long memberIndex, Pageable pageable);
 }
