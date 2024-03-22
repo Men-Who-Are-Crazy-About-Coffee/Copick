@@ -1,10 +1,8 @@
-import 'package:dio/dio.dart';
 import 'package:fe/constants.dart';
 import 'package:fe/src/services/api_service.dart';
 import 'package:fe/src/services/delete_storage.dart';
 import 'package:fe/src/services/user_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -22,7 +20,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   void logout() {
     deleteStorage.deleteAll();
-    Navigator.pushNamed(context, '/');
+    Navigator.pushNamed(context, '/login');
   }
 
   @override
@@ -59,28 +57,10 @@ class _ProfilePageState extends State<ProfilePage> {
       );
     }
 
-    const storage = FlutterSecureStorage();
-    Future<void> isLogin() async {
-      String? accessToekn = await storage.read(key: "ACCESS_TOKEN");
-      if (accessToekn == null) Navigator.pushNamed(context, '/login');
-    }
-
-    @override
-    void initState() {
-      super.initState();
-      isLogin();
-    }
-
     return Scaffold(
       appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            tooltip: "Back",
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-          title: const Text("프로필")),
+        title: const Text("프로필"),
+      ),
       body: SingleChildScrollView(
         child: Center(
           child: Column(

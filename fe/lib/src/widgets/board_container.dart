@@ -55,66 +55,128 @@ class _BoardContainerState extends State<BoardContainer> {
   }
 
   ThemeColors themeColors = ThemeColors();
-  final List<String> _comments = [
-    '첫 번째 댓글입니다!',
-    '두 번째 댓글입니다!',
-    // 더 많은 댓글이 있을 수 있습니다.
-  ];
+  TextEditingController commentController = TextEditingController();
+  late List<dynamic> _comments = [];
 
   void _showModalBottomSheet() {
     showModalBottomSheet(
       context: context,
       builder: (context) {
-        TextEditingController commentController = TextEditingController();
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            ListView.builder(
-              shrinkWrap: true,
-              itemCount: _comments.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(_comments[index]),
-                );
-              },
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    child: TextField(
-                      controller: commentController,
-                      decoration: const InputDecoration(
-                        hintText: '댓글 추가...',
+        return SingleChildScrollView(
+          child: Padding(
+            padding: MediaQuery.of(context).viewInsets,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: _comments.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: ClipOval(
+                              child: Image.network(
+                                _comments[index]['memberPrifileImage'] ??
+                                    "https://jariyo-s3.s3.ap-northeast-2.amazonaws.com/memeber/anonymous.png",
+                                height: 40,
+                                width: 40,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Text(
+                                    _comments[index]['memberName'],
+                                    style: const TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w800),
+                                  ),
+                                  const SizedBox(
+                                    width: 12,
+                                  ),
+                                  Text(
+                                    (_comments[index]['regDate'])
+                                        .toString()
+                                        .substring(0, 10),
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey,
+                                    ),
+                                  )
+                                ],
+                              ),
+                              Text(
+                                _comments[index]['content'],
+                                style: const TextStyle(fontSize: 13),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                    ),
+                    );
+                  },
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: TextField(
+                            controller: commentController,
+                            decoration: const InputDecoration(
+                              hintText: '댓글 추가...',
+                            ),
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.send),
+                        onPressed: () {
+                          setState(() {
+                            addComment();
+                            commentController.clear();
+                          });
+                          // 모달을 닫고 싶지 않으면 아래 줄을 주석 처리하세요.
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.send),
-                    onPressed: () {
-                      setState(() {
-                        _comments.add(commentController.text);
-                        commentController.clear();
-                      });
-                      // 모달을 닫고 싶지 않으면 아래 줄을 주석 처리하세요.
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
+          ),
         );
       },
     );
   }
 
+  void addComment() async {
+    await apiService.post(
+      "/api/comment",
+      data: {
+        "boardIndex": _index,
+        "content": commentController.text,
+      },
+    );
+  }
+
   void getComment() async {
+    Response response =
+        await apiService.get("/api/comment/board/$_index?sort=index");
+    _comments = response.data['list'];
+    print(_comments[0]);
     _showModalBottomSheet();
-    print(_index);
-    // Response response = await apiService.get("/api/comment/board/$_index");
-    // _comments = response.data['list'];
   }
 
   @override
@@ -135,12 +197,12 @@ class _BoardContainerState extends State<BoardContainer> {
                 ClipOval(
                   child: Image.network(
                     widget.memberImg,
-                    height: 20,
-                    width: 20,
+                    height: 40,
+                    width: 40,
                     fit: BoxFit.cover,
                   ),
                 ),
-                const SizedBox(width: 20),
+                const SizedBox(width: 10),
                 Text("$_memberNickName")
               ],
             ),

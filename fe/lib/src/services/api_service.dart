@@ -20,8 +20,7 @@ class ApiService {
       onError: (DioException error, handler) async {
         if (error.response?.statusCode == 404) {
           handler.next(error);
-        }
-        if (error.response?.statusCode == 401 && refresh) {
+        } else if (error.response?.statusCode == 401 && refresh) {
           String? refreshToken = await storage.read(key: 'REFRESH_TOKEN');
           if (refreshToken != null) {
             try {

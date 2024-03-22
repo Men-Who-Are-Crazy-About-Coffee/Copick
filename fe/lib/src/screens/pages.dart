@@ -1,5 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:fe/constants.dart';
+import 'package:fe/routes.dart';
 import 'package:fe/src/services/camera_provider.dart';
 import 'package:fe/src/screens/camera_page.dart';
 import 'package:fe/src/screens/community_page.dart';
@@ -31,7 +32,7 @@ class _PagesState extends State<Pages> {
   final storage = const FlutterSecureStorage();
   Future<void> isLogin() async {
     String? accessToekn = await storage.read(key: "ACCESS_TOKEN");
-    if (accessToekn == null) Navigator.pushNamed(context, '/login');
+    if (accessToekn == null) Navigator.pushNamed(context, '/');
   }
 
   void addWidgets(CameraDescription? camera) {
@@ -39,7 +40,7 @@ class _PagesState extends State<Pages> {
       const HomePage(),
       const GalleryPage(),
       CameraPage(camera: camera!),
-      CommunityPage(),
+      const CommunityPage(),
       const ProfilePage()
     ];
   }
