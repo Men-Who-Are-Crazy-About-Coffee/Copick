@@ -46,7 +46,7 @@ class _MainState extends State<IntroPage> with SingleTickerProviderStateMixin {
 
   final storage = const FlutterSecureStorage();
   void goLogin() async {
-    String? refreshToken = await storage.read(key: 'REFRESH_TOKEN');
+    String? refreshToken = await storage.read(key: 'ACCESS_TOKEN');
     print(refreshToken);
     Navigator.pushNamed(context, '/login');
     return;

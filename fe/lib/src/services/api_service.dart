@@ -17,7 +17,8 @@ class ApiService {
         options.headers['Authorization'] = 'Bearer $accessToken';
         return handler.next(options);
       },
-      onError: (DioError error, handler) async {
+      onError: (DioException error, handler) async {
+        handler.next(error);
         // if (error.response?.statusCode == 401) {
         //   // Access token expired, attempt to refresh it
         //   String? refreshToken = await storage.read(key: 'REFRESH_TOKEN');
