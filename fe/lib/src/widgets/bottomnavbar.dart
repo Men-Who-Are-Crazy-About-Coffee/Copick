@@ -21,8 +21,8 @@ class BottomNavbar extends StatelessWidget {
         onTap: onItemTapped, // 외부에서 제공된 콜백을 사용
         items: [
           const BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            label: 'Home',
+            icon: Icon(Icons.stacked_bar_chart_sharp),
+            label: 'Statistics',
           ),
           BottomNavigationBarItem(
             icon: currentIndex == 1
