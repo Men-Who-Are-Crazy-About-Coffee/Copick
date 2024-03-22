@@ -8,30 +8,6 @@ class BoardProvider extends ChangeNotifier {
   int currentIndex = 0;
   bool isMore = false;
 
-  // Future<void> pageViewItems({
-  //   bool isStart = true,
-  // }) async {
-  //   if (!isMore) {
-  //     isMore = true;
-  //     notifyListeners();
-  //     Future.delayed(Duration(milliseconds: isStart ? 0 : 2000), () {
-  //       for (int i = 0; i < 3; i++) {
-  //         items
-  //             .add('https://picsum.photos/id/${i + currentIndex + 50}/300/400');
-  //       }
-  //       currentIndex = currentIndex + 3;
-  //       isMore = false;
-  //       notifyListeners();
-  //     });
-  //   }
-  // }
-
-  // Future<void> changedPage(int index) async {
-  //   if (index == currentIndex) {
-  //     pageViewItems(isStart: false);
-  //   }
-  // }
-
   int size = 5;
   ApiService apiService = ApiService();
 
@@ -39,6 +15,7 @@ class BoardProvider extends ChangeNotifier {
     Response response = await apiService
         .get('/api/board/search?domain=GENERAL&size=$size&page=0');
     var boards = response.data['list'];
+    // print(boards);
     for (var board in boards) {
       String userImg = "";
       board['userProfileImage'] == null
@@ -47,12 +24,14 @@ class BoardProvider extends ChangeNotifier {
           : userImg = board['userProfileImage'];
       items.add(
         BoardContainer(
+          index: board['index'],
           coffeeImg: board['images'], // 이 부분은 실제 데이터에 맞게 조정하세요
           memberNickName: board['userNickname'],
           memberImg: userImg,
-          comment: board['content'],
-          like: 1,
-          isLiked: false,
+          title: board['title'],
+          content: board['content'],
+          like: board['likes'],
+          isLiked: board['liked'],
         ),
       );
     }
@@ -76,12 +55,14 @@ class BoardProvider extends ChangeNotifier {
               : userImg = board['userProfileImage'];
           items.add(
             BoardContainer(
+              index: board['index'],
               coffeeImg: board['images'], // 이 부분은 실제 데이터에 맞게 조정하세요
               memberNickName: board['userNickname'],
               memberImg: userImg,
-              comment: board['content'],
-              like: 1,
-              isLiked: false,
+              title: board['title'],
+              content: board['content'],
+              like: board['likes'],
+              isLiked: board['liked'],
             ),
           );
         }

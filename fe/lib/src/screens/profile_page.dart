@@ -62,6 +62,7 @@ class _ProfilePageState extends State<ProfilePage> {
     const storage = FlutterSecureStorage();
     Future<void> isLogin() async {
       String? accessToekn = await storage.read(key: "ACCESS_TOKEN");
+      if (accessToekn == null) Navigator.pushNamed(context, '/login');
     }
 
     @override

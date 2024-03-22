@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -71,16 +72,10 @@ class _CommentBoxState extends State<CommentBox> {
             onPressed: () {
               setState(() {
                 _isExpanded = !_isExpanded;
+                Navigator.pushNamed(context, '/homescreen');
               });
             },
             child: Text(_isExpanded ? "접기" : "더보기"),
-          ),
-          Image.network(img),
-          TextButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/vertical');
-            },
-            child: const Text("2"),
           ),
         ],
       ),

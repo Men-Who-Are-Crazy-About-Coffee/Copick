@@ -19,31 +19,26 @@ class ApiService {
       },
       onError: (DioError error, handler) async {
         if (error.response?.statusCode == 401 && refresh) {
-          // Access token expired, attempt to refresh it
           String? refreshToken = await storage.read(key: 'REFRESH_TOKEN');
           if (refreshToken != null) {
-            // Make a request to the token refresh endpoint
             try {
               refresh = false;
+
+              Dio dio = Dio();
               Response refreshResponse = await dio.post(
-                '$baseUrl/api/auth/refresh',
+                "$baseUrl/api/auth/refresh",
                 data: {"refreshToken": refreshToken},
               );
-
               print(refreshResponse.data);
-              String newAccessToken = refreshResponse.data['access_token'];
-              print(newAccessToken);
-
-              // Update the access token in storage
+              String newAccessToken = refreshResponse.data["accessToken"];
               await storage.write(key: 'ACCESS_TOKEN', value: newAccessToken);
-              // Update the request with the new access token and retry
               error.requestOptions.headers['Authorization'] =
                   'Bearer $newAccessToken';
               final opts = Options(
                 method: error.requestOptions.method,
                 headers: error.requestOptions.headers,
               );
-              // Retry the original request with the new access token
+
               return handler.resolve(await dio.request(
                 baseUrl + error.requestOptions.path,
                 options: opts,
