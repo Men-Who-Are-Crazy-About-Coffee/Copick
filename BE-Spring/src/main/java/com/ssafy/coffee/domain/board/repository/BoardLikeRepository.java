@@ -18,4 +18,6 @@ public interface BoardLikeRepository extends JpaRepository<BoardLike, Long> {
     boolean existsByBoardAndMember(Board board, Member member);
 
     Page<BoardLike> findAllByMemberIndex(Long memberIndex, Pageable pageable);
+
+    long countByBoard(Board board);
 }

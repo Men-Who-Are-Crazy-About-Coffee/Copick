@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "result", description = "전역 설정 API")
+@Tag(name = "global", description = "전역 설정 API")
 @RequestMapping("/api/global")
 public class GlobalController {
     private final GlobalService globalService;
