@@ -65,7 +65,7 @@ public class BoardController {
             @RequestParam(defaultValue = "GENERAL") String domain,
             @PageableDefault(page = 0, size = 10, sort = "index", direction = Sort.Direction.DESC) Pageable pageable,
             @AuthenticationPrincipal PrincipalMember principalMember) {
-        BoardGetListResponseDto boardGetListResponseDto = boardService.searchBoard(keyword, domain, pageable);
+        BoardGetListResponseDto boardGetListResponseDto = boardService.searchBoard(keyword, domain, pageable, principalMember.toEntity());
         return ResponseEntity.status(HttpStatus.OK).body(boardGetListResponseDto);
     }
 
@@ -76,7 +76,7 @@ public class BoardController {
     @ApiResponse(responseCode = "500", description = "서버 오류")
     public ResponseEntity<Object> getMyPosts(@AuthenticationPrincipal PrincipalMember principalMember,
                                              @PageableDefault(sort = "index", direction = Sort.Direction.DESC) Pageable pageable) {
-        BoardGetListResponseDto myPosts = boardService.getPostsByMemebr(principalMember.toEntity().getIndex(), pageable);
+        BoardGetListResponseDto myPosts = boardService.getPostsByMember(principalMember.toEntity(), pageable);
         return ResponseEntity.ok(myPosts);
     }
 
@@ -87,7 +87,7 @@ public class BoardController {
     @ApiResponse(responseCode = "500", description = "서버 오류")
     public ResponseEntity<Object> getMyLikedPosts(@AuthenticationPrincipal PrincipalMember principalMember,
                                                   @PageableDefault(sort = "index", direction = Sort.Direction.DESC) Pageable pageable) {
-        BoardGetListResponseDto likedPosts = boardService.getLikedPostsByMember(principalMember.toEntity().getIndex(), pageable);
+        BoardGetListResponseDto likedPosts = boardService.getLikedPostsByMember(principalMember.toEntity(), pageable);
         return ResponseEntity.ok(likedPosts);
     }
 

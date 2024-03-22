@@ -66,12 +66,13 @@ public class BoardService {
                 .collect(Collectors.toList());
 
         boolean liked = boardLikeRepository.existsByBoardAndMember(board, member);
+        long likesCount = boardLikeRepository.countByBoard(board);
 
-        return new BoardGetResponseDto(board, images, liked);
+        return new BoardGetResponseDto(board, images, liked, likesCount);
     }
 
 
-    public BoardGetListResponseDto searchBoard(String keyword, String domain, Pageable pageable) {
+    public BoardGetListResponseDto searchBoard(String keyword, String domain, Pageable pageable, Member member) {
         Page<Board> boards = boardRepository.findByTitleContainingAndDomainAndIsDeletedFalse(
                 keyword, BoardDomain.valueOf(domain.toUpperCase()), pageable);
 
@@ -81,30 +82,41 @@ public class BoardService {
                     .map(BoardImage::getImage)
                     .collect(Collectors.toList());
 
-            return new BoardGetResponseDto(board, imageUrls, false);
+            boolean liked = boardLikeRepository.existsByBoardAndMember(board, member);
+            long likesCount = boardLikeRepository.countByBoard(board);
+
+            return new BoardGetResponseDto(board, imageUrls, liked, likesCount);
         }).collect(Collectors.toList());
 
         return new BoardGetListResponseDto(content, boards.getTotalPages(), boards.getTotalElements());
     }
 
-    public BoardGetListResponseDto getPostsByMemebr(Long memberIndex, Pageable pageable) {
-        Page<Board> boards = boardRepository.findAllByCreatedByIndexAndIsDeletedFalse(memberIndex, pageable);
+    public BoardGetListResponseDto getPostsByMember(Member member, Pageable pageable) {
+        Page<Board> boards = boardRepository.findAllByCreatedByIndexAndIsDeletedFalse(member.getIndex(), pageable);
         List<BoardGetResponseDto> content = boards.getContent().stream().map(board -> {
             List<BoardImage> boardImages = boardImageRepository.findAllByBoard(board);
             List<String> imageUrls = boardImages.stream().map(BoardImage::getImage).collect(Collectors.toList());
-            return new BoardGetResponseDto(board, imageUrls, false);
+
+            boolean liked = boardLikeRepository.existsByBoardAndMember(board, member);
+            long likesCount = boardLikeRepository.countByBoard(board);
+
+            return new BoardGetResponseDto(board, imageUrls, liked, likesCount);
         }).collect(Collectors.toList());
 
         return new BoardGetListResponseDto(content, boards.getTotalPages(), boards.getTotalElements());
     }
 
-    public BoardGetListResponseDto getLikedPostsByMember(Long memberIndex, Pageable pageable) {
-        Page<BoardLike> likes = boardLikeRepository.findAllByMemberIndex(memberIndex, pageable);
+    public BoardGetListResponseDto getLikedPostsByMember(Member member, Pageable pageable) {
+        Page<BoardLike> likes = boardLikeRepository.findAllByMemberIndex(member.getIndex(), pageable);
         List<BoardGetResponseDto> content = likes.getContent().stream().map(like -> {
             Board board = like.getBoard();
             List<BoardImage> boardImages = boardImageRepository.findAllByBoard(board);
             List<String> imageUrls = boardImages.stream().map(BoardImage::getImage).collect(Collectors.toList());
-            return new BoardGetResponseDto(board, imageUrls, true);
+
+            boolean liked = boardLikeRepository.existsByBoardAndMember(board, member);
+            long likesCount = boardLikeRepository.countByBoard(board);
+
+            return new BoardGetResponseDto(board, imageUrls, liked, likesCount);
         }).collect(Collectors.toList());
 
         return new BoardGetListResponseDto(content, likes.getTotalPages(), likes.getTotalElements());
