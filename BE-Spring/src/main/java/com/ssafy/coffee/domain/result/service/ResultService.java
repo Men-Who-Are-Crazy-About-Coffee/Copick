@@ -1,6 +1,8 @@
 package com.ssafy.coffee.domain.result.service;
 
 import com.ssafy.coffee.domain.bean.repository.BeanRepository;
+import com.ssafy.coffee.domain.global.entity.Global;
+import com.ssafy.coffee.domain.global.repository.GlobalRepository;
 import com.ssafy.coffee.domain.member.entity.Member;
 import com.ssafy.coffee.domain.member.repository.MemberRepository;
 import com.ssafy.coffee.domain.result.dto.AnalyzeResponseDto;
@@ -30,6 +32,8 @@ public class ResultService {
     private final RoastingRepository roastingRepository;
     private final BeanRepository beanRepository;
     private final SequenceRepository sequenceRepository;
+    private final GlobalRepository globalRepository;
+
     @Value("${python.url}")
     private String pythonURL;
 
@@ -64,6 +68,14 @@ public class ResultService {
             result.setRoasting(roastingRepository.findByIndex(response));
         }
         result.setFlawBeanCount(resultFlawCnt);
+
+        Global globalNormalBean = globalRepository.findById("global_normal_bean")
+                .orElseThrow(() -> new EntityNotFoundException("Global not found with key: global_normal_bean"));
+        globalNormalBean.setValue(globalNormalBean.getValue()+result.getNormalBeanCount());
+        Global globalFlawBean = globalRepository.findById("global_flaw_bean")
+                .orElseThrow(() -> new EntityNotFoundException("Global not found with key: global_flaw_bean"));
+        globalFlawBean.setValue(globalNormalBean.getValue()+result.getFlawBeanCount());
+
         return result;
     }
 
@@ -83,9 +95,21 @@ public class ResultService {
         if(normalCount + flawCount > 0)
             myNormalPercent = normalCount/(normalCount+flawCount);
         myNormalPercent = Math.round(myNormalPercent*1000)/10.0;
+
+        double globalNormalBean = (double)globalRepository.findById("global_normal_bean")
+                .orElseThrow(() -> new EntityNotFoundException("Global not found with key: global_normal_bean")).getValue();
+        double globalFlawBean = (double)globalRepository.findById("global_flaw_bean")
+                .orElseThrow(() -> new EntityNotFoundException("Global not found with key: global_normal_bean")).getValue();
+
+        double totalNormalPercent = 0;
+        if(globalNormalBean + globalFlawBean > 0)
+            totalNormalPercent = globalNormalBean/(globalNormalBean+globalFlawBean);
+        totalNormalPercent = Math.round(totalNormalPercent*1000)/10.0;
+
         return AnalyzeResponseDto.builder()
                 .myNormalPercent(myNormalPercent)
                 .myFlawPercent((1000-myNormalPercent*10)/10.0)
+                .totalNormalPercent(totalNormalPercent)
                 .build();
     }
 }
