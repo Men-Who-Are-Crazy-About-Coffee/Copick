@@ -216,33 +216,6 @@ class _BarChartState extends State<_BarChart>
   FlBorderData get borderData => FlBorderData(
         show: false,
       );
-
-  List<BarChartGroupData> get barGroups => [
-        BarChartGroupData(
-          x: 0,
-          barRods: [
-            BarChartRodData(
-              toY: 20,
-              color: const Color(0xffD4A373),
-              width: 50,
-              borderRadius: BorderRadius.circular(16),
-            )
-          ],
-          showingTooltipIndicators: [0],
-        ),
-        BarChartGroupData(
-          x: 1,
-          barRods: [
-            BarChartRodData(
-              toY: 15,
-              color: const Color(0xffD9D9D9),
-              width: 50,
-              borderRadius: BorderRadius.circular(16),
-            )
-          ],
-          showingTooltipIndicators: [0],
-        ),
-      ];
 }
 
 class BarChartSample3 extends StatefulWidget {
