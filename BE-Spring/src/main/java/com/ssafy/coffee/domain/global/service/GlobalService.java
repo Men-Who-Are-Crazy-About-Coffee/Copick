@@ -1,20 +1,23 @@
-package com.ssafy.coffee.global.util;
+package com.ssafy.coffee.domain.global.service;
 
 import com.ssafy.coffee.domain.bean.entity.Bean;
 import com.ssafy.coffee.domain.bean.repository.BeanRepository;
+import com.ssafy.coffee.domain.global.entity.Global;
+import com.ssafy.coffee.domain.global.repository.GlobalRepository;
 import com.ssafy.coffee.domain.roasting.entity.Roasting;
 import com.ssafy.coffee.domain.roasting.repository.RoastingRepository;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.stereotype.Service;
 
-@Component
+@Service
 @RequiredArgsConstructor
-public class DataUtil {
+public class GlobalService {
+
     private final BeanRepository beanRepository;
     private final RoastingRepository roastingRepository;
-    public void initBean(){
+    private final GlobalRepository globalRepository;
+
+    public void addBasicData() {
         beanRepository.save(Bean.builder()
                 .type("Arabica")
                 .content("아라비카는 부드럽고 향기가 있으며, 로브스타종에 비해 단맛, 신맛, 감칠맛, 향이 뛰어나 가격이 더 비싸고, 카페인 함유량이 로부스타보다 적습니다.아라비카종은 해발 900~2000m 이상의 고지대에서 생산되며, 기계를 이용한 대량 재배와 수확이 불가능하기 때문에 사람손으로 일일이 심고 가꾸고 거두어야 합니다.")
@@ -31,8 +34,8 @@ public class DataUtil {
                 .content("리베리카는 아프리카의 리베리아가 원산지인데 쓴맛이 강하고 향이 적어 전체 약1% 수준으로 생산량이 적습니다.")
                 .image("https://jariyo-s3.s3.ap-northeast-2.amazonaws.com/bean/3/ee3e0ac0-d69b-47ae-b4b2-2454b98afe5a.png")
                 .build());
-    }
-    public void initRoasting(){
+
+
         roastingRepository.save(Roasting.builder()
                 .type("Light")
                 .content("이 단계의 원두를 가지고 커피를 추출하면 커피 본래의 맛을 느끼기 어렵습니다. " +
@@ -81,5 +84,16 @@ public class DataUtil {
                         "생두의 종류에 따라서는 타는 냄새가 나는 경우도 있으며, 로스팅 타임도 매우 짧습니다.")
                 .image("https://jariyo-s3.s3.ap-northeast-2.amazonaws.com/roasting/8/d80d8824-0de5-447e-934b-3c31ec4a982e.PNG")
                 .build());
+
+
+        globalRepository.save(Global.builder()
+                .key("global_nomal_bean")
+                .value(0L)
+                .build());
+        globalRepository.save(Global.builder()
+                .key("global_flaw_bean")
+                .value(0L)
+                .build());
+
     }
 }

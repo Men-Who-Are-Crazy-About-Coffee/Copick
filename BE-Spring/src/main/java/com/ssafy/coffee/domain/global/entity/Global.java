@@ -1,6 +1,7 @@
 package com.ssafy.coffee.domain.global.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,6 +17,11 @@ public class Global {
 
     @Setter
     @Column(name = "global_value", nullable = false)
-    private int value;
+    private Long value;
 
+    @Builder
+    public Global(String key, Long value) {
+        this.key = key;
+        this.value = value;
+    }
 }
