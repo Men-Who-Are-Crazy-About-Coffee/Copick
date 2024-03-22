@@ -1,6 +1,5 @@
 package com.ssafy.coffee;
 
-import com.ssafy.coffee.global.util.DataUtil;
 import jakarta.annotation.PostConstruct;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -17,7 +16,6 @@ public class CoffeeApplication {
     void started() {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     }
-    private static DataUtil dataUtil;
     public static void main(String[] args) {
         SpringApplication.run(CoffeeApplication.class, args);
     }

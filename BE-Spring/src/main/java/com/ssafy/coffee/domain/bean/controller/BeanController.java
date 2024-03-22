@@ -66,7 +66,7 @@ public class BeanController {
     public ResponseEntity<Object> updateBean(@PathVariable Long beanIndex,
                                              @ModelAttribute BeanUpdateRequestDto beanUpdateRequestDto) {
         beanService.updateBean(beanIndex, beanUpdateRequestDto);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build(); // 본문을 비워 응답
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Bean updated successfully");
     }
 
     @Operation(summary = "커피콩 삭제", description = "커피콩 정보를 삭제합니다.")
