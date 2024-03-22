@@ -1,3 +1,22 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:c2beba71c48ee5057b8c3a20ef901faefd58ff18c9b13fa5a473baa933068960
-size 669
+package com.ssafy.coffee;
+
+import jakarta.annotation.PostConstruct;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.scheduling.annotation.EnableScheduling;
+
+import java.util.TimeZone;
+
+@SpringBootApplication
+@EnableJpaAuditing
+@EnableScheduling
+public class CoffeeApplication {
+    @PostConstruct
+    void started() {
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+    }
+    public static void main(String[] args) {
+        SpringApplication.run(CoffeeApplication.class, args);
+    }
+}
