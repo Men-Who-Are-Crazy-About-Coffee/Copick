@@ -41,10 +41,10 @@ async def analyze_flaw(request: Request,
                         resultIndex: str = Form(...), file: UploadFile = File(...)):
         db_session = None
         try:
-            # authorization_header = request.headers.get('Authorization')
-            # access_token = authorization_header[7:]
+            authorization_header = request.headers.get('Authorization')
+            access_token = authorization_header[7:]
 
-            # payload = await functions.check_token(access_token)
+            payload = await functions.check_token(access_token)
             # member_index = payload["userIndex"]
 
             result_index = resultIndex[0]
