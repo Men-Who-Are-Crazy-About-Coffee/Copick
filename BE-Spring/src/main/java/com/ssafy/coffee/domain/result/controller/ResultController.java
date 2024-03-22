@@ -1,6 +1,5 @@
 package com.ssafy.coffee.domain.result.controller;
 
-import com.amazonaws.Response;
 import com.ssafy.coffee.domain.auth.dto.PrincipalMember;
 import com.ssafy.coffee.domain.recipe.entity.Recipe;
 import com.ssafy.coffee.domain.recipe.service.RecipeService;
@@ -11,7 +10,6 @@ import com.ssafy.coffee.domain.result.entity.Result;
 import com.ssafy.coffee.domain.result.entity.Sequence;
 import com.ssafy.coffee.domain.result.service.ResultService;
 import com.ssafy.coffee.domain.result.service.SequenceService;
-import com.ssafy.coffee.global.util.DataUtil;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,7 +18,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,15 +27,6 @@ public class ResultController {
     private final ResultService resultService;
     private final SequenceService sequenceService;
     private final RecipeService recipeService;
-    private final DataUtil dataUtil;
-
-    @GetMapping ("/setting")
-    public ResponseEntity<Object> addBasicData(){
-        dataUtil.initRoasting();
-        dataUtil.initBean();
-        return ResponseEntity.status(HttpStatus.OK).body("success");
-    }
-
     @GetMapping("/init")
     public ResponseEntity<Object> getNewResultIndex(@AuthenticationPrincipal PrincipalMember principalMember){
         Result result = resultService.insertEmptyResult(principalMember.getIndex());
