@@ -87,7 +87,7 @@ public class GlobalService {
 
 
         globalRepository.save(Global.builder()
-                .key("global_nomal_bean")
+                .key("global_normal_bean")
                 .value(0L)
                 .build());
         globalRepository.save(Global.builder()
