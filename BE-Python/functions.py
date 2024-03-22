@@ -2,7 +2,7 @@ import io
 from io import BytesIO
 import os
 import shutil
-from PIL import Image
+from PIL import Image, ImageDraw
 from fastapi import File, UploadFile;
 from jose import jwt,JWTError
 import cv2
@@ -10,6 +10,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 import extcolors
 import requests
+from ultralytics import YOLO
 
 async def check_token(token: str):
     try:
@@ -79,8 +80,22 @@ async def manufacture_image(file: UploadFile = File(...)):
         image_data = await file.read()
         image = Image.open(io.BytesIO(image_data))
         image = image.convert("RGB") #for safe
-        image = image.resize((300, 280)) 
 
+        model = YOLO('best.pt')
+        results = model(image)
+
+        draw = ImageDraw.Draw(image)
+        flaw_count = 0
+
+        # cls 텐서와 바운딩 박스 정보를 이용해 클래스가 0인 경우만 그리기
+        for i, box in enumerate(results[0].obb.xyxy):
+            # 클래스가 0이 아니면 다음 바운딩 박스로 넘어갑니다.
+            if results[0].obb.cls[i] != 0:
+                continue
+            x1, y1, x2, y2 = box.tolist()  # Tensor를 리스트로 변환
+            draw.rectangle([x1, y1, x2, y2], outline="red", width=3)
+            flaw_count += 1
+        normal_count = results[0].obb.cls.size()[0] - flaw_count
         #flaw 생성됨
 
         # 바이트 스트림으로 이미지 저장
@@ -89,6 +104,6 @@ async def manufacture_image(file: UploadFile = File(...)):
         await file.close()
         # 바이트 스트림을 반환
         img_byte_arr.seek(0)  # Seek to the start of the stream
-        return img_byte_arr,10,20
+        return img_byte_arr,normal_count,flaw_count
     except Exception as e:
         print("Error:",e)
