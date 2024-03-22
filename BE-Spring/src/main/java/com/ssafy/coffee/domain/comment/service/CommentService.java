@@ -63,7 +63,8 @@ public class CommentService {
 
 
     public CommentGetListResponseDto getCommentsByBoard(Long boardIndex, Pageable pageable) {
-        Page<Comment> comments = commentRepository.findAllByBoardIndex(boardIndex, pageable);
+
+        Page<Comment> comments = commentRepository.findAllByBoard(boardIndex, pageable);
         List<CommentGetResponseDto> commentGetResponseDtos = comments.stream()
                 .map(CommentGetResponseDto::new)
                 .toList();
