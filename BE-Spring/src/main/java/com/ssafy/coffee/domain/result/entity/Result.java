@@ -3,7 +3,7 @@ package com.ssafy.coffee.domain.result.entity;
 import com.ssafy.coffee.domain.bean.entity.Bean;
 import com.ssafy.coffee.domain.member.entity.Member;
 import com.ssafy.coffee.domain.roasting.entity.Roasting;
-import com.ssafy.coffee.global.entity.BaseObject;
+import com.ssafy.coffee.global.entity.AuditableBaseObject;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,16 +13,12 @@ import lombok.Setter;
 @Entity
 @Getter
 @NoArgsConstructor
-public class Result extends BaseObject {
+public class Result extends AuditableBaseObject {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "result_index", nullable = false)
     private Long index;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_index", nullable = false)
-    private Member member;
 
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
@@ -43,12 +39,12 @@ public class Result extends BaseObject {
     private int flawBeanCount;
 
     @Builder
-    public Result(Long index,Member member,Bean bean, Roasting roasting, int normalBeanCount,int flawBeanCount){
-        this.index=index;
-        this.member=member;
-        this.bean=bean;
-        this.roasting=roasting;
-        this.normalBeanCount=normalBeanCount;
-        this.flawBeanCount=flawBeanCount;
+    public Result(Long index, Member member, Bean bean, Roasting roasting, int normalBeanCount, int flawBeanCount) {
+        this.index = index;
+        this.bean = bean;
+        this.roasting = roasting;
+        this.normalBeanCount = normalBeanCount;
+        this.flawBeanCount = flawBeanCount;
+        setCreatedBy(member);
     }
 }

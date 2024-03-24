@@ -14,6 +14,6 @@ import java.util.Optional;
 @Repository
 public interface ResultRepository extends JpaRepository<Result, Long> {
     Optional<Result> findByIndex(Long index);
-    List<Result> findAllByMemberAndRegDateBetween(Member member, LocalDateTime startDate, LocalDateTime endDate);
+    List<Result> findAllByCreatedByAndRegDateBetween(Member member, LocalDateTime startDate, LocalDateTime endDate);
 
 }

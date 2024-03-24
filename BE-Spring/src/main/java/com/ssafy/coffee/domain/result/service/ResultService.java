@@ -42,9 +42,8 @@ public class ResultService {
         Member member = memberRepository.findByIndexAndIsDeletedFalse(memberIndex)
                 .orElseThrow(() -> new EntityNotFoundException("Member not found with index: " + memberIndex));
         Result result = resultRepository.save(Result.builder()
-                .member(member)
-                .roasting(roastingRepository.findByIndex(1L))
-                .bean(beanRepository.findByIndex(1L))
+                .roasting(roastingRepository.findById(1L).orElseThrow())
+                .bean(beanRepository.findById(1L).orElseThrow())
                 .flawBeanCount(0)
                 .normalBeanCount(0)
                 .build());
@@ -57,58 +56,58 @@ public class ResultService {
                 .orElseThrow(() -> new EntityNotFoundException("Result not found with index: " + resultIndex));
         List<Sequence> sequenceList = sequenceRepository.findAllByResultIndex(resultIndex);
         int resultFlawCnt = 0;
-        if(!sequenceList.isEmpty()) {
+        if (!sequenceList.isEmpty()) {
             for (Sequence s : sequenceList)
                 resultFlawCnt += s.getFlaw();
             result.setNormalBeanCount(sequenceList.get(sequenceList.size() - 1).getNormal());
             WebClient webClient = WebClient.builder().build();
             Long response = webClient.get()
-                    .uri(pythonURL+"/api/python/roasting?image_link="+sequenceList.get(sequenceList.size() - 1).getImage())
+                    .uri(pythonURL + "/api/python/roasting?image_link=" + sequenceList.get(sequenceList.size() - 1).getImage())
                     .retrieve().bodyToMono(Long.class).block();
-            result.setRoasting(roastingRepository.findByIndex(response));
+            result.setRoasting(roastingRepository.findById(response).orElseThrow());
         }
         result.setFlawBeanCount(resultFlawCnt);
 
         Global globalNormalBean = globalRepository.findById("global_normal_bean")
                 .orElseThrow(() -> new EntityNotFoundException("Global not found with key: global_normal_bean"));
-        globalNormalBean.setValue(globalNormalBean.getValue()+result.getNormalBeanCount());
+        globalNormalBean.setValue(globalNormalBean.getValue() + result.getNormalBeanCount());
         Global globalFlawBean = globalRepository.findById("global_flaw_bean")
                 .orElseThrow(() -> new EntityNotFoundException("Global not found with key: global_flaw_bean"));
-        globalFlawBean.setValue(globalNormalBean.getValue()+result.getFlawBeanCount());
+        globalFlawBean.setValue(globalNormalBean.getValue() + result.getFlawBeanCount());
 
         return result;
     }
 
-    public AnalyzeResponseDto getResultByRegDate(long memberIndex, LocalDateTime startDate, LocalDateTime endDate){
+    public AnalyzeResponseDto getResultByRegDate(long memberIndex, LocalDateTime startDate, LocalDateTime endDate) {
         Member accessMember = memberRepository.findByIndexAndIsDeletedFalse(memberIndex)
                 .orElseThrow(() -> new EntityNotFoundException("Member not found with index: " + memberIndex));
-        List<Result> resultList = resultRepository.findAllByMemberAndRegDateBetween(accessMember,startDate,endDate);
-        if(resultList.isEmpty())
-            throw new EntityNotFoundException("Result not found with date between "+startDate+"and"+endDate);
+        List<Result> resultList = resultRepository.findAllByCreatedByAndRegDateBetween(accessMember, startDate, endDate);
+        if (resultList.isEmpty())
+            throw new EntityNotFoundException("Result not found with date between " + startDate + "and" + endDate);
         double normalCount = 0;
         double flawCount = 0;
         double myNormalPercent = 0;
-        for(Result result:resultList){
-            normalCount+=result.getNormalBeanCount();
-            flawCount+=result.getFlawBeanCount();
+        for (Result result : resultList) {
+            normalCount += result.getNormalBeanCount();
+            flawCount += result.getFlawBeanCount();
         }
-        if(normalCount + flawCount > 0)
-            myNormalPercent = normalCount/(normalCount+flawCount);
-        myNormalPercent = Math.round(myNormalPercent*1000)/10.0;
+        if (normalCount + flawCount > 0)
+            myNormalPercent = normalCount / (normalCount + flawCount);
+        myNormalPercent = Math.round(myNormalPercent * 1000) / 10.0;
 
-        double globalNormalBean = (double)globalRepository.findById("global_normal_bean")
+        double globalNormalBean = (double) globalRepository.findById("global_normal_bean")
                 .orElseThrow(() -> new EntityNotFoundException("Global not found with key: global_normal_bean")).getValue();
-        double globalFlawBean = (double)globalRepository.findById("global_flaw_bean")
+        double globalFlawBean = (double) globalRepository.findById("global_flaw_bean")
                 .orElseThrow(() -> new EntityNotFoundException("Global not found with key: global_normal_bean")).getValue();
 
         double totalNormalPercent = 0;
-        if(globalNormalBean + globalFlawBean > 0)
-            totalNormalPercent = globalNormalBean/(globalNormalBean+globalFlawBean);
-        totalNormalPercent = Math.round(totalNormalPercent*1000)/10.0;
+        if (globalNormalBean + globalFlawBean > 0)
+            totalNormalPercent = globalNormalBean / (globalNormalBean + globalFlawBean);
+        totalNormalPercent = Math.round(totalNormalPercent * 1000) / 10.0;
 
         return AnalyzeResponseDto.builder()
                 .myNormalPercent(myNormalPercent)
-                .myFlawPercent((1000-myNormalPercent*10)/10.0)
+                .myFlawPercent((1000 - myNormalPercent * 10) / 10.0)
                 .totalNormalPercent(totalNormalPercent)
                 .build();
     }
