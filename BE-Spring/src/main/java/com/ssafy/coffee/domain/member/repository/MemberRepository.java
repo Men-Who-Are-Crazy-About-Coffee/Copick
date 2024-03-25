@@ -1,3 +1,19 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:4315b5e775bbd0e14547c60addc2a4524288a0e91661861ae78b8a969bbc4144
-size 705
+package com.ssafy.coffee.domain.member.repository;
+
+import com.ssafy.coffee.domain.member.entity.Member;
+import com.ssafy.coffee.global.constant.AuthType;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public interface MemberRepository extends JpaRepository<Member, Long> {
+    Optional<Member> findByIdAndAuthType(String id, AuthType authType);
+    Optional<Member> findById(String memberId);
+    Optional<Member> findByIndexAndIsDeletedFalse(Long index);
+
+    List<Member> findByIsDeletedTrueAndModDateBefore(LocalDateTime lastDeleteTime);
+}
