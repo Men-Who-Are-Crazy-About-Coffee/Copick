@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
 import 'package:fe/constants.dart';
 import 'package:fe/src/services/api_service.dart';
@@ -36,6 +38,30 @@ class _ProfilePageState extends State<ProfilePage> {
         _image = pickedFile;
       }
     });
+  }
+
+  Future sendImage(int? index, String? nickname) async {
+    String fileName = _image!.path.split('/').last;
+    Uint8List fileBytes = await _image!.readAsBytes();
+    FormData formData = FormData();
+    formData.fields.add(MapEntry("nickname", nickname ?? ""));
+    formData.files.add(MapEntry(
+      "image", MultipartFile.fromBytes(fileBytes, filename: fileName),
+      // 필요한 경우 여기에 다른 필드를 추가할 수 있습니다.
+    ));
+    try {
+      var response = await apiService.put(
+        '/api/member/$index', // 서버의 URL을 입력하세요
+        data: formData,
+      );
+
+      print("File upload response: $response");
+
+      // 성공적으로 업로드되면 서버의 응답을 처리합니다.
+    } on DioError catch (e) {
+      print("File upload error: $e");
+      // 오류가 발생하면 여기에서 처리합니다.
+    }
   }
 
   @override
@@ -112,35 +138,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                     : OutlinedButton(
                                         onPressed: () async {
                                           await getImage();
-                                          Future sendImage() async {
-                                            print("안녕");
-                                            String fileName =
-                                                _image!.path.split('/').last;
-                                            FormData formData =
-                                                FormData.fromMap({
-                                              "image":
-                                                  await MultipartFile.fromFile(
-                                                      _image!.path,
-                                                      filename: fileName),
-                                              // 필요한 경우 여기에 다른 필드를 추가할 수 있습니다.
-                                            });
-                                            formData.fields.add(MapEntry(
-                                                "nickname",
-                                                user.user.nickname ?? ""));
-                                            try {
-                                              var response =
-                                                  await apiService.post(
-                                                '/api/member/${user.user.index}', // 서버의 URL을 입력하세요
-                                                data: formData,
-                                              );
-                                              print(
-                                                  "File upload response: $response");
-                                              // 성공적으로 업로드되면 서버의 응답을 처리합니다.
-                                            } on DioError catch (e) {
-                                              print("File upload error: $e");
-                                              // 오류가 발생하면 여기에서 처리합니다.
-                                            }
-                                          }
+                                          await sendImage(user.user.index,
+                                              user.user.nickname);
                                         },
                                         child: Stack(
                                           children: [
@@ -226,9 +225,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     Row(
                       children: [
                         TextButton(
-                          onPressed: () {
-                            print('TextButton이 눌렸습니다.');
-                          },
+                          onPressed: () {},
                           child: const Text("내 게시글 보기"),
                         ),
                       ],
@@ -256,9 +253,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     Row(
                       children: [
                         TextButton(
-                          onPressed: () {
-                            print('TextButton이 눌렸습니다.');
-                          },
+                          onPressed: () {},
                           child: const Text("내가 좋아요 한 글 보기"),
                         ),
                       ],

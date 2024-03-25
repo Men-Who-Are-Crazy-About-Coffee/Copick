@@ -47,6 +47,7 @@ class BoardProvider extends ChangeNotifier {
         Response response = await apiService.get(
             '/api/board/search?domain=GENERAL&size=$size&page=$currentIndex');
         var boards = response.data['list'];
+        print(boards);
         for (var board in boards) {
           String userImg = "";
           board['userProfileImage'] == null

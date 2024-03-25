@@ -75,6 +75,7 @@ class ApiService {
 
   Future<Response> post(String url, {dynamic data}) async {
     Response response;
+
     try {
       response = await dio.post(baseUrl + url, data: data);
     } on Error catch (e) {
