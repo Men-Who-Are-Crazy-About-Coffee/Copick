@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from jose import JWTError
 from sqlalchemy import text
-import functions, s3_utils, db_utils
+import functions, s3_utils, DB_utils
 from PIL import Image
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -26,7 +26,7 @@ app.add_middleware(
 )
 
 s3_connection = s3_utils.s3_connection()
-db_session_maker = db_utils.posgreSQL_connection()
+db_session_maker = DB_utils.posgreSQL_connection()
 
 @app.get("/")
 def read_root():
@@ -55,13 +55,13 @@ async def analyze_flaw(request: Request,
             s3_path = os.environ["AWS_S3_URL"]+"/"+file_path
 
             db_session = db_session_maker()
-            db_utils.posgreSQL_save_sequence(result_index,file_name,result_normal,result_flaw,db_session)
+            DB_utils.posgreSQL_save_sequence(result_index,file_name,result_normal,result_flaw,db_session)
                     
             s3_utils.s3_save_sequence(result_index,image_byte_stream,file_name,s3_connection)
 
             for cropped_image in cropped_images:
                 cropped_file_name = str(uuid.uuid4())+".jpg"
-                db_utils.posgreSQL_save_flaw(result_index,cropped_file_name,db_session)
+                DB_utils.posgreSQL_save_flaw(result_index,cropped_file_name,db_session)
                 s3_utils.s3_save_flaw(result_index,cropped_image,cropped_file_name,s3_connection)
 
             db_session.commit()
