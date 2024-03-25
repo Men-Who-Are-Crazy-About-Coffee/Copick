@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -48,7 +49,7 @@ public class MemberController {
     @ApiResponse(responseCode = "404", description = "제공된 memberIndex로 멤버를 찾을 수 없음")
     @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터")
     @ApiResponse(responseCode = "500", description = "서버 내부 오류")
-    @PutMapping("/{memberIndex}")
+    @PutMapping(path = "/{memberIndex}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Object> updateMember(@PathVariable Long memberIndex,
                                                @ModelAttribute MemberUpdateRequestDto memberUpdateRequestDto) {
         memberService.updateMember(memberIndex, memberUpdateRequestDto);
