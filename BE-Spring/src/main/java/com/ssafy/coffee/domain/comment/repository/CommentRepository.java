@@ -1,15 +1,3 @@
-package com.ssafy.coffee.domain.comment.repository;
-
-import com.ssafy.coffee.domain.comment.entity.Comment;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
-@Repository
-public interface CommentRepository extends JpaRepository<Comment, Long> {
-
-    Page<Comment> findAllByBoardIndex(Long boardIndex, Pageable pageable);
-
-    Page<Comment> findAllByCreatedByIndex(Long userIndex, Pageable pageable);
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:1a39c21cbde96f7fec592412cd84ce50f227ca2b2056124c0fd04cd761f9823e
+size 646
