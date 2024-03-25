@@ -3,6 +3,7 @@ import 'package:fe/src/services/api_service.dart';
 import 'package:fe/src/services/delete_storage.dart';
 import 'package:fe/src/services/user_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -89,14 +90,35 @@ class _ProfilePageState extends State<ProfilePage> {
                                   shape: BoxShape
                                       .circle, // 여기에 circle을 추가하여 더 명확한 원형을 강조할 수도 있습니다.
                                 ),
-                                child: ClipOval(
-                                  child: Image.network(
-                                    user.user.profileImage == ""
-                                        ? defaultImg
-                                        : user.user.profileImage!,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
+                                child: !isEdited
+                                    ? ClipOval(
+                                        child: Image.network(
+                                          user.user.profileImage == ""
+                                              ? defaultImg
+                                              : user.user.profileImage!,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      )
+                                    : OutlinedButton(
+                                        onPressed: () {},
+                                        child: Stack(
+                                          children: [
+                                            ClipOval(
+                                              child: Image.network(
+                                                user.user.profileImage == ""
+                                                    ? defaultImg
+                                                    : user.user.profileImage!,
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                            const Positioned(
+                                              height: 80,
+                                              width: 80,
+                                              child: Icon(Icons.camera_alt),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
                               ),
                             ),
                           ),
@@ -112,6 +134,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                     child: Row(
                                       children: [
                                         Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             const SizedBox(
                                               height: 20,
