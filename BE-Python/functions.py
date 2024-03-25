@@ -86,24 +86,37 @@ async def manufacture_image(file: UploadFile = File(...)):
 
         draw = ImageDraw.Draw(image)
         flaw_count = 0
+        cropped_images = []
 
-        # cls 텐서와 바운딩 박스 정보를 이용해 클래스가 0인 경우만 그리기
+        # flaw 이미지 자르기
         for i, box in enumerate(results[0].obb.xyxy):
             # 클래스가 0이 아니면 다음 바운딩 박스로 넘어갑니다.
             if results[0].obb.cls[i] != 0:
                 continue
             x1, y1, x2, y2 = box.tolist()  # Tensor를 리스트로 변환
+            #flaw 크롭된 이미지 생성
+            crop = image.crop((x1, y1, x2, y2))
+            # 크롭된 이미지를 바이트 스트림으로 변환
+            img_byte_arr = io.BytesIO()
+            crop.save(img_byte_arr, format='JPEG')
+            img_byte_arr.seek(0)  # 스트림의 시작 위치로 커서 이동
+            cropped_images.append(img_byte_arr)  # 리스트에 추가
+        # 이미지에 박스 그리기
+        for i, box in enumerate(results[0].obb.xyxy):   # cls 텐서와 바운딩 박스 정보를 이용해 클래스가 0인 경우만 그리기
+            # 클래스가 0이 아니면 다음 바운딩 박스로 넘어갑니다.
+            if results[0].obb.cls[i] != 0:
+                continue
+            x1, y1, x2, y2 = box.tolist()  # Tensor를 리스트로 변환
+
             draw.rectangle([x1, y1, x2, y2], outline="red", width=3)
             flaw_count += 1
         normal_count = results[0].obb.cls.size()[0] - flaw_count
-        #flaw 생성됨
-
         # 바이트 스트림으로 이미지 저장
         img_byte_arr = io.BytesIO()
         image.save(img_byte_arr, format='JPEG')
         await file.close()
         # 바이트 스트림을 반환
         img_byte_arr.seek(0)  # Seek to the start of the stream
-        return img_byte_arr,normal_count,flaw_count
+        return img_byte_arr,normal_count,flaw_count,cropped_images
     except Exception as e:
-        print("Error:",e)
+        print("Error:",e)   
