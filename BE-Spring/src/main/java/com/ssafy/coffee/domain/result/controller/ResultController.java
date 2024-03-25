@@ -5,9 +5,11 @@ import com.ssafy.coffee.domain.recipe.entity.Recipe;
 import com.ssafy.coffee.domain.recipe.service.RecipeService;
 import com.ssafy.coffee.domain.result.dto.AnalyzeRequestDto;
 import com.ssafy.coffee.domain.result.dto.AnalyzeResponseDto;
+import com.ssafy.coffee.domain.result.dto.FlawResponseDto;
 import com.ssafy.coffee.domain.result.dto.ResultResponseDto;
 import com.ssafy.coffee.domain.result.entity.Result;
 import com.ssafy.coffee.domain.result.entity.Sequence;
+import com.ssafy.coffee.domain.result.service.FlawService;
 import com.ssafy.coffee.domain.result.service.ResultService;
 import com.ssafy.coffee.domain.result.service.SequenceService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,6 +29,7 @@ public class ResultController {
     private final ResultService resultService;
     private final SequenceService sequenceService;
     private final RecipeService recipeService;
+    private final FlawService flawService;
     @GetMapping("/init")
     public ResponseEntity<Object> getNewResultIndex(@AuthenticationPrincipal PrincipalMember principalMember){
         Result result = resultService.insertEmptyResult(principalMember.getIndex());
@@ -56,5 +59,12 @@ public class ResultController {
                 resultService.getResultByRegDate(principalMember.getIndex()
                 ,analyzeRequestDto.getStartDate().atStartOfDay()
                 ,analyzeRequestDto.getEndDate().plusDays(1).atStartOfDay()));
+    }
+
+    @GetMapping("/flaws")
+    public ResponseEntity<Object> getFlaws(@AuthenticationPrincipal PrincipalMember principalMember){
+        return ResponseEntity.status(HttpStatus.OK).body(
+                flawService.getFlawListByMemberIndex(principalMember.getIndex())
+        );
     }
 }
