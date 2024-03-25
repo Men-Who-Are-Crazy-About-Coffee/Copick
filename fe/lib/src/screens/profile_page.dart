@@ -73,14 +73,8 @@ class _ProfilePageState extends State<ProfilePage> {
     }
 
     return Scaffold(
-<<<<<<< HEAD
-      appBar: AppBar(
-        title: const Text("프로필"),
-      ),
-=======
       appBar:
           AppBar(automaticallyImplyLeading: false, title: const Text("프로필")),
->>>>>>> feature-FE/closeapp
       body: SingleChildScrollView(
         child: Center(
           child: Column(
