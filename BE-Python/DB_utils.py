@@ -1,13 +1,3 @@
-import os
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-
-def posgreSQL_connection(): # postgreSQL 세션메이커 생성
-    try:
-        DB_URL = "postgresql://"+os.environ["POSTGRESQL_USERNAME"]+":"+os.environ["POSTGRESQL_PASSWORD"]+"@"+os.environ["POSTGRESQL_HOST_URL"]+"/"+os.environ["POSTGRESQL_DB_NAME"]
-        engine = create_engine(DB_URL)
-        postgreSQL = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-        print("postgreSQL connected!")
-        return postgreSQL
-    except Exception as e:
-        print("Error:",e)
+version https://git-lfs.github.com/spec/v1
+oid sha256:5b67b6976de99a7b128f85946cb2709ae7d2c7aef9f511940604ff19d60b8858
+size 1531
