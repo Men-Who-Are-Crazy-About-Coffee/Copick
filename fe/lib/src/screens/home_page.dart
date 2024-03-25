@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart';
+import 'package:fe/constants.dart';
 import 'package:fe/src/services/api_service.dart';
 import 'package:fe/src/services/user_provider.dart';
 import 'package:flutter/material.dart';
@@ -18,11 +19,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  ThemeColors themeColors = ThemeColors();
   DateTimeRange? dateRange; // 선택된 날짜 범위를 저장할 변수
   double normal = 0;
   double flaw = 0;
   double other = 0;
-
+  String formattedDateRange = '날짜를 선택해주세요.';
   // 날짜 범위 선택기를 표시하는 함수
   Future<void> _pickDateRange(BuildContext context) async {
     final DateTimeRange? newDateRange = await showDateRangePicker(
@@ -35,7 +37,21 @@ class _HomePageState extends State<HomePage> {
     if (newDateRange != null) {
       setState(() {
         dateRange = newDateRange;
+        updateFormattedDateRange();
       });
+    }
+  }
+
+  void updateFormattedDateRange() {
+    if (dateRange != null) {
+      final DateFormat formatter = DateFormat('yyyy-MM-dd');
+      final String start = formatter.format(dateRange!.start);
+      final String end = formatter.format(dateRange!.end);
+      formattedDateRange = '$start - $end'; // 상태 업데이트
+
+      sendData(start, end, context); // 날짜가 설정될 때만 sendData 호출
+    } else {
+      formattedDateRange = '날짜를 선택해주세요.';
     }
   }
 
@@ -62,10 +78,13 @@ class _HomePageState extends State<HomePage> {
           "endDate": endDate,
         },
       );
+
       Map<String, dynamic> responseMap = response.data;
+
       setState(() {
         normal = responseMap["myNormalPercent"];
         flaw = responseMap["myFlawPercent"];
+        other = responseMap["totalNormalPercent"];
       });
       // 정상적인 응답 처리
     } on DioException catch (e) {
@@ -114,6 +133,8 @@ class _HomePageState extends State<HomePage> {
     var user = Provider.of<UserProvider>(context);
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: themeColors.color5,
         title: const Text('로스팅 통계'),
         actions: <Widget>[
           IconButton(
@@ -127,6 +148,9 @@ class _HomePageState extends State<HomePage> {
           color: Colors.white,
           child: Column(
             children: [
+              const SizedBox(
+                height: 30,
+              ),
               Text(
                 '현재까지 ${user.user.nickname}님이 촬영한 원두 분석 통계에요.',
                 style: const TextStyle(
@@ -140,7 +164,7 @@ class _HomePageState extends State<HomePage> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  _getFormattedDateRange(),
+                  formattedDateRange,
                   style: const TextStyle(fontSize: 14),
                 ),
               ),
@@ -152,13 +176,16 @@ class _HomePageState extends State<HomePage> {
                   : const SizedBox(
                       height: 80,
                     ),
-              BarChartSample3(
-                normal: normal,
-                other: other,
-              ),
-              const SizedBox(
-                height: 30,
-              ),
+              normal != 0 && flaw != 0
+                  ? BarChartSample3(
+                      normal: normal,
+                      other: other,
+                    )
+                  : const Center(
+                      child: SizedBox(
+                        height: 30,
+                      ),
+                    ),
             ],
           ),
         ),

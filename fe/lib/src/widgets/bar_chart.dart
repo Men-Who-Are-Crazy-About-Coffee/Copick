@@ -6,7 +6,6 @@ class _BarChart extends StatefulWidget {
   final double endValue;
   final double otherValue;
   const _BarChart({
-    super.key,
     required this.endValue,
     required this.otherValue,
   });
@@ -25,7 +24,7 @@ class _BarChartState extends State<_BarChart>
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: const Duration(seconds: 2), // 애니메이션 지속 시간
+      duration: const Duration(seconds: 4), // 애니메이션 지속 시간
       vsync: this,
     );
 
@@ -132,7 +131,7 @@ class _BarChartState extends State<_BarChart>
                   ? const Text('다른 사용자들의 평균과 동일해요.')
                   : widget.endValue > widget.otherValue
                       ? Text(
-                          '다른 사용자들의 평균보다 ${widget.endValue - widget.otherValue}%p만큼 높아요.')
+                          '다른 사용자들의 평균보다 ${(widget.endValue * 10 - widget.otherValue * 10) / 10}%p만큼 높아요.')
                       : Text(
                           '다른 사용자들의 평균보다 ${widget.otherValue - widget.endValue}%p만큼 낮아요.'),
           const SizedBox(
@@ -156,7 +155,7 @@ class _BarChartState extends State<_BarChart>
             int rodIndex,
           ) {
             return BarTooltipItem(
-              rod.toY.round().toString(),
+              rod.toY.toStringAsFixed(1),
               const TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.bold,
@@ -216,6 +215,52 @@ class _BarChartState extends State<_BarChart>
   FlBorderData get borderData => FlBorderData(
         show: false,
       );
+
+  @override
+  void didUpdateWidget(covariant _BarChart oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // normal과 otherValue가 변경되었는지 확인
+    if (widget.endValue != oldWidget.endValue ||
+        widget.otherValue != oldWidget.otherValue) {
+      // 애니메이션 값을 재설정
+      _resetAnimations();
+    }
+  }
+
+  void _resetAnimations() {
+    // 애니메이션 컨트롤러 재설정
+    _animationController.reset();
+
+    // 첫 번째 바의 애니메이션 재설정
+    _firstBarAnimation =
+        Tween<double>(begin: 0, end: widget.otherValue).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: const Interval(
+          0.0, 0.5, // 애니메이션 지속 시간의 절반동안 실행
+          curve: Curves.easeOut,
+        ),
+      ),
+    )..addListener(() {
+            setState(() {}); // UI 업데이트를 위해 setState 호출
+          });
+
+    // 두 번째 바의 애니메이션 재설정
+    _secondBarAnimation = Tween<double>(begin: 0, end: widget.endValue).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: const Interval(
+          0.5, 1.0, // 애니메이션 지속 시간의 나머지 절반동안 실행
+          curve: Curves.easeOut,
+        ),
+      ),
+    )..addListener(() {
+        setState(() {}); // UI 업데이트를 위해 setState 호출
+      });
+
+    // 애니메이션 재시작
+    _animationController.forward();
+  }
 }
 
 class BarChartSample3 extends StatefulWidget {

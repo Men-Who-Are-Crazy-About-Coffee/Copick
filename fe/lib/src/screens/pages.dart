@@ -9,7 +9,9 @@ import 'package:fe/src/screens/home_page.dart';
 import 'package:fe/src/screens/profile_page.dart';
 import 'package:fe/src/services/user_provider.dart';
 import 'package:fe/src/widgets/bottomnavbar.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
 
@@ -60,23 +62,53 @@ class _PagesState extends State<Pages> {
 
     ThemeColors themeColors = ThemeColors();
     // 로그인되지 않았을 경우 로그인 페이지를 리스트에 추가
-    return ChangeNotifierProvider(
-      create: (context) => UserProvider()..fetchUserData(),
-      child: Scaffold(
-        body: widgetOptions.elementAt(_selectedIndex),
-        floatingActionButton: SizedBox(
-          width: 80,
-          height: 80,
-          child: FloatingActionButton(
-            backgroundColor: themeColors.color5,
-            child: const Icon(Icons.camera, size: 40),
-            onPressed: () => onItemTapped(2),
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) => {
+        kIsWeb
+            ? const Text('ndkdkdk')
+            : showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('알림'),
+                    content: const Text('앱을 종료할까요?'),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () =>
+                            Navigator.of(context).pop(false), // 앱을 종료하지 않음
+                        child: const Text('아니요'),
+                      ),
+                      TextButton(
+                        onPressed: () => {
+                          SystemNavigator.pop(),
+                        }, // 앱 종료
+                        child: const Text('예'),
+                      ),
+                    ],
+                  );
+                },
+              )
+      },
+      child: ChangeNotifierProvider(
+        create: (context) => UserProvider()..fetchUserData(),
+        child: Scaffold(
+          body: widgetOptions.elementAt(_selectedIndex),
+          floatingActionButton: SizedBox(
+            width: 80,
+            height: 80,
+            child: FloatingActionButton(
+              backgroundColor: themeColors.color5,
+              child: const Icon(Icons.camera, size: 40),
+              onPressed: () => onItemTapped(2),
+            ),
           ),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        bottomNavigationBar: BottomNavbar(
-          currentIndex: _selectedIndex,
-          onItemTapped: onItemTapped,
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerDocked,
+          bottomNavigationBar: BottomNavbar(
+            currentIndex: _selectedIndex,
+            onItemTapped: onItemTapped,
+          ),
         ),
       ),
     );
