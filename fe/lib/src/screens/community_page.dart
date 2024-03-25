@@ -33,7 +33,10 @@ class _CommunityPageState extends State<CommunityPage> {
       create: (_) => BoardProvider()..started(),
       child: Consumer<BoardProvider>(builder: (context, value, child) {
         return Scaffold(
-          appBar: AppBar(title: const Text('자유 게시판')),
+          appBar: AppBar(
+            title: const Text('자유 게시판'),
+            automaticallyImplyLeading: false,
+          ),
           body: Center(
             child: SizedBox(
               width: 500,

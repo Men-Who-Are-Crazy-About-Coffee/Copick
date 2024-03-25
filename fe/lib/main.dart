@@ -1,4 +1,5 @@
 import 'package:camera/camera.dart';
+import 'package:fe/constants.dart';
 import 'package:fe/routes.dart';
 import 'package:fe/src/services/camera_provider.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,7 @@ void main() async {
   final firstCamera = cameras.first;
   await dotenv.load(fileName: ".env");
 
-  return runApp(
+  runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(

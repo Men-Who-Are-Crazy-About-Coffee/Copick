@@ -27,6 +27,26 @@ class _LoginState extends State<Login> {
   }
 
   Future<void> login(String id, String password) async {
+    if (id.isEmpty || password.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('알림'),
+            content: const Text('아이디와 비밀번호를 모두 입력해야 해요.'),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('확인'),
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+              ),
+            ],
+          );
+        },
+      );
+      return; // Exit the function if ID or password is empty
+    }
     ApiService apiService = ApiService();
     try {
       Response response = await apiService.post('/api/auth/login', data: {
@@ -39,8 +59,24 @@ class _LoginState extends State<Login> {
       await storage.write(
           key: "REFRESH_TOKEN", value: responseMap["refreshToken"]);
       Navigator.pushNamed(context, '/pages');
-    } catch (e) {
-      print("로그인실패");
+    } on DioException catch (e) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('알림'),
+            content: const Text('아이디, 비밀번호가 일치하지 않거나 없는 회원이에요.'),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('확인'),
+                onPressed: () {
+                  Navigator.of(context).pop(); // 대화상자 닫기
+                },
+              ),
+            ],
+          );
+        },
+      );
     }
 
     // print(response.data);

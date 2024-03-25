@@ -72,15 +72,8 @@ class _ProfilePageState extends State<ProfilePage> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            tooltip: "Back",
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-          title: const Text("프로필")),
+      appBar:
+          AppBar(automaticallyImplyLeading: false, title: const Text("프로필")),
       body: SingleChildScrollView(
         child: Center(
           child: Column(
