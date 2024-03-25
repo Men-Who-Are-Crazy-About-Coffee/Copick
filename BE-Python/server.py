@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from jose import JWTError
 from sqlalchemy import text
-import functions, s3_utils, DB_utils
+import functions, s3_utils, db_utils
 from PIL import Image
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -25,8 +25,8 @@ app.add_middleware(
     allow_headers=["*"],	# 허용할 http header 목록을 설정할 수 있으며 Content-Type, Accept, Accept-Language, Content-Language은 항상 허용된다.
 )
 
-s3 = s3_utils.s3_connection()
-db_session_maker = DB_utils.posgreSQL_connection()
+s3_connection = s3_utils.s3_connection()
+db_session_maker = db_utils.posgreSQL_connection()
 
 @app.get("/")
 def read_root():
@@ -41,24 +41,32 @@ async def analyze_flaw(request: Request,
                         resultIndex: str = Form(...), file: UploadFile = File(...)):
         db_session = None
         try:
-            authorization_header = request.headers.get('Authorization')
-            access_token = authorization_header[7:]
+            # authorization_header = request.headers.get('Authorization')
+            # access_token = authorization_header[7:]
 
-            payload = await functions.check_token(access_token)
+            # await functions.check_token(access_token)
             # member_index = payload["userIndex"]
 
             result_index = resultIndex[0]
             
-            image_byte_stream,result_normal,result_flaw = await functions.manufacture_image(file)
+            image_byte_stream,result_normal,result_flaw,cropped_images = await functions.manufacture_image(file)
             file_name = str(uuid.uuid4())+".jpg"
             file_path = "result/"+result_index+"/"+file_name
             s3_path = os.environ["AWS_S3_URL"]+"/"+file_path
 
             db_session = db_session_maker()
-            db_session.execute(text("INSERT INTO sequence(result_index,sequence_image,result_normal,result_flaw) VALUES(%s,\'%s\',%d,%d)"
-                %(result_index,s3_path,result_normal,result_flaw)))
+            db_utils.posgreSQL_save_sequence(result_index,file_name,result_normal,result_flaw,db_session)
+            # db_session.execute(text("INSERT INTO sequence(result_index,sequence_image,result_normal,result_flaw) VALUES(%s,\'%s\',%d,%d)"
+            #     %(result_index,s3_path,result_normal,result_flaw)))
                     
-            s3.upload_fileobj(image_byte_stream,os.environ["AWS_S3_BUCKET"],file_path)
+            s3_utils.s3_save_sequence(result_index,image_byte_stream,file_name,s3_connection)
+            # s3_connection.upload_fileobj(image_byte_stream,os.environ["AWS_S3_BUCKET"],file_path)
+
+            for cropped_image in cropped_images:
+                cropped_file_name = str(uuid.uuid4())+".jpg"
+                db_utils.posgreSQL_save_flaw(result_index,cropped_file_name,db_session)
+                s3_utils.s3_save_flaw(result_index,cropped_image,cropped_file_name,s3_connection)
+                # s3_connection.upload_fileobj(cropped_image,os.environ["AWS_S3_BUCKET"],"flaw/"+str(uuid.uuid4())+".jpg")
 
             db_session.commit()
             return s3_path
