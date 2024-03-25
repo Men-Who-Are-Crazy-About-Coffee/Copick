@@ -8,7 +8,6 @@ import lombok.*;
 
 @Entity
 @Getter
-@ToString
 @NoArgsConstructor
 public class Member extends BaseObject {
 

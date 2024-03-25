@@ -21,7 +21,7 @@ public class Roasting {
     private String type;
 
     @Setter
-    @Column(name = "roasting_content", nullable = false, length = 255)
+    @Column(name = "roasting_content", nullable = false, length = 4000)
     private String content;
 
     @Setter

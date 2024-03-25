@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface BeanRepository extends JpaRepository<Bean, Long> {
-    <Optional> Bean findByIndex(Long index);
+
 }

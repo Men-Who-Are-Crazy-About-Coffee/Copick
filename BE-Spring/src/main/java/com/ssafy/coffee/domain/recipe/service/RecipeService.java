@@ -38,8 +38,8 @@ public class RecipeService {
 
         Recipe recipe = recipeRepository.save(
                 Recipe.builder()
-                        .roasting(roastingRepository.findByIndex(recipePostRequestDto.getBeanIndex()))
-                        .bean(beanRepository.findByIndex(recipePostRequestDto.getBeanIndex()))
+                        .roasting(roastingRepository.findById(recipePostRequestDto.getBeanIndex()).orElseThrow())
+                        .bean(beanRepository.findById(recipePostRequestDto.getBeanIndex()).orElseThrow())
                         .title(recipePostRequestDto.getTitle())
                         .content("")
                         .build()

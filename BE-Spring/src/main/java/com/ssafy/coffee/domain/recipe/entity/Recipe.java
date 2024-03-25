@@ -12,7 +12,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @NoArgsConstructor
-public class Recipe extends AuditableBaseObject {
+public class Recipe {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,7 +34,7 @@ public class Recipe extends AuditableBaseObject {
     private String title;
 
     @Setter
-    @Column(name = "recipe_content", nullable = false, length = 255)
+    @Column(name = "recipe_content", nullable = false, length = 4000)
     private String content;
 
     @Builder
