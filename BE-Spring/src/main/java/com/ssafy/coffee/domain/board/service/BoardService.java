@@ -11,6 +11,7 @@ import com.ssafy.coffee.domain.board.entity.BoardLike;
 import com.ssafy.coffee.domain.board.repository.BoardImageRepository;
 import com.ssafy.coffee.domain.board.repository.BoardLikeRepository;
 import com.ssafy.coffee.domain.board.repository.BoardRepository;
+import com.ssafy.coffee.domain.comment.repository.CommentRepository;
 import com.ssafy.coffee.domain.member.entity.Member;
 import com.ssafy.coffee.domain.s3.service.S3Service;
 import com.ssafy.coffee.global.constant.Role;
@@ -30,6 +31,7 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final BoardImageRepository boardImageRepository;
     private final BoardLikeRepository boardLikeRepository;
+    private final CommentRepository commentRepository;
     private final S3Service s3Service;
 
     @Transactional
@@ -67,8 +69,9 @@ public class BoardService {
 
         boolean liked = boardLikeRepository.existsByBoardAndMember(board, member);
         long likesCount = boardLikeRepository.countByBoard(board);
+        long commentCount = commentRepository.countByBoard(board);
 
-        return new BoardGetResponseDto(board, images, liked, likesCount);
+        return new BoardGetResponseDto(board, images, liked, likesCount, commentCount);
     }
 
 
@@ -84,8 +87,9 @@ public class BoardService {
 
             boolean liked = boardLikeRepository.existsByBoardAndMember(board, member);
             long likesCount = boardLikeRepository.countByBoard(board);
+            long commentCount = commentRepository.countByBoard(board);
 
-            return new BoardGetResponseDto(board, imageUrls, liked, likesCount);
+            return new BoardGetResponseDto(board, imageUrls, liked, likesCount, commentCount);
         }).collect(Collectors.toList());
 
         return new BoardGetListResponseDto(content, boards.getTotalPages(), boards.getTotalElements());
@@ -99,8 +103,9 @@ public class BoardService {
 
             boolean liked = boardLikeRepository.existsByBoardAndMember(board, member);
             long likesCount = boardLikeRepository.countByBoard(board);
+            long commentCount = commentRepository.countByBoard(board);
 
-            return new BoardGetResponseDto(board, imageUrls, liked, likesCount);
+            return new BoardGetResponseDto(board, imageUrls, liked, likesCount, commentCount);
         }).collect(Collectors.toList());
 
         return new BoardGetListResponseDto(content, boards.getTotalPages(), boards.getTotalElements());
@@ -115,8 +120,9 @@ public class BoardService {
 
             boolean liked = boardLikeRepository.existsByBoardAndMember(board, member);
             long likesCount = boardLikeRepository.countByBoard(board);
+            long commentCount = commentRepository.countByBoard(board);
 
-            return new BoardGetResponseDto(board, imageUrls, liked, likesCount);
+            return new BoardGetResponseDto(board, imageUrls, liked, likesCount, commentCount);
         }).collect(Collectors.toList());
 
         return new BoardGetListResponseDto(content, likes.getTotalPages(), likes.getTotalElements());
