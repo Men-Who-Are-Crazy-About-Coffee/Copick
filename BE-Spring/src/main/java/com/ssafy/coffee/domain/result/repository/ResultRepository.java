@@ -1,3 +1,19 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:8acbeda85e409e386b3e4c8cb9711b7a7f8f8231ea61433b82d59ecb63d3f2d9
-size 681
+package com.ssafy.coffee.domain.result.repository;
+
+import com.ssafy.coffee.domain.member.entity.Member;
+import com.ssafy.coffee.domain.result.entity.Result;
+import com.ssafy.coffee.global.constant.AuthType;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public interface ResultRepository extends JpaRepository<Result, Long> {
+    Optional<Result> findByIndex(Long index);
+    List<Result> findAllByCreatedByAndRegDateBetween(Member member, LocalDateTime startDate, LocalDateTime endDate);
+
+}

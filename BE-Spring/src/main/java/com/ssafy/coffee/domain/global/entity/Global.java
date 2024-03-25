@@ -1,3 +1,27 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:56edf38431e7da26f210484b3af3b18314c424b2d1dbc64e292786985bf242fb
-size 527
+package com.ssafy.coffee.domain.global.entity;
+
+import jakarta.persistence.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Entity
+@Getter
+@NoArgsConstructor
+public class Global {
+
+    @Id
+    @Column(name = "global_key", nullable = false)
+    private String key;
+
+    @Setter
+    @Column(name = "global_value", nullable = false)
+    private Long value;
+
+    @Builder
+    public Global(String key, Long value) {
+        this.key = key;
+        this.value = value;
+    }
+}
