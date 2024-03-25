@@ -120,3 +120,44 @@ async def manufacture_image(file: UploadFile = File(...)):
         return img_byte_arr,normal_count,flaw_count,cropped_images
     except Exception as e:
         print("Error:",e)   
+
+def get_stream_video():
+    # camera 정의
+    cam = cv2.VideoCapture(0)
+
+    model = YOLO('best.pt')  # 모델을 루프 바깥에서 한 번만 로드
+
+    while True:
+        # 카메라 값 불러오기
+        success, frame = cam.read()
+
+        if not success:
+            break
+        else:
+            ret, buffer = cv2.imencode('.jpg', frame)
+            image = Image.open(io.BytesIO(buffer))
+            image = image.convert("RGB")  # for safe
+
+            results = model(image)
+
+            draw = ImageDraw.Draw(image)
+
+            # 이미지에 박스 그리기
+            for i, box in enumerate(results[0].obb.xyxy):
+                # 클래스가 0이 아니면 다음 바운딩 박스로 넘어갑니다.
+                if results[0].obb.cls[i] != 0:
+                    continue
+                x1, y1, x2, y2 = box.tolist()  # Tensor를 리스트로 변환
+                draw.rectangle([x1, y1, x2, y2], outline="red", width=3)
+
+            img_byte_arr = io.BytesIO()
+            image.save(img_byte_arr, format='JPEG')
+            img_byte_arr.seek(0)  # 스트림의 시작 위치로 커서 이동
+
+            # `frame`에 최종 이미지의 바이트 데이터를 할당
+            frame = img_byte_arr.getvalue()  # 수정된 부분
+
+            # yield로 하나씩 넘겨준다.
+            yield (b'--frame\r\n'
+                   b'Content-Type: image/jpeg\r\n\r\n' +
+                   frame + b'\r\n')
