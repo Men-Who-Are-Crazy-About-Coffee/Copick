@@ -1,5 +1,5 @@
 import 'package:fe/src/screens/community_write_page.dart';
-import 'package:fe/src/screens/home_screen';
+import 'package:fe/src/screens/home_screen.dart';
 import 'package:fe/src/screens/intro_page.dart';
 import 'package:fe/src/screens/login_page.dart';
 import 'package:fe/src/screens/pages.dart';
