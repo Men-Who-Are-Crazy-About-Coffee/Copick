@@ -33,7 +33,7 @@ class CommentBox extends StatefulWidget {
 class _CommentBoxState extends State<CommentBox> {
   final String _comment =
       '이 텍스트는 예시로 사용되는 긴 텍스트입니다. 필요에 따라 내용을 변경하세요. 이 텍스트가 너무 길 경우, 사용자는 전체 내용을 볼 수 있도록 "더보기"를 누를 수 있습니다.';
-  bool _isExpanded = false;
+  final bool _isExpanded = false;
   String img =
       "https://jariyo-s3.s3.ap-northeast-2.amazonaws.com/memeber/anonymous.png";
 
@@ -67,15 +67,6 @@ class _CommentBoxState extends State<CommentBox> {
                 ? CrossFadeState.showSecond
                 : CrossFadeState.showFirst,
             duration: const Duration(milliseconds: 200),
-          ),
-          TextButton(
-            onPressed: () {
-              setState(() {
-                _isExpanded = !_isExpanded;
-                Navigator.pushNamed(context, '/homescreen');
-              });
-            },
-            child: Text(_isExpanded ? "접기" : "더보기"),
           ),
         ],
       ),
