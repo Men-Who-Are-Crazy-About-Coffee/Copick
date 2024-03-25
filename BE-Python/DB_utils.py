@@ -17,7 +17,6 @@ def posgreSQL_save_sequence(result_index, file_name,result_normal,result_flaw, d
         file_path = os.environ["AWS_S3_URL"]+"/result/"+result_index+"/sequence/"+file_name
         db_session.execute(text("INSERT INTO sequence(result_index,sequence_image,result_normal,result_flaw) VALUES(%s,\'%s\',%d,%d)"
             %(result_index,file_path,result_normal,result_flaw)))
-        db_session.commit()
     except Exception as e:
         print("Error(posgreSQL_save_sequence):",e)
         
@@ -26,6 +25,5 @@ def posgreSQL_save_flaw(result_index, file_name, db_session):
         file_path = os.environ["AWS_S3_URL"]+"/result/"+result_index+"/flaw/"+file_name
         db_session.execute(text("INSERT INTO flaw(result_index,flaw_image,is_deleted,reg_date) VALUES(%s,\'%s\',%s,%s)"
             %(result_index,file_path,"false","now()")))
-        db_session.commit()
     except Exception as e:
         print("Error(posgreSQL_save_flaw):",e)

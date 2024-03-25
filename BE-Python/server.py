@@ -41,10 +41,10 @@ async def analyze_flaw(request: Request,
                         resultIndex: str = Form(...), file: UploadFile = File(...)):
         db_session = None
         try:
-            # authorization_header = request.headers.get('Authorization')
-            # access_token = authorization_header[7:]
+            authorization_header = request.headers.get('Authorization')
+            access_token = authorization_header[7:]
 
-            # await functions.check_token(access_token)
+            await functions.check_token(access_token)
             # member_index = payload["userIndex"]
 
             result_index = resultIndex[0]
@@ -56,17 +56,13 @@ async def analyze_flaw(request: Request,
 
             db_session = db_session_maker()
             db_utils.posgreSQL_save_sequence(result_index,file_name,result_normal,result_flaw,db_session)
-            # db_session.execute(text("INSERT INTO sequence(result_index,sequence_image,result_normal,result_flaw) VALUES(%s,\'%s\',%d,%d)"
-            #     %(result_index,s3_path,result_normal,result_flaw)))
                     
             s3_utils.s3_save_sequence(result_index,image_byte_stream,file_name,s3_connection)
-            # s3_connection.upload_fileobj(image_byte_stream,os.environ["AWS_S3_BUCKET"],file_path)
 
             for cropped_image in cropped_images:
                 cropped_file_name = str(uuid.uuid4())+".jpg"
                 db_utils.posgreSQL_save_flaw(result_index,cropped_file_name,db_session)
                 s3_utils.s3_save_flaw(result_index,cropped_image,cropped_file_name,s3_connection)
-                # s3_connection.upload_fileobj(cropped_image,os.environ["AWS_S3_BUCKET"],"flaw/"+str(uuid.uuid4())+".jpg")
 
             db_session.commit()
             return s3_path
