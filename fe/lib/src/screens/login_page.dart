@@ -21,11 +21,6 @@ class _LoginState extends State<Login> {
 
   final storage = const FlutterSecureStorage();
 
-  void isLogined() async {
-    String? token = await storage.read(key: 'ACCESS_TOKEN');
-    if (token != null) Navigator.pushNamed(context, '/pages');
-  }
-
   Future<void> login(String id, String password) async {
     ApiService apiService = ApiService();
     try {
@@ -49,7 +44,6 @@ class _LoginState extends State<Login> {
   @override
   void initState() {
     super.initState();
-    isLogined();
   }
 
   @override

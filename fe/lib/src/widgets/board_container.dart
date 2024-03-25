@@ -88,36 +88,45 @@ class _BoardContainerState extends State<BoardContainer> {
                               ),
                             ),
                           ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Text(
-                                    _comments[index]['memberName'],
-                                    style: const TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w800),
-                                  ),
-                                  const SizedBox(
-                                    width: 12,
-                                  ),
-                                  Text(
-                                    (_comments[index]['regDate'])
-                                        .toString()
-                                        .substring(0, 10),
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey,
+                          SizedBox(
+                            width: 500,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      _comments[index]['memberName'],
+                                      style: const TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w800),
                                     ),
-                                  )
-                                ],
-                              ),
-                              Text(
-                                _comments[index]['content'],
-                                style: const TextStyle(fontSize: 13),
-                              ),
-                            ],
+                                    const SizedBox(
+                                      width: 12,
+                                    ),
+                                    Text(
+                                      (_comments[index]['regDate'])
+                                          .toString()
+                                          .substring(0, 10),
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey,
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        _comments[index]['content'],
+                                        style: const TextStyle(fontSize: 13),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
@@ -175,7 +184,7 @@ class _BoardContainerState extends State<BoardContainer> {
     Response response =
         await apiService.get("/api/comment/board/$_index?sort=index");
     _comments = response.data['list'];
-    print(_comments[0]);
+
     _showModalBottomSheet();
   }
 

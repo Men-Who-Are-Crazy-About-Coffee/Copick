@@ -53,10 +53,9 @@ class ApiService {
           } else {
             throw Exception('Refresh token not found');
           }
-        } else {
+        } else if (error.response?.statusCode == 401 && refresh) {
           DeleteStorage deleteStorage = DeleteStorage();
           deleteStorage.deleteAll();
-          return;
         }
       },
     ));

@@ -17,11 +17,14 @@ class _ProfilePageState extends State<ProfilePage> {
   DeleteStorage deleteStorage = DeleteStorage();
   String defaultImg =
       "https://jariyo-s3.s3.ap-northeast-2.amazonaws.com/memeber/anonymous.png";
+  bool isEdited = false;
 
   void logout() {
     deleteStorage.deleteAll();
     Navigator.pushNamed(context, '/login');
   }
+
+  void editProfile() {}
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +91,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                 ),
                                 child: ClipOval(
                                   child: Image.network(
-                                    defaultImg,
+                                    user.user.profileImage == ""
+                                        ? defaultImg
+                                        : user.user.profileImage!,
                                     fit: BoxFit.cover,
                                   ),
                                 ),
@@ -108,6 +113,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                       children: [
                                         Column(
                                           children: [
+                                            const SizedBox(
+                                              height: 20,
+                                            ),
                                             Text(
                                               user.user.id!,
                                               style: const TextStyle(
@@ -120,19 +128,6 @@ class _ProfilePageState extends State<ProfilePage> {
                                       ],
                                     ),
                                   ),
-                                  Expanded(
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.end,
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        IconButton(
-                                          icon: const Icon(Icons.edit),
-                                          onPressed: () {},
-                                        ),
-                                      ],
-                                    ),
-                                  )
                                 ],
                               ),
                             ),
@@ -146,13 +141,16 @@ class _ProfilePageState extends State<ProfilePage> {
                       children: [
                         OutlinedButton(
                           onPressed: () {
-                            // print("버튼pressd");
+                            setState(() {
+                              isEdited = !isEdited;
+                            });
                           },
                           style: OutlinedButton.styleFrom(
                             foregroundColor: themeColors.black,
                             side: BorderSide(
-                                color: themeColors.color5,
-                                width: 2), // 테두리 색상과 두께
+                              color: themeColors.color5,
+                              width: 2,
+                            ), // 테두리 색상과 두께
                             fixedSize: const Size(300, 30),
                           ),
                           child: const Text('프로필 편집하기'),
