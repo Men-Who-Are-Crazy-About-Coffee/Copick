@@ -50,7 +50,7 @@ public class MemberController {
     @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     @PutMapping("/{memberIndex}")
     public ResponseEntity<Object> updateMember(@PathVariable Long memberIndex,
-                                               @RequestBody MemberUpdateRequestDto memberUpdateRequestDto) {
+                                               @ModelAttribute MemberUpdateRequestDto memberUpdateRequestDto) {
         memberService.updateMember(memberIndex, memberUpdateRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body("Member updated successfully");
     }

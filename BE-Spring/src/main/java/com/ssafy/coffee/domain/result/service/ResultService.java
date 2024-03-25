@@ -46,6 +46,7 @@ public class ResultService {
                 .bean(beanRepository.findById(1L).orElseThrow())
                 .flawBeanCount(0)
                 .normalBeanCount(0)
+                .member(member)
                 .build());
         return result;
     }
