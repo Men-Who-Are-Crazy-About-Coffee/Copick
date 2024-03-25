@@ -5,6 +5,7 @@ import com.ssafy.coffee.domain.member.dto.MemberRequestGetDto;
 import com.ssafy.coffee.domain.member.dto.MemberUpdateRequestDto;
 import com.ssafy.coffee.domain.member.entity.Member;
 import com.ssafy.coffee.domain.member.repository.MemberRepository;
+import com.ssafy.coffee.domain.s3.service.S3Service;
 import com.ssafy.coffee.global.constant.AuthType;
 import com.ssafy.coffee.global.constant.Role;
 import com.ssafy.coffee.global.exception.EntityAlreadyExistsException;
@@ -24,6 +25,7 @@ import java.util.Optional;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final S3Service s3Service;
 
     @Transactional
     public void registerMember(MemberRegistRequestDto memberRegistRequestDto) {
@@ -63,16 +65,10 @@ public class MemberService {
 
         if (memberUpdateRequestDto.getNickname() != null)
             member.setNickname(memberUpdateRequestDto.getNickname());
-
-        if (memberUpdateRequestDto.getProfileImage() != null)
-            member.setProfileImage(memberUpdateRequestDto.getProfileImage());
-
-        if (memberUpdateRequestDto.getPassword() != null)
-            member.setPassword(passwordEncoder.encode(memberUpdateRequestDto.getPassword()));
-
-        if (memberUpdateRequestDto.getRole() != null) {
-            Role role = Role.valueOf(memberUpdateRequestDto.getRole().toUpperCase());
-            member.setRole(role);
+        if (memberUpdateRequestDto.getImage() != null) {
+            String filePath = "member/" + memberIndex;
+            String url = s3Service.uploadFile(filePath, memberUpdateRequestDto.getImage());
+            member.setProfileImage(url);
         }
     }
 
