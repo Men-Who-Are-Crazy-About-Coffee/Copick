@@ -23,8 +23,9 @@ public class BoardGetResponseDto {
     private Boolean liked;
 
     private Long likes;
+    private Long comments;
 
-    public BoardGetResponseDto(Board board, List<String> images, Boolean liked, Long likes) {
+    public BoardGetResponseDto(Board board, List<String> images, Boolean liked, Long likes, Long comments) {
         this.index = board.getIndex();
         this.userId = board.getCreatedBy().getIndex();
         this.userNickname = board.getCreatedBy().getNickname();
@@ -39,5 +40,6 @@ public class BoardGetResponseDto {
         this.liked = liked;
 
         this.likes = likes;
+        this.comments = comments;
     }
 }
