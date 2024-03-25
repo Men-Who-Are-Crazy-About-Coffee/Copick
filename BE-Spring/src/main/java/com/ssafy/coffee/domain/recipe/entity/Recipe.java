@@ -12,7 +12,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @NoArgsConstructor
-public class Recipe extends AuditableBaseObject {
+public class Recipe {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
