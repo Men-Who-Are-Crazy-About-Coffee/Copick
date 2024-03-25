@@ -1,3 +1,10 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:be6e8da811959c4086793e9affc9779560de0ee1982b43042d9a7d164af496f9
-size 307
+package com.ssafy.coffee.domain.global.repository;
+
+import com.ssafy.coffee.domain.global.entity.Global;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface GlobalRepository extends JpaRepository<Global, String> {
+
+}
