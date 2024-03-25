@@ -1,5 +1,6 @@
 package com.ssafy.coffee.domain.comment.repository;
 
+import com.ssafy.coffee.domain.board.entity.Board;
 import com.ssafy.coffee.domain.comment.entity.Comment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,4 +13,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     Page<Comment> findAllByBoardIndex(Long boardIndex, Pageable pageable);
 
     Page<Comment> findAllByCreatedByIndex(Long userIndex, Pageable pageable);
+
+    long countByBoard(Board board);
 }
