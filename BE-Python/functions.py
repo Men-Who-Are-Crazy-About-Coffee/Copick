@@ -161,3 +161,30 @@ def get_stream_video():
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' +
                    frame + b'\r\n')
+
+def manufacture_video(frame_data,model):
+    try:
+        image = Image.open(io.BytesIO(frame_data))
+        image = image.convert("RGB") #for safe
+
+        # model = YOLO('best.pt')
+        results = model(image)
+
+        draw = ImageDraw.Draw(image)
+
+        # 이미지에 박스 그리기
+        for i, box in enumerate(results[0].obb.xyxy):   # cls 텐서와 바운딩 박스 정보를 이용해 클래스가 0인 경우만 그리기
+            # 클래스가 0이 아니면 다음 바운딩 박스로 넘어갑니다.
+            if results[0].obb.cls[i] != 0:
+                continue
+            x1, y1, x2, y2 = box.tolist()  # Tensor를 리스트로 변환
+
+            draw.rectangle([x1, y1, x2, y2], outline="red", width=3)
+        # 바이트 스트림으로 이미지 저장
+        img_byte_arr = io.BytesIO()
+        image.save(img_byte_arr, format='JPEG')
+        # 바이트 스트림을 반환
+        img_byte_arr.seek(0)  # Seek to the start of the stream
+        return img_byte_arr
+    except Exception as e:
+        print("Error:",e)   
