@@ -2,13 +2,15 @@ import os
 import shutil
 import uuid
 from typing import List,Optional
-from fastapi import FastAPI, File, UploadFile, Header, Form, Request
+from fastapi import FastAPI, File, UploadFile, Header, Form, Request, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 from dotenv import load_dotenv
 from jose import JWTError
 from sqlalchemy import text
 import functions, s3_utils, DB_utils
 from PIL import Image
+from asyncio import TimeoutError, wait_for
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 load_dotenv(os.path.join(BASE_DIR, ".env"))
@@ -85,3 +87,28 @@ async def analyze_roasting(image_link:str):
     except Exception as e:
             print("Error:",e)
             return "error"
+    
+@app.get("/api/python/video")
+def streaming():
+    return StreamingResponse(functions.get_stream_video(), media_type="multipart/x-mixed-replace; boundary=frame")
+
+@app.websocket("/ws/python/video")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    try:
+        while True:
+            try:
+                # 5초 동안 데이터를 기다립니다.
+                data = await wait_for(websocket.receive_bytes(), timeout=5)
+                # 데이터를 처리합니다. 예: 영상 프레임 처리
+                # 처리 결과를 다시 클라이언트로 보냅니다.
+                await websocket.send_bytes(data)
+            except TimeoutError:
+                # 5초 동안 데이터가 수신되지 않으면 루프를 종료합니다.
+                break
+    except WebSocketDisconnect:
+        # 클라이언트 연결이 끊어진 경우 처리
+        print("Client disconnected.")
+    finally:
+        # 연결을 닫습니다.
+        await websocket.close()
