@@ -1,4 +1,6 @@
 import os
+import io
+from io import BytesIO
 import shutil
 import uuid
 from typing import List,Optional
@@ -11,6 +13,8 @@ from sqlalchemy import text
 import functions, s3_utils, DB_utils
 from PIL import Image
 from asyncio import TimeoutError, wait_for
+from ultralytics import YOLO
+
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 load_dotenv(os.path.join(BASE_DIR, ".env"))
@@ -29,6 +33,7 @@ app.add_middleware(
 
 s3_connection = s3_utils.s3_connection()
 db_session_maker = DB_utils.posgreSQL_connection()
+ai_model = YOLO('best.pt')
 
 @app.get("/")
 def read_root():
@@ -99,16 +104,24 @@ async def websocket_endpoint(websocket: WebSocket):
         while True:
             try:
                 # 5초 동안 데이터를 기다립니다.
-                data = await wait_for(websocket.receive_bytes(), timeout=5)
+                frame_data = await wait_for(websocket.receive_bytes(), timeout=30)
                 # 데이터를 처리합니다. 예: 영상 프레임 처리
+                # image = Image.open(io.BytesIO(data))
                 # 처리 결과를 다시 클라이언트로 보냅니다.
-                await websocket.send_bytes(data)
+                # print(data)
+                
+                # await websocket.send_bytes(functions.manufacture_video(frame_data))
+                await websocket.send_bytes(functions.manufacture_video(frame_data,ai_model))
+                # await websocket.send_bytes(frame_data)
             except TimeoutError:
                 # 5초 동안 데이터가 수신되지 않으면 루프를 종료합니다.
                 break
     except WebSocketDisconnect:
         # 클라이언트 연결이 끊어진 경우 처리
         print("Client disconnected.")
+    except Exception as e:
+        print("Error:",e)
+        return "error"
     finally:
         # 연결을 닫습니다.
         await websocket.close()
