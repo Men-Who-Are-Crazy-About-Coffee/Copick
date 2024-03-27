@@ -16,5 +16,6 @@ final routes = {
   "/auth/login": (context) => const RedirectPage(),
   "/pages": (context) => const Pages(),
   "/community_write": (context) => const CommunityWritePage(),
-  "/video": (context) => VideoPage(camera: Provider.of<CameraProvider>(context).camera as CameraDescription),
+  "/video": (context) => VideoPage(
+      camera: Provider.of<CameraProvider>(context).camera as CameraDescription),
 };

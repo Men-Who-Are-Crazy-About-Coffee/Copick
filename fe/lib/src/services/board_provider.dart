@@ -25,6 +25,7 @@ class BoardProvider extends ChangeNotifier {
       items.add(
         BoardContainer(
           index: board['index'],
+          userId: board['userId'],
           coffeeImg: board['images'], // 이 부분은 실제 데이터에 맞게 조정하세요
           memberNickName: board['userNickname'],
           memberImg: userImg,
@@ -57,6 +58,7 @@ class BoardProvider extends ChangeNotifier {
           items.add(
             BoardContainer(
               index: board['index'],
+              userId: board['userId'],
               coffeeImg: board['images'], // 이 부분은 실제 데이터에 맞게 조정하세요
               memberNickName: board['userNickname'],
               memberImg: userImg,
