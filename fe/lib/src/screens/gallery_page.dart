@@ -267,7 +267,7 @@ class _GalleryPageState extends State<GalleryPage> {
                                             children: [
                                               Padding(
                                                 padding: const EdgeInsets.only(
-                                                    left: 20),
+                                                    left: 0),
                                                 child: Text(
                                                   entry.key,
                                                   style: const TextStyle(
@@ -279,96 +279,91 @@ class _GalleryPageState extends State<GalleryPage> {
                                               const SizedBox(
                                                 height: 20,
                                               ),
-                                              Center(
-                                                child: Wrap(
-                                                  spacing: 8.0,
-                                                  runSpacing: 16.0,
-                                                  children: List.generate(
-                                                      entry.value.length,
-                                                      (index) {
-                                                    var imageurl = entry
-                                                        .value[index]['image'];
-                                                    var isChecked =
-                                                        entry.value[index]
-                                                            ['isChecked'];
-                                                    return Row(
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      children: [
-                                                        InkWell(
-                                                          onLongPress: () {
-                                                            // 이미지를 길게 누르면 선택 모드 활성화
-                                                            setState(() {
-                                                              isSelectMode =
-                                                                  true;
-                                                            });
-                                                          },
-                                                          onTap: () {
-                                                            if (!isSelectMode) {
-                                                              // 선택 모드가 아닐 때만 상세보기 함수 호출
-                                                              detail(imageurl);
-                                                            } else {
-                                                              // 선택 모드일 때는 이미지 탭으로 체크박스 토글
-                                                              toggleCheckbox(
-                                                                  entry.key,
-                                                                  index,
-                                                                  !isChecked);
-                                                            }
-                                                          },
-                                                          child: Stack(
-                                                            children: [
-                                                              SizedBox(
-                                                                width: 100,
-                                                                height: 100,
-                                                                child:
-                                                                    ClipRRect(
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              10.0), // 이미지에 둥근 모서리 추가 (선택적)
-                                                                  child: Image
-                                                                      .network(
-                                                                    imageurl,
-                                                                    fit: BoxFit
-                                                                        .cover,
-                                                                  ),
+                                              Wrap(
+                                                spacing: 8.0,
+                                                runSpacing: 16.0,
+                                                children: List.generate(
+                                                    entry.value.length,
+                                                    (index) {
+                                                  var imageurl = entry
+                                                      .value[index]['image'];
+                                                  var isChecked =
+                                                      entry.value[index]
+                                                          ['isChecked'];
+                                                  return Row(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    children: [
+                                                      InkWell(
+                                                        onLongPress: () {
+                                                          // 이미지를 길게 누르면 선택 모드 활성화
+                                                          setState(() {
+                                                            isSelectMode = true;
+                                                          });
+                                                        },
+                                                        onTap: () {
+                                                          if (!isSelectMode) {
+                                                            // 선택 모드가 아닐 때만 상세보기 함수 호출
+                                                            detail(imageurl);
+                                                          } else {
+                                                            // 선택 모드일 때는 이미지 탭으로 체크박스 토글
+                                                            toggleCheckbox(
+                                                                entry.key,
+                                                                index,
+                                                                !isChecked);
+                                                          }
+                                                        },
+                                                        child: Stack(
+                                                          children: [
+                                                            SizedBox(
+                                                              width: 100,
+                                                              height: 100,
+                                                              child: ClipRRect(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            10.0), // 이미지에 둥근 모서리 추가 (선택적)
+                                                                child: Image
+                                                                    .network(
+                                                                  imageurl,
+                                                                  fit: BoxFit
+                                                                      .cover,
                                                                 ),
                                                               ),
-                                                              if (isSelectMode) // 선택 모드가 활성화되었을 때만 체크박스 표시
-                                                                Positioned(
-                                                                  top: 0,
-                                                                  right: 0,
-                                                                  child:
-                                                                      Checkbox(
-                                                                    activeColor:
-                                                                        themeColors
-                                                                            .color5,
-                                                                    shape:
-                                                                        RoundedRectangleBorder(
-                                                                      borderRadius:
-                                                                          BorderRadius.circular(
-                                                                              15),
-                                                                    ),
-                                                                    value:
-                                                                        isChecked,
-                                                                    onChanged:
-                                                                        (bool?
-                                                                            value) {
-                                                                      toggleCheckbox(
-                                                                          entry
-                                                                              .key,
-                                                                          index,
-                                                                          value);
-                                                                    },
+                                                            ),
+                                                            if (isSelectMode) // 선택 모드가 활성화되었을 때만 체크박스 표시
+                                                              Positioned(
+                                                                top: 0,
+                                                                right: 0,
+                                                                child: Checkbox(
+                                                                  activeColor:
+                                                                      themeColors
+                                                                          .color5,
+                                                                  shape:
+                                                                      RoundedRectangleBorder(
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            15),
                                                                   ),
+                                                                  value:
+                                                                      isChecked,
+                                                                  onChanged:
+                                                                      (bool?
+                                                                          value) {
+                                                                    toggleCheckbox(
+                                                                        entry
+                                                                            .key,
+                                                                        index,
+                                                                        value);
+                                                                  },
                                                                 ),
-                                                            ],
-                                                          ),
+                                                              ),
+                                                          ],
                                                         ),
-                                                      ],
-                                                    );
-                                                  }),
-                                                ),
+                                                      ),
+                                                    ],
+                                                  );
+                                                }),
                                               ),
                                               const SizedBox(height: 20),
                                               const Divider(),
