@@ -10,7 +10,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 class VideoPage extends StatefulWidget {
   final CameraDescription camera;
 
-  VideoPage({super.key,required this.camera});
+  VideoPage({super.key, required this.camera});
 
   @override
   _VideoPageState createState() => _VideoPageState();
@@ -34,7 +34,7 @@ class _VideoPageState extends State<VideoPage> {
     });
 
     _channel = WebSocketChannel.connect(
-      Uri.parse('ws://ai.copick.duckdns.org/ws/python/video'),
+      Uri.parse('wss://ai.copick.duckdns.org/ws/python/video'),
     );
 
     _channel!.stream.listen((dynamic message) {
@@ -61,7 +61,7 @@ class _VideoPageState extends State<VideoPage> {
   }
 
   void startImageStream() async {
-    Timer.periodic(Duration(milliseconds: 500  ), (timer) async {
+    Timer.periodic(Duration(milliseconds: 500), (timer) async {
       if (!_controller!.value.isInitialized) {
         print("Controller is not initialized");
         return;
@@ -86,7 +86,6 @@ class _VideoPageState extends State<VideoPage> {
           child: _image == null
               ? Text('Sending Images...')
               : RawImage(image: _image), // ui.Image 객체를 사용하여 이미지 표시
-        )
-    );
+        ));
   }
 }
