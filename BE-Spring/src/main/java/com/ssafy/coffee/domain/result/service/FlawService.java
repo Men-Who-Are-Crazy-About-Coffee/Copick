@@ -26,6 +26,7 @@ public class FlawService {
         for(Result r: accessMemberResultList)
             for(Flaw f : flawRepository.findAllByResultIndex(r.getIndex()))
                 flawList.add(FlawResponseDto.builder()
+                        .flawIndex(f.getFlawIndex())
                         .regDate(f.getRegDate())
                         .image(f.getImage())
                         .build());

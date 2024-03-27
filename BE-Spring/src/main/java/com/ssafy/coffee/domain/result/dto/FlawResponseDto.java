@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class FlawResponseDto {
+    private Long flawIndex;
     private LocalDateTime regDate; // 등록 일시
     private String image;
 }
