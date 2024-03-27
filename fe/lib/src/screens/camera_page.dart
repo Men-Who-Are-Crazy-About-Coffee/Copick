@@ -86,6 +86,7 @@ class CameraPageState extends State<CameraPage> {
     super.initState();
     // 카메라 컨트롤러를 생성합니다.
     _controller = CameraController(
+      enableAudio: false,
       widget.camera,
       ResolutionPreset.medium,
     );
@@ -110,7 +111,7 @@ class CameraPageState extends State<CameraPage> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             // 초기화가 완료되면 카메라 프리뷰를 표시합니다.
-            return CameraPreview(_controller);
+            return Center(child: CameraPreview(_controller));
           } else {
             // 그렇지 않으면 진행 표시기를 표시합니다.
             return const Center(child: CircularProgressIndicator());

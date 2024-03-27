@@ -6,6 +6,7 @@ import 'package:fe/src/services/api_service.dart';
 import 'package:fe/src/services/delete_storage.dart';
 import 'package:fe/src/services/user_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
@@ -22,8 +23,14 @@ class _ProfilePageState extends State<ProfilePage> {
   String defaultImg =
       "https://jariyo-s3.s3.ap-northeast-2.amazonaws.com/memeber/anonymous.png";
   bool isEdited = false;
+  final storage = const FlutterSecureStorage();
 
-  void logout() {
+  void logout() async {
+    String? refreshToekn = await storage.read(key: "REFRESH_TOKEN");
+    Response response =
+        await apiService.delete('/api/auth/logout?refreshToken=$refreshToekn');
+    print(response.data);
+    Future.delayed(const Duration(milliseconds: 5000), () async {});
     deleteStorage.deleteAll();
     Navigator.pushNamed(context, '/login');
   }
