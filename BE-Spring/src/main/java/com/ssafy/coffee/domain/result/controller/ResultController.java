@@ -1,5 +1,6 @@
 package com.ssafy.coffee.domain.result.controller;
 
+import com.amazonaws.Response;
 import com.ssafy.coffee.domain.auth.dto.PrincipalMember;
 import com.ssafy.coffee.domain.recipe.entity.Recipe;
 import com.ssafy.coffee.domain.recipe.service.RecipeService;
@@ -14,6 +15,7 @@ import com.ssafy.coffee.domain.result.service.ResultService;
 import com.ssafy.coffee.domain.result.service.SequenceService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "result", description = "분석 결과 API")
@@ -66,5 +69,11 @@ public class ResultController {
         return ResponseEntity.status(HttpStatus.OK).body(
                 flawService.getFlawListByMemberIndex(principalMember.getIndex())
         );
+    }
+
+    @PostMapping("/flaws/update")
+    public ResponseEntity<Object> updateFlaws(@RequestBody List<Long> flawIndexList){
+        flawService.updateFlawsByFlawIndex(flawIndexList);
+        return ResponseEntity.status(HttpStatus.OK).body("Flaw updated successfully");
     }
 }

@@ -10,6 +10,7 @@ import com.ssafy.coffee.domain.result.repository.SequenceRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,12 +25,17 @@ public class FlawService {
         List<Result> accessMemberResultList = resultRepository.findAllByCreatedByIndex(memberIndex);
         List<FlawResponseDto> flawList = new ArrayList<>();
         for(Result r: accessMemberResultList)
-            for(Flaw f : flawRepository.findAllByResultIndex(r.getIndex()))
+            for(Flaw f : flawRepository.findAllByResultIndexAndIsDeleted(r.getIndex(),false))
                 flawList.add(FlawResponseDto.builder()
                         .flawIndex(f.getFlawIndex())
                         .regDate(f.getRegDate())
                         .image(f.getImage())
                         .build());
         return flawList;
+    }
+
+    @Transactional
+    public void updateFlawsByFlawIndex(List<Long> flawIndexList){
+        flawRepository.updateAllByIndex(flawIndexList);
     }
 }
