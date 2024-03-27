@@ -17,27 +17,38 @@ class VideoPage extends StatefulWidget {
 }
 
 class _VideoPageState extends State<VideoPage> {
-  late CameraController? _controller;
-  late WebSocketChannel? _channel;
+  late CameraController _controller;
+  late WebSocketChannel _channel;
   ui.Image? _image; // ui.Image 객체를 저장할 변수
+  Timer? _timer; // Timer 객체를 저장할 변수
+  bool _firstResponseReceived = false; // 첫 번째 응답을 받았는지 추적하는 플래그
 
   @override
   void initState() {
     super.initState();
-    _controller = CameraController(widget.camera, ResolutionPreset.medium);
-    _controller!.initialize().then((_) {
+    _controller = CameraController(
+      enableAudio: false,
+      widget.camera,
+      ResolutionPreset.medium,
+    );
+    _controller.initialize().then((_) {
       if (!mounted) {
         return;
       }
       setState(() {});
-      startImageStream();
+      // 초기 이미지 캡처 및 전송
+      captureAndSendImage();
     });
 
     _channel = WebSocketChannel.connect(
       Uri.parse('wss://ai.copick.duckdns.org/ws/python/video'),
     );
 
-    _channel!.stream.listen((dynamic message) {
+    _channel.stream.listen((dynamic message) {
+      if (!_firstResponseReceived) {
+        _firstResponseReceived = true; // 첫 번째 응답 수신
+        startImageStream(); // 응답 수신 후 이미지 스트리밍 시작
+      }
       updateImage(message);
     });
   }
@@ -55,21 +66,35 @@ class _VideoPageState extends State<VideoPage> {
 
   @override
   void dispose() {
-    _controller?.dispose();
-    _channel?.sink.close();
+    _controller.dispose();
+    _channel.sink.close();
+    _timer?.cancel();
     super.dispose();
   }
 
-  void startImageStream() async {
-    Timer.periodic(const Duration(milliseconds: 200), (timer) async {
-      if (!_controller!.value.isInitialized) {
-        print("Controller is not initialized");
+  Future<void> captureAndSendImage() async {
+    if (!_controller.value.isInitialized) {
+      print("Controller is not initialized");
+      return;
+    }
+    try {
+      final image = await _controller.takePicture();
+      final bytes = await image.readAsBytes();
+      _channel.sink.add(bytes);
+    } catch (e) {
+      print("첫 번째 사진 캡처 또는 전송 실패: $e");
+    }
+  }
+
+  void startImageStream() {
+    _timer = Timer.periodic(const Duration(milliseconds: 200), (timer) async {
+      if (!_controller.value.isInitialized || !_firstResponseReceived) {
         return;
       }
       try {
-        final image = await _controller!.takePicture();
+        final image = await _controller.takePicture();
         final bytes = await image.readAsBytes();
-        _channel!.sink.add(bytes);
+        _channel.sink.add(bytes);
       } catch (e) {
         print("사진 캡처 또는 전송 실패: $e");
       }
@@ -79,13 +104,14 @@ class _VideoPageState extends State<VideoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Camera WebSocket Streaming - No Preview'),
-        ),
-        body: Center(
-          child: _image == null
-              ? const Text('Sending Images...')
-              : RawImage(image: _image), // ui.Image 객체를 사용하여 이미지 표시
-        ));
+      appBar: AppBar(
+        title: const Text('Camera WebSocket Streaming - No Preview'),
+      ),
+      body: Center(
+        child: _image == null
+            ? const Text('Sending Images...')
+            : RawImage(image: _image),
+      ),
+    );
   }
 }

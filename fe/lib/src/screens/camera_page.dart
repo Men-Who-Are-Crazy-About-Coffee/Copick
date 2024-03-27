@@ -70,8 +70,9 @@ Future<void> sendImage(XFile file) async {
 // 사진 찍기 화면
 class CameraPage extends StatefulWidget {
   final CameraDescription camera;
+  final int coffeeTypeValue;
 
-  const CameraPage({super.key, required this.camera});
+  const CameraPage({super.key, required this.camera, this.coffeeTypeValue = 0});
 
   @override
   CameraPageState createState() => CameraPageState();
@@ -86,6 +87,7 @@ class CameraPageState extends State<CameraPage> {
     super.initState();
     // 카메라 컨트롤러를 생성합니다.
     _controller = CameraController(
+      enableAudio: false,
       widget.camera,
       ResolutionPreset.medium,
     );
