@@ -1,3 +1,31 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:6f4536bd4d50719bf5a0b5c037a05233b79ee110b6a0026a24da14cdc40af286
-size 867
+import 'package:camera/camera.dart';
+import 'package:fe/constants.dart';
+import 'package:fe/routes.dart';
+import 'package:fe/src/services/camera_provider.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:provider/provider.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // 사용 가능한 카메라 목록을 가져옵니다.
+  final cameras = await availableCameras();
+  print("cameras : ");
+  print(cameras);
+
+  // 첫 번째 카메라를 선택합니다.
+  final firstCamera = cameras.first;
+  await dotenv.load(fileName: ".env");
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+            create: (context) => CameraProvider()..setCamera(firstCamera)),
+      ],
+      child: MaterialApp(
+        routes: routes,
+      ),
+    ),
+  );
+}
