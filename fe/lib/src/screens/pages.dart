@@ -5,7 +5,7 @@ import 'package:fe/src/services/camera_provider.dart';
 import 'package:fe/src/screens/camera_page.dart';
 import 'package:fe/src/screens/community_page.dart';
 import 'package:fe/src/screens/gallery_page.dart';
-import 'package:fe/src/screens/home_page.dart';
+import 'package:fe/src/screens/stat_page.dart';
 import 'package:fe/src/screens/profile_page.dart';
 import 'package:fe/src/services/user_provider.dart';
 import 'package:fe/src/widgets/bottomnavbar.dart';
@@ -39,7 +39,7 @@ class _PagesState extends State<Pages> {
 
   void addWidgets(CameraDescription? camera) {
     widgetOptions = [
-      const HomePage(),
+      const StatPage(),
       const GalleryPage(),
       CameraPage(camera: camera!),
       const CommunityPage(),

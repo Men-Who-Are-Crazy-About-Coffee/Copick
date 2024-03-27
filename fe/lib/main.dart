@@ -26,7 +26,7 @@ void main() async {
       ],
       child: MaterialApp(
         theme: ThemeData(
-          fontFamily: "netmarble",
+          fontFamily: "SDchild",
         ),
         routes: routes,
       ),
