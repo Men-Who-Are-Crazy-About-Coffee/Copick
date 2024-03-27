@@ -38,12 +38,13 @@ public class ResultService {
     private String pythonURL;
 
     @Transactional
-    public Result insertEmptyResult(long memberIndex) {
+    public Result insertEmptyResult(long memberIndex,Long beanIndex) {
         Member member = memberRepository.findByIndexAndIsDeletedFalse(memberIndex)
                 .orElseThrow(() -> new EntityNotFoundException("Member not found with index: " + memberIndex));
         Result result = resultRepository.save(Result.builder()
                 .roasting(roastingRepository.findById(1L).orElseThrow())
-                .bean(beanRepository.findById(1L).orElseThrow())
+                .bean(beanRepository.findById(beanIndex).orElseThrow(()
+                        -> new EntityNotFoundException("Bean not found with index: " + beanIndex)))
                 .flawBeanCount(0)
                 .normalBeanCount(0)
                 .member(member)

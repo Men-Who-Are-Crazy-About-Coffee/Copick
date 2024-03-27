@@ -33,9 +33,10 @@ public class ResultController {
     private final SequenceService sequenceService;
     private final RecipeService recipeService;
     private final FlawService flawService;
-    @GetMapping("/init")
-    public ResponseEntity<Object> getNewResultIndex(@AuthenticationPrincipal PrincipalMember principalMember){
-        Result result = resultService.insertEmptyResult(principalMember.getIndex());
+    @GetMapping("/init/{beanIndex}")
+    public ResponseEntity<Object> getNewResultIndex(@AuthenticationPrincipal PrincipalMember principalMember,
+                                                    @PathVariable Long beanIndex){
+        Result result = resultService.insertEmptyResult(principalMember.getIndex(),beanIndex);
         return ResponseEntity.status(HttpStatus.OK).body(result.getIndex());
     }
 
