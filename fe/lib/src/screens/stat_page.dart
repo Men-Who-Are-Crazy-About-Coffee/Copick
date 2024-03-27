@@ -11,20 +11,28 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
-
-  @override
-  _HomePageState createState() => _HomePageState();
+enum LoadingState {
+  loading,
+  completed,
+  empty,
 }
 
-class _HomePageState extends State<HomePage> {
+class StatPage extends StatefulWidget {
+  const StatPage({super.key});
+
+  @override
+  _StatPageState createState() => _StatPageState();
+}
+
+class _StatPageState extends State<StatPage> {
+  LoadingState loadingState = LoadingState.loading;
   ThemeColors themeColors = ThemeColors();
   DateTimeRange? dateRange; // 선택된 날짜 범위를 저장할 변수
   double normal = 0;
   double flaw = 0;
   double other = 0;
   String formattedDateRange = '날짜를 선택해주세요.';
+
   // 날짜 범위 선택기를 표시하는 함수
   Future<void> _pickDateRange(BuildContext context) async {
     final DateTimeRange? newDateRange = await showDateRangePicker(
@@ -48,10 +56,13 @@ class _HomePageState extends State<HomePage> {
       final String start = formatter.format(dateRange!.start);
       final String end = formatter.format(dateRange!.end);
       formattedDateRange = '$start - $end'; // 상태 업데이트
-
       sendData(start, end, context); // 날짜가 설정될 때만 sendData 호출
     } else {
-      formattedDateRange = '날짜를 선택해주세요.';
+      DateTime now = DateTime.now();
+      DateTime oneWeekAgo = now.subtract(const Duration(days: 7));
+      String formattedToday = DateFormat('yyyy-MM-dd').format(now);
+      String formattedOneWeekAgo = DateFormat('yyyy-MM-dd').format(oneWeekAgo);
+      formattedDateRange = '$formattedOneWeekAgo ~ $formattedToday';
     }
   }
 
@@ -65,6 +76,11 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     isLogin();
+    loadingState = LoadingState.loading;
+    DateTime now = DateTime.now();
+    DateTime oneWeekAgo = now.subtract(const Duration(days: 7));
+    dateRange = DateTimeRange(start: oneWeekAgo, end: now);
+    updateFormattedDateRange();
   }
 
   Future<void> sendData(
@@ -81,44 +97,39 @@ class _HomePageState extends State<HomePage> {
 
       Map<String, dynamic> responseMap = response.data;
 
-      setState(() {
-        normal = responseMap["myNormalPercent"];
-        flaw = responseMap["myFlawPercent"];
-        other = responseMap["totalNormalPercent"];
-      });
+      if (responseMap.isNotEmpty && responseMap["myNormalPercent"] != null) {
+        setState(() {
+          normal = responseMap["myNormalPercent"];
+          flaw = responseMap["myFlawPercent"];
+          other = responseMap["totalNormalPercent"];
+          loadingState = LoadingState.completed; // 데이터 로딩 완료
+        });
+      } else {
+        setState(() {
+          loadingState = LoadingState.empty; // 데이터 없음
+        });
+      }
       // 정상적인 응답 처리
     } on DioException catch (e) {
       if (e.response?.statusCode == 404) {
-        // 404 오류 처리
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('알림'),
-              content: const Text('해당 구간에는 데이터가 없어요.'),
-              actions: <Widget>[
-                TextButton(
-                  child: const Text('확인'),
-                  onPressed: () {
-                    Navigator.of(context).pop(); // 대화상자 닫기
-                  },
-                ),
-              ],
-            );
-          },
-        );
+        setState(() {
+          loadingState = LoadingState.empty;
+        });
       } else {
         // 다른 오류 처리
       }
-    } catch (e) {
-      // DioException 이외의 오류 처리
     }
   }
 
   // 선택된 날짜 범위를 문자열로 반환하는 함수
   String _getFormattedDateRange() {
     if (dateRange == null) {
-      return '날짜를 선택해주세요.';
+      DateTime now = DateTime.now();
+      DateTime oneWeekAgo = now.subtract(const Duration(days: 7));
+      String formattedToday = DateFormat('yyyy-MM-dd').format(now);
+      String formattedOneWeekAgo = DateFormat('yyyy-MM-dd').format(oneWeekAgo);
+      sendData(formattedOneWeekAgo, formattedToday, context);
+      return '$formattedOneWeekAgo ~ $formattedToday';
     } else {
       final DateFormat formatter = DateFormat('yyyy-MM-dd');
       final String start = formatter.format(dateRange!.start);
@@ -169,13 +180,17 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               normal != 0 && flaw != 0
-                  ? PieChartSample2(
-                      normal: normal,
-                      flaw: flaw,
-                    )
-                  : const SizedBox(
-                      height: 80,
-                    ),
+                  ? PieChartSample2(normal: normal, flaw: flaw)
+                  : loadingState == LoadingState.loading
+                      ? const CircularProgressIndicator() // 로딩 중 인디케이터 표시
+                      : const Column(
+                          children: [
+                            SizedBox(
+                              height: 50,
+                            ),
+                            Text('해당 구간에는 데이터가 없어요.'),
+                          ],
+                        ),
               normal != 0 && flaw != 0
                   ? BarChartSample3(
                       normal: normal,
