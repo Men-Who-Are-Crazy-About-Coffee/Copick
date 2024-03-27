@@ -2,11 +2,11 @@ import 'package:camera/camera.dart';
 import 'package:fe/constants.dart';
 import 'package:fe/routes.dart';
 import 'package:fe/src/services/camera_provider.dart';
-import 'package:fe/src/screens/camera_page.dart';
 import 'package:fe/src/screens/community_page.dart';
 import 'package:fe/src/screens/gallery_page.dart';
 import 'package:fe/src/screens/home_page.dart';
 import 'package:fe/src/screens/profile_page.dart';
+import 'package:fe/src/screens/selection_page.dart';
 import 'package:fe/src/services/user_provider.dart';
 import 'package:fe/src/widgets/bottomnavbar.dart';
 import 'package:flutter/foundation.dart';
@@ -41,7 +41,7 @@ class _PagesState extends State<Pages> {
     widgetOptions = [
       const HomePage(),
       const GalleryPage(),
-      CameraPage(camera: camera!),
+      const SelectionPage(),
       const CommunityPage(),
       const ProfilePage()
     ];
