@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // 사용 가능한 카메라 목록을 가져옵니다.
+  // 사용 가능한 카메라 목록을 가져옵니다.#
   final cameras = await availableCameras();
   print("cameras : ");
   print(cameras);
