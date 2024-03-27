@@ -13,7 +13,7 @@ public class Flaw extends BaseObject {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "flaw_index", nullable = false)
-    private Long FlawIndex;
+    private Long flawIndex;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "result_index", nullable = false)
