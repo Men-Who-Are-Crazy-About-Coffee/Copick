@@ -185,6 +185,6 @@ def manufacture_video(frame_data,model):
         image.save(img_byte_arr, format='JPEG')
         # 바이트 스트림을 반환
         img_byte_arr.seek(0)  # Seek to the start of the stream
-        return img_byte_arr
+        return img_byte_arr.getvalue()
     except Exception as e:
-        print("Error:",e)   
+        print("Error:",e)
