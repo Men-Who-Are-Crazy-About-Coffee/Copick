@@ -1,78 +1,17 @@
 import 'dart:typed_data';
 
+import 'package:fe/src/services/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:dio/dio.dart';
 import 'package:image_picker/image_picker.dart';
-
-Future<void> uploadFile() async {
-  // 이미지 선택
-  final picker = ImagePicker();
-  final XFile? file = await picker.pickImage(source: ImageSource.gallery);
-
-  if (file != null) {
-    Dio dio = Dio();
-    var url = 'https://example.com/upload'; // 실제 업로드할 서버의 URL
-
-    FormData formData = FormData.fromMap({
-      "file": await MultipartFile.fromFile(file.path, filename: file.name),
-      // "file"은 서버에서 요구하는 키 값이며, 필요에 따라 변경 가능합니다.
-      // 추가적으로 다른 데이터를 함께 보내야 할 경우, 여기에 Map 형식으로 추가하면 됩니다.
-    });
-
-    try {
-      Response response = await dio.post(url, data: formData);
-      if (response.statusCode == 200) {
-        print("업로드 성공: ${response.data}");
-      } else {
-        print("서버 오류: ${response.statusCode}");
-      }
-    } catch (e) {
-      print("업로드 실패: $e");
-    }
-  } else {
-    print("파일 선택이 취소되었습니다.");
-  }
-}
-
-Future<void> sendImage(XFile file) async {
-  Dio dio = Dio();
-  var url = 'http://192.168.31.45:8080/neighbor/feed'; // 실제 업로드할 서버의 URL
-
-  Uint8List fileBytes = await file.readAsBytes();
-
-  MultipartFile multipartFile =
-      MultipartFile.fromBytes(fileBytes, filename: "uploaded_file.jpg");
-
-  FormData formData = FormData.fromMap({
-    // "image": MultipartFile.fromBytes(fileBytes, filename: "uploaded_file.jpg"),
-    "content": "나는 플러터야",
-    // "file"은 서버에서 요구하는 키 값이며, 필요에 따라 변경 가능합니다.
-    // 추가적으로 다른 데이터를 함께 보내야 할 경우, 여기에 Map 형식으로 추가하면 됩니다.
-  });
-  formData.files.add(MapEntry(
-    "images",
-    multipartFile,
-  ));
-
-  try {
-    Response response = await dio.post(url, data: formData);
-    if (response.statusCode == 200) {
-      print("업로드 성공: ${response.data}");
-    } else {
-      print("서버 오류: ${response.statusCode}");
-    }
-  } catch (e) {
-    print("업로드 실패: $e");
-  }
-}
 
 // 사진 찍기 화면
 class CameraPage extends StatefulWidget {
   final CameraDescription camera;
   final int coffeeTypeValue;
 
-  const CameraPage({super.key, required this.camera, this.coffeeTypeValue = 0});
+  const CameraPage({super.key, required this.camera, this.coffeeTypeValue = 1});
 
   @override
   CameraPageState createState() => CameraPageState();
@@ -81,25 +20,61 @@ class CameraPage extends StatefulWidget {
 class CameraPageState extends State<CameraPage> {
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
+  ApiService apiService = ApiService();
+  String? resultIndex;
 
   @override
   void initState() {
     super.initState();
-    // 카메라 컨트롤러를 생성합니다.
-    _controller = CameraController(
-      enableAudio: false,
-      widget.camera,
-      ResolutionPreset.medium,
-    );
-    // 컨트롤러를 초기화합니다.
+    initializeCamera();
+  }
+
+  Future<void> initializeCamera() async {
+    // 카메라 컨트롤러 생성 및 초기화
+    _controller = CameraController(widget.camera, ResolutionPreset.medium);
     _initializeControllerFuture = _controller.initialize();
+
+    // 서버로부터 resultIndex 받기
+    try {
+      Response response = await apiService
+          .get('/api/result/init/${widget.coffeeTypeValue.toString()}');
+      resultIndex = response.data;
+    } catch (e) {
+      print("resultIndex를 받아오는데 실패했습니다: $e");
+    }
   }
 
   @override
   void dispose() {
-    // 위젯의 생명주기가 끝나면 컨트롤러를 해제합니다.
     _controller.dispose();
     super.dispose();
+  }
+
+  Future<String?> sendImage(XFile file) async {
+    Dio dio = Dio();
+    var url = 'https://ai.copick.duckdns.org/api/python/analyze';
+    Uint8List fileBytes = await file.readAsBytes();
+    MultipartFile multipartFile =
+        MultipartFile.fromBytes(fileBytes, filename: file.name);
+
+    FormData formData = FormData.fromMap({
+      "resultIndex": resultIndex,
+      "file": multipartFile,
+    });
+
+    try {
+      Response response = await dio.post(url, data: formData);
+      if (response.statusCode == 200) {
+        String imageUrl = response.data;
+        return imageUrl;
+      } else {
+        print("서버 오류: ${response.statusCode}");
+        return null;
+      }
+    } catch (e) {
+      print("업로드 실패: $e");
+      return null;
+    }
   }
 
   @override
@@ -125,17 +100,22 @@ class CameraPageState extends State<CameraPage> {
         onPressed: () async {
           try {
             await _initializeControllerFuture;
-            // 사진을 찍습니다.
             final image = await _controller.takePicture();
-            // await sendImage(image);
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) =>
-                      DisplayPictureScreen(imagePath: image.path)),
-            );
+            // 이미지 전송 후 반환된 URL을 받습니다.
+            String? imageUrl = await sendImage(image);
+            if (imageUrl != null) {
+              // 반환된 이미지 URL을 DisplayPictureScreen으로 전달합니다.
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        DisplayPictureScreen(imagePath: imageUrl)),
+              );
+            } else {
+              print("이미지 업로드 실패 또는 URL을 받지 못함.");
+            }
           } catch (e) {
-            const Text("에러");
+            print("에러: $e");
           }
         },
       ),
@@ -151,9 +131,9 @@ class DisplayPictureScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // 네트워크 이미지를 표시합니다.
     return Scaffold(
       appBar: AppBar(title: const Text('찍힌 사진 보기')),
-      // 이미지를 화면에 꽉 차게 표시합니다.
       body: Image.network(imagePath),
     );
   }

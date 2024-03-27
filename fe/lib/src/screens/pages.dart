@@ -1,6 +1,5 @@
 import 'package:camera/camera.dart';
 import 'package:fe/constants.dart';
-import 'package:fe/routes.dart';
 import 'package:fe/src/services/camera_provider.dart';
 import 'package:fe/src/screens/community_page.dart';
 import 'package:fe/src/screens/gallery_page.dart';
