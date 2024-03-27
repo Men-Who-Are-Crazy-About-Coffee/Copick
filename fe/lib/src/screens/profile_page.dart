@@ -140,6 +140,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                           await getImage();
                                           await sendImage(user.user.index,
                                               user.user.nickname);
+                                          user.fetchUserData();
                                         },
                                         child: Stack(
                                           children: [
@@ -202,21 +203,22 @@ class _ProfilePageState extends State<ProfilePage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         OutlinedButton(
-                          onPressed: () {
-                            setState(() {
-                              isEdited = !isEdited;
-                            });
-                          },
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: themeColors.black,
-                            side: BorderSide(
-                              color: themeColors.color5,
-                              width: 2,
-                            ), // 테두리 색상과 두께
-                            fixedSize: const Size(300, 30),
-                          ),
-                          child: const Text('프로필 편집하기'),
-                        ),
+                            onPressed: () {
+                              setState(() {
+                                isEdited = !isEdited;
+                              });
+                            },
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: themeColors.black,
+                              side: BorderSide(
+                                color: themeColors.color5,
+                                width: 2,
+                              ), // 테두리 색상과 두께
+                              fixedSize: const Size(300, 30),
+                            ),
+                            child: isEdited
+                                ? const Text("완료하기")
+                                : const Text('프로필 편집하기')),
                       ],
                     ),
                     const SizedBox(

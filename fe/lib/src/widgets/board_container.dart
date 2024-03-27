@@ -36,7 +36,7 @@ class _BoardContainerState extends State<BoardContainer> {
   String? _title;
   String? _content;
   bool _isLiked = false;
-  int? _like;
+  int _like = 0;
   int? _index;
   bool _isExpanded = false;
   ApiService apiService = ApiService();
@@ -57,6 +57,14 @@ class _BoardContainerState extends State<BoardContainer> {
   ThemeColors themeColors = ThemeColors();
   TextEditingController commentController = TextEditingController();
   late List<dynamic> _comments = [];
+
+  void setLike() async {
+    apiService.post('/api/board/$_index/like');
+  }
+
+  void deleteLike() async {
+    apiService.delete('/api/board/$_index/like');
+  }
 
   void _showModalBottomSheet() {
     showModalBottomSheet(
@@ -232,8 +240,10 @@ class _BoardContainerState extends State<BoardContainer> {
                         : Colors.grey,
                   ),
                   onPressed: () {
+                    _isLiked ? deleteLike() : setLike();
                     setState(() {
                       _isLiked = !_isLiked; // 버튼을 탭할 때마다 '좋아요' 상태 토글
+                      _isLiked ? _like += 1 : _like -= 1;
                     });
                   },
                 ),
