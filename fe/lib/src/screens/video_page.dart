@@ -1,33 +1,31 @@
 import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'package:fe/src/services/camera_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:provider/provider.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-List<CameraDescription>? cameras;
-
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  cameras = await availableCameras();
-  runApp(VideoPage());
-}
-
 class VideoPage extends StatefulWidget {
+  final CameraDescription camera;
+
+  VideoPage({super.key,required this.camera});
+
   @override
   _VideoPageState createState() => _VideoPageState();
 }
 
 class _VideoPageState extends State<VideoPage> {
-  CameraController? controller;
-  WebSocketChannel? channel;
-  ui.Image? image; // ui.Image 객체를 저장할 변수
+  late CameraController? _controller;
+  late WebSocketChannel? _channel;
+  ui.Image? _image; // ui.Image 객체를 저장할 변수
 
   @override
   void initState() {
     super.initState();
-    controller = CameraController(cameras![0], ResolutionPreset.medium);
-    controller!.initialize().then((_) {
+    _controller = CameraController(widget.camera, ResolutionPreset.medium);
+    _controller!.initialize().then((_) {
       if (!mounted) {
         return;
       }
@@ -35,11 +33,11 @@ class _VideoPageState extends State<VideoPage> {
       startImageStream();
     });
 
-    channel = WebSocketChannel.connect(
-      Uri.parse('ws://localhost:8000/ws/python/video'),
+    _channel = WebSocketChannel.connect(
+      Uri.parse('ws://ai.copick.duckdns.org/ws/python/video'),
     );
 
-    channel!.stream.listen((dynamic message) {
+    _channel!.stream.listen((dynamic message) {
       updateImage(message);
     });
   }
@@ -51,27 +49,27 @@ class _VideoPageState extends State<VideoPage> {
         completer.complete(img);
       }
     });
-    image = await completer.future;
+    _image = await completer.future;
     setState(() {});
   }
 
   @override
   void dispose() {
-    controller?.dispose();
-    channel?.sink.close();
+    _controller?.dispose();
+    _channel?.sink.close();
     super.dispose();
   }
 
   void startImageStream() async {
-    Timer.periodic(Duration(milliseconds: 150), (timer) async {
-      if (!controller!.value.isInitialized) {
+    Timer.periodic(Duration(milliseconds: 500  ), (timer) async {
+      if (!_controller!.value.isInitialized) {
         print("Controller is not initialized");
         return;
       }
       try {
-        final image = await controller!.takePicture();
+        final image = await _controller!.takePicture();
         final bytes = await image.readAsBytes();
-        channel!.sink.add(bytes);
+        _channel!.sink.add(bytes);
       } catch (e) {
         print("사진 캡처 또는 전송 실패: $e");
       }
@@ -80,17 +78,15 @@ class _VideoPageState extends State<VideoPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
+    return Scaffold(
         appBar: AppBar(
           title: Text('Camera WebSocket Streaming - No Preview'),
         ),
         body: Center(
-          child: image == null
+          child: _image == null
               ? Text('Sending Images...')
-              : RawImage(image: image), // ui.Image 객체를 사용하여 이미지 표시
-        ),
-      ),
+              : RawImage(image: _image), // ui.Image 객체를 사용하여 이미지 표시
+        )
     );
   }
 }

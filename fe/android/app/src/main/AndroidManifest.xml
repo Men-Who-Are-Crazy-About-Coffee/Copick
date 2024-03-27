@@ -6,7 +6,7 @@
         android:enableOnBackInvokedCallback="true"
         android:requestLegacyExternalStorage="true"
         android:preserveLegacyExternalStorage="true"
-        android:label="CoPick"
+        android:label="Copick"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
