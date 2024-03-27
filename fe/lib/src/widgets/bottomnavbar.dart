@@ -32,15 +32,14 @@ class BottomNavbar extends StatelessWidget {
                     height: 24,
                   )
                 : Image.asset(
-                    'assets/images/coffeeBean1.png', // 1이 아닐 때 다른 이미지
+                    'assets/images/coffeeBean1.png',
                     width: 24,
                     height: 24,
                   ),
             label: 'Gallery',
           ),
           const BottomNavigationBarItem(
-            // 이 항목은 실제 버튼이 아닌 여백을 만들기 위한 더미 항목입니다.
-            icon: SizedBox(width: 50), // 공간 확보를 위한 더미 위젯
+            icon: SizedBox(width: 50),
             label: '', // 레이블 없음
           ),
           const BottomNavigationBarItem(

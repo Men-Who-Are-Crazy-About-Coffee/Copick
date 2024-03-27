@@ -25,6 +25,9 @@ void main() async {
             create: (context) => CameraProvider()..setCamera(firstCamera)),
       ],
       child: MaterialApp(
+        theme: ThemeData(
+          fontFamily: "netmarble",
+        ),
         routes: routes,
       ),
     ),
