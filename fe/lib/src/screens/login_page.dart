@@ -6,6 +6,7 @@ import 'package:fe/src/services/api_service.dart';
 import 'package:fe/src/widgets/rounded_button.dart';
 import 'package:fe/src/widgets/inputfield.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class Login extends StatefulWidget {
@@ -42,9 +43,10 @@ class _LoginState extends State<Login> {
       );
       return; // Exit the function if ID or password is empty
     }
-    ApiService apiService = ApiService();
+    Dio dio = Dio();
     try {
-      Response response = await apiService.post('/api/auth/login', data: {
+      String baseUrl = dotenv.env['BASE_URL']!;
+      Response response = await dio.post('$baseUrl/api/auth/login', data: {
         "id": id,
         "password": password,
       });
