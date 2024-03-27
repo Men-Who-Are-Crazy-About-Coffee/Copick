@@ -5,6 +5,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ApiService {
   Dio dio = Dio();
+
   String baseUrl = dotenv.env['BASE_URL']!;
 
   final storage = const FlutterSecureStorage();
