@@ -157,26 +157,26 @@ class _LoginState extends State<Login> {
                           const SizedBox(
                             height: 30,
                           ),
-                          Card(
-                            elevation: 18,
-                            clipBehavior: Clip.antiAlias,
-                            child: Ink.image(
-                              image:
-                                  const AssetImage('assets/images/kakao.png'),
-                              fit: BoxFit.cover, // 이미지 채우기 방식 지정
-                              width: 300,
-                              height: 60,
-                              child: InkWell(
-                                onTap: () {},
+                          // Card(
+                          //   elevation: 18,
+                          //   clipBehavior: Clip.antiAlias,
+                          //   child: Ink.image(
+                          //     image:
+                          //         const AssetImage('assets/images/kakao.png'),
+                          //     fit: BoxFit.cover, // 이미지 채우기 방식 지정
+                          //     width: 300,
+                          //     height: 60,
+                          //     child: InkWell(
+                          //       onTap: () {},
 
-                                // InkWell이 꽉 찬 영역에 반응하도록 Container 등으로 감싸거나 크기를 지정
-                                child: const SizedBox(
-                                  width: 500, // InkWell의 크기를 지정
-                                  height: 60,
-                                ),
-                              ),
-                            ),
-                          ),
+                          //       // InkWell이 꽉 찬 영역에 반응하도록 Container 등으로 감싸거나 크기를 지정
+                          //       child: const SizedBox(
+                          //         width: 500, // InkWell의 크기를 지정
+                          //         height: 60,
+                          //       ),
+                          //     ),
+                          //   ),
+                          // ),
                         ],
                       ),
                     )),
