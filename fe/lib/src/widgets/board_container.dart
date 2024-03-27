@@ -1,7 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:fe/constants.dart';
 import 'package:fe/src/services/api_service.dart';
+import 'package:fe/src/services/user_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class BoardContainer extends StatefulWidget {
   final int index;
@@ -12,10 +14,12 @@ class BoardContainer extends StatefulWidget {
   final String content;
   final bool isLiked;
   final int like;
+  final int userId;
 
   const BoardContainer({
     super.key,
     required this.index,
+    required this.userId,
     required this.memberImg,
     required this.memberNickName,
     required this.coffeeImg,
@@ -37,8 +41,10 @@ class _BoardContainerState extends State<BoardContainer> {
   String? _content;
   bool _isLiked = false;
   int _like = 0;
+  int _userId = 0;
   int? _index;
   bool _isExpanded = false;
+  bool _isDeleted = false;
   ApiService apiService = ApiService();
 
   @override
@@ -52,6 +58,7 @@ class _BoardContainerState extends State<BoardContainer> {
     _isLiked = widget.isLiked;
     _like = widget.like;
     _index = widget.index;
+    _userId = widget.userId;
   }
 
   ThemeColors themeColors = ThemeColors();
@@ -65,6 +72,42 @@ class _BoardContainerState extends State<BoardContainer> {
   void deleteLike() async {
     apiService.delete('/api/board/$_index/like');
   }
+
+  void deleteBoard() async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('게시글 삭제'),
+          content: const Text('정말 게시글을 삭제하시겠습니까?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('네'),
+              onPressed: () async {
+                Response response =
+                    await apiService.delete('/api/board/$_index');
+                print(response.statusCode);
+                if (response.statusCode == 204) {
+                  setState(() {
+                    _isDeleted = true;
+                  });
+                }
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('아니요'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void unRegister() {}
 
   void _showModalBottomSheet() {
     showModalBottomSheet(
@@ -198,6 +241,7 @@ class _BoardContainerState extends State<BoardContainer> {
 
   @override
   Widget build(BuildContext context) {
+    var user = Provider.of<UserProvider>(context); // Counter 인스턴스에 접근
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: Container(
@@ -220,7 +264,25 @@ class _BoardContainerState extends State<BoardContainer> {
                   ),
                 ),
                 const SizedBox(width: 10),
-                Text("$_memberNickName")
+                Text("$_memberNickName"),
+                _memberNickName == user.user.nickname
+                    ? Row(
+                        children: [
+                          const SizedBox(
+                            width: 20,
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              deleteBoard();
+                            },
+                            child: const Text(
+                              "삭제",
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          ),
+                        ],
+                      )
+                    : const Text("")
               ],
             ),
             const SizedBox(height: 10),

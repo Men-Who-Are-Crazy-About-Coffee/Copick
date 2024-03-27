@@ -24,7 +24,11 @@ class _VideoPageState extends State<VideoPage> {
   @override
   void initState() {
     super.initState();
-    _controller = CameraController(widget.camera, ResolutionPreset.medium);
+    _controller = CameraController(
+      enableAudio: false,
+      widget.camera,
+      ResolutionPreset.medium,
+    );
     _controller!.initialize().then((_) {
       if (!mounted) {
         return;
