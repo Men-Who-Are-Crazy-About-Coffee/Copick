@@ -38,12 +38,13 @@ public class ResultService {
     private String pythonURL;
 
     @Transactional
-    public Result insertEmptyResult(long memberIndex) {
+    public Result insertEmptyResult(long memberIndex,Long beanIndex) {
         Member member = memberRepository.findByIndexAndIsDeletedFalse(memberIndex)
                 .orElseThrow(() -> new EntityNotFoundException("Member not found with index: " + memberIndex));
         Result result = resultRepository.save(Result.builder()
                 .roasting(roastingRepository.findById(1L).orElseThrow())
-                .bean(beanRepository.findById(1L).orElseThrow())
+                .bean(beanRepository.findById(beanIndex).orElseThrow(()
+                        -> new EntityNotFoundException("Bean not found with index: " + beanIndex)))
                 .flawBeanCount(0)
                 .normalBeanCount(0)
                 .member(member)
@@ -57,10 +58,13 @@ public class ResultService {
                 .orElseThrow(() -> new EntityNotFoundException("Result not found with index: " + resultIndex));
         List<Sequence> sequenceList = sequenceRepository.findAllByResultIndex(resultIndex);
         int resultFlawCnt = 0;
+        int resultNormalCnt = 0;
         if (!sequenceList.isEmpty()) {
-            for (Sequence s : sequenceList)
+            for (Sequence s : sequenceList) {
                 resultFlawCnt += s.getFlaw();
-            result.setNormalBeanCount(sequenceList.get(sequenceList.size() - 1).getNormal());
+                resultNormalCnt += s.getNormal();
+            }
+//            result.setNormalBeanCount(sequenceList.get(sequenceList.size() - 1).getNormal());
             WebClient webClient = WebClient.builder().build();
             Long response = webClient.get()
                     .uri(pythonURL + "/api/python/roasting?image_link=" + sequenceList.get(sequenceList.size() - 1).getImage())
@@ -68,6 +72,7 @@ public class ResultService {
             result.setRoasting(roastingRepository.findById(response).orElseThrow());
         }
         result.setFlawBeanCount(resultFlawCnt);
+        result.setNormalBeanCount(resultNormalCnt);
 
         Global globalNormalBean = globalRepository.findById("global_normal_bean")
                 .orElseThrow(() -> new EntityNotFoundException("Global not found with key: global_normal_bean"));
