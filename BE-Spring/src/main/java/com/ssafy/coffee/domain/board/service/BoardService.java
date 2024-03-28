@@ -1,15 +1,10 @@
 package com.ssafy.coffee.domain.board.service;
 
-import com.ssafy.coffee.domain.board.dto.BoardGetListResponseDto;
-import com.ssafy.coffee.domain.board.dto.BoardGetResponseDto;
-import com.ssafy.coffee.domain.board.dto.BoardPostRequestDto;
-import com.ssafy.coffee.domain.board.dto.BoardUpdateRequestDto;
-import com.ssafy.coffee.domain.board.entity.Board;
-import com.ssafy.coffee.domain.board.entity.BoardDomain;
-import com.ssafy.coffee.domain.board.entity.BoardImage;
-import com.ssafy.coffee.domain.board.entity.BoardLike;
+import com.ssafy.coffee.domain.board.dto.*;
+import com.ssafy.coffee.domain.board.entity.*;
 import com.ssafy.coffee.domain.board.repository.BoardImageRepository;
 import com.ssafy.coffee.domain.board.repository.BoardLikeRepository;
+import com.ssafy.coffee.domain.board.repository.BoardRedisLikeRepository;
 import com.ssafy.coffee.domain.board.repository.BoardRepository;
 import com.ssafy.coffee.domain.comment.repository.CommentRepository;
 import com.ssafy.coffee.domain.member.entity.Member;
@@ -17,22 +12,28 @@ import com.ssafy.coffee.domain.s3.service.S3Service;
 import com.ssafy.coffee.global.constant.Role;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SetOperations;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BoardService {
     private final BoardRepository boardRepository;
     private final BoardImageRepository boardImageRepository;
     private final BoardLikeRepository boardLikeRepository;
     private final CommentRepository commentRepository;
     private final S3Service s3Service;
+    private final BoardRedisLikeRepository boardRedisLikeRepository;
+    private final RedisTemplate<String, String> redisTemplate;
 
     @Transactional
     public void addBoard(BoardPostRequestDto boardPostRequestDto, Member member) {
@@ -59,19 +60,16 @@ public class BoardService {
 
 
     public BoardGetResponseDto getBoard(Long boardIndex, Member member) {
-        Board board = boardRepository.findByIndexAndIsDeletedFalse(boardIndex)
-                .orElseThrow(() -> new IllegalArgumentException("Board with id " + boardIndex + " not found"));
+        Board board = getExistBoard(boardIndex);
 
         List<BoardImage> boardImages = boardImageRepository.findAllByBoard(board);
-        List<String> images = boardImages.stream()
+        List<String> imageUrls = boardImages.stream()
                 .map(BoardImage::getImage)
                 .collect(Collectors.toList());
 
-        boolean liked = boardLikeRepository.existsByBoardAndMember(board, member);
-        long likesCount = boardLikeRepository.countByBoard(board);
-        long commentCount = commentRepository.countByBoard(board);
+        BoardLikeInfoDto boardLikeInfo = getBoardLikeInfo(board,member);
 
-        return new BoardGetResponseDto(board, images, liked, likesCount, commentCount);
+        return new BoardGetResponseDto(board, imageUrls, boardLikeInfo.isLiked(),boardLikeInfo.getLikesCount(),boardLikeInfo.getCommentCount());
     }
 
 
@@ -85,14 +83,23 @@ public class BoardService {
                     .map(BoardImage::getImage)
                     .collect(Collectors.toList());
 
-            boolean liked = boardLikeRepository.existsByBoardAndMember(board, member);
-            long likesCount = boardLikeRepository.countByBoard(board);
-            long commentCount = commentRepository.countByBoard(board);
+            BoardLikeInfoDto boardLikeInfo = getBoardLikeInfo(board,member);
 
-            return new BoardGetResponseDto(board, imageUrls, liked, likesCount, commentCount);
+            return new BoardGetResponseDto(board, imageUrls, boardLikeInfo.isLiked(),boardLikeInfo.getLikesCount(),boardLikeInfo.getCommentCount());
         }).collect(Collectors.toList());
 
         return new BoardGetListResponseDto(content, boards.getTotalPages(), boards.getTotalElements());
+    }
+
+    public BoardLikeInfoDto getBoardLikeInfo(Board board, Member member) {
+        SetOperations<String, String> stringStringSetOperations = redisTemplate.opsForSet();
+        Set<String> boardRedisLikeSet = Objects.requireNonNull(stringStringSetOperations.intersect("board_like:boardIndex:"+board.getIndex(),"board_like:memberIndex:"+member.getIndex()));
+//        log.debug("세트 : {} {}",boardRedisLikeSet,board.getIndex());
+        return BoardLikeInfoDto.builder()
+                .liked(boardLikeRepository.existsByBoardAndMember(board, member) || !boardRedisLikeSet.isEmpty())
+                .likesCount(boardLikeRepository.countByBoard(board)+Objects.requireNonNull(stringStringSetOperations.size("board_like:boardIndex:"+board.getIndex())))
+                .commentCount(commentRepository.countByBoard(board))
+                .build();
     }
 
     public BoardGetListResponseDto getPostsByMember(Member member, Pageable pageable) {
@@ -101,11 +108,9 @@ public class BoardService {
             List<BoardImage> boardImages = boardImageRepository.findAllByBoard(board);
             List<String> imageUrls = boardImages.stream().map(BoardImage::getImage).collect(Collectors.toList());
 
-            boolean liked = boardLikeRepository.existsByBoardAndMember(board, member);
-            long likesCount = boardLikeRepository.countByBoard(board);
-            long commentCount = commentRepository.countByBoard(board);
+            BoardLikeInfoDto boardLikeInfo = getBoardLikeInfo(board,member);
 
-            return new BoardGetResponseDto(board, imageUrls, liked, likesCount, commentCount);
+            return new BoardGetResponseDto(board, imageUrls, boardLikeInfo.isLiked(),boardLikeInfo.getLikesCount(),boardLikeInfo.getCommentCount());
         }).collect(Collectors.toList());
 
         return new BoardGetListResponseDto(content, boards.getTotalPages(), boards.getTotalElements());
@@ -118,19 +123,16 @@ public class BoardService {
             List<BoardImage> boardImages = boardImageRepository.findAllByBoard(board);
             List<String> imageUrls = boardImages.stream().map(BoardImage::getImage).collect(Collectors.toList());
 
-            boolean liked = boardLikeRepository.existsByBoardAndMember(board, member);
-            long likesCount = boardLikeRepository.countByBoard(board);
-            long commentCount = commentRepository.countByBoard(board);
+            BoardLikeInfoDto boardLikeInfo = getBoardLikeInfo(board,member);
 
-            return new BoardGetResponseDto(board, imageUrls, liked, likesCount, commentCount);
+            return new BoardGetResponseDto(board, imageUrls, boardLikeInfo.isLiked(),boardLikeInfo.getLikesCount(),boardLikeInfo.getCommentCount());
         }).collect(Collectors.toList());
 
         return new BoardGetListResponseDto(content, likes.getTotalPages(), likes.getTotalElements());
     }
 
     public void updateBoard(Long boardId, BoardUpdateRequestDto boardUpdateRequestDto, Member member) {
-        Board board = boardRepository.findByIndexAndIsDeletedFalse(boardId)
-                .orElseThrow(() -> new IllegalArgumentException("Board with id " + boardId + " not found"));
+        Board board = getExistBoard(boardId);
 
         if (member.getRole() != Role.ADMIN && !Objects.equals(board.getCreatedBy().getIndex(), member.getIndex()))
             throw new IllegalStateException("You do not have permission to update this board.");
@@ -146,8 +148,7 @@ public class BoardService {
     }
 
     public void deleteBoard(Long boardIndex, Member member) {
-        Board board = boardRepository.findByIndexAndIsDeletedFalse(boardIndex)
-                .orElseThrow(() -> new IllegalArgumentException("Board with index " + boardIndex + " does not exist"));
+        Board board = getExistBoard(boardIndex);
 
         if (member.getRole() != Role.ADMIN && !Objects.equals(board.getCreatedBy().getIndex(), member.getIndex()))
             throw new IllegalStateException("You do not have permission to update this board.");
@@ -157,27 +158,55 @@ public class BoardService {
     }
 
     public void addLike(Long boardIndex, Member member) {
-        Board board = boardRepository.findByIndexAndIsDeletedFalse(boardIndex)
-                .orElseThrow(() -> new IllegalArgumentException("Board with id " + boardIndex + " not found"));
-
+        Board board = getExistBoard(boardIndex);
+        Set<String> boardRedisLikeSet =getBoardRedisLikeSet(member, board);
+        if(!boardRedisLikeSet.isEmpty()){
+            throw new IllegalStateException("You already liked this board.");
+        }
         boardLikeRepository.findByBoardAndMember(board, member)
                 .ifPresent(like -> {
                     throw new IllegalStateException("You already liked this board.");
                 });
 
-        BoardLike boardLike = BoardLike.builder().board(board).member(member).build();
-        boardLikeRepository.save(boardLike);
+
+        BoardRedisLike boardRedisLike = BoardRedisLike.builder()
+                .boardIndex(board.getIndex())
+                .memberIndex(member.getIndex())
+                .build();
+        boardRedisLikeRepository.save(boardRedisLike);
+    }
+
+    private Board getExistBoard(Long boardIndex) {
+        return boardRepository.findByIndexAndIsDeletedFalse(boardIndex)
+                .orElseThrow(() -> new IllegalArgumentException("Board with id " + boardIndex + " not found"));
+    }
+
+    @Scheduled(cron = "0 0/10 * * * *")
+    public void saveBoardLikeFromRedis(){
+
+        List<BoardLike> boardLikeList=new ArrayList<>();
+        boardRedisLikeRepository.findAll().forEach(v->boardLikeList.add(v.toEntity()));
+        boardRedisLikeRepository.deleteAll();
+        boardLikeRepository.saveAll(boardLikeList);
+
+
     }
 
     public void removeLike(Long boardIndex, Member member) {
-        Board board = boardRepository.findByIndexAndIsDeletedFalse(boardIndex)
-                .orElseThrow(() -> new IllegalArgumentException("Board with id " + boardIndex + " not found"));
+        Board board = getExistBoard(boardIndex);
+        Set<String> boardRedisLikeSet = getBoardRedisLikeSet(member, board);
+        if(!boardRedisLikeSet.isEmpty()){
+            boardRedisLikeRepository.deleteById(Integer.valueOf(boardRedisLikeSet.iterator().next()));
 
-        BoardLike boardLike = boardLikeRepository.findByBoardAndMember(board, member)
-                .orElseThrow(() -> new IllegalArgumentException("Like not found"));
-
-        boardLikeRepository.delete(boardLike);
+        }else {
+            BoardLike boardLike = boardLikeRepository.findByBoardAndMember(board, member)
+                    .orElseThrow(() -> new IllegalArgumentException("Like not found"));
+            boardLikeRepository.delete(boardLike);
+        }
     }
 
-
+    private Set<String> getBoardRedisLikeSet(Member member, Board board) {
+        SetOperations<String, String> stringStringSetOperations = redisTemplate.opsForSet();
+        return Objects.requireNonNull(stringStringSetOperations.intersect("board_like:boardIndex:"+ board.getIndex(),"board_like:memberIndex:"+ member.getIndex()));
+    }
 }

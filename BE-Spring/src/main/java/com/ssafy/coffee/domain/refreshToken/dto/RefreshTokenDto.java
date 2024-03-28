@@ -1,4 +1,4 @@
-package com.ssafy.coffee.domain.RefreshToken.dto;
+package com.ssafy.coffee.domain.refreshToken.dto;
 
 import lombok.Builder;
 import lombok.Getter;
