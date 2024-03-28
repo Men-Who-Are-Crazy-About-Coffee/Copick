@@ -15,7 +15,7 @@ class CommunityWritePage extends StatefulWidget {
 }
 
 class _CommunityWritePageState extends State<CommunityWritePage> {
-  String? _selectedDomain;
+  final String _selectedDomain = "GENERAL";
 
   XFile? _image;
 
@@ -69,7 +69,7 @@ class _CommunityWritePageState extends State<CommunityWritePage> {
           MultipartFile.fromBytes(fileBytes, filename: "uploaded_file.jpg");
 
       // 텍스트 필드 추가
-      formData.fields.add(const MapEntry("domain", "GENERAL"));
+      formData.fields.add(MapEntry("domain", _selectedDomain));
       formData.fields.add(MapEntry("title", _titleController.text));
       formData.fields.add(MapEntry("content", _contentController.text));
       formData.files.add(MapEntry(
@@ -99,44 +99,32 @@ class _CommunityWritePageState extends State<CommunityWritePage> {
               padding: const EdgeInsets.all(12.0),
               child: Column(
                 children: [
-                  Row(
+                  const Row(
                     children: <Widget>[
-                      Expanded(
-                        child: RadioListTile<String>(
-                          title: const Text('기술'),
-                          value: "Domain.Tech",
-                          groupValue: _selectedDomain,
-                          onChanged: (String? value) {
-                            setState(() {
-                              _selectedDomain = value;
-                            });
-                          },
-                        ),
-                      ),
-                      Expanded(
-                        child: RadioListTile<String>(
-                          title: const Text('자유'),
-                          value: "자유",
-                          groupValue: _selectedDomain,
-                          onChanged: (String? value) {
-                            setState(() {
-                              _selectedDomain = value;
-                            });
-                          },
-                        ),
-                      ),
-                      Expanded(
-                        child: RadioListTile<String>(
-                          title: const Text('질문'),
-                          value: "질문",
-                          groupValue: _selectedDomain,
-                          onChanged: (String? value) {
-                            setState(() {
-                              _selectedDomain = value;
-                            });
-                          },
-                        ),
-                      ),
+                      // Expanded(
+                      //   child: RadioListTile<String>(
+                      //     title: const Text('자유'),
+                      //     value: "GENERAL",
+                      //     groupValue: _selectedDomain,
+                      //     onChanged: (String? value) {
+                      //       setState(() {
+                      //         _selectedDomain = value;
+                      //       });
+                      //     },
+                      //   ),
+                      // ),
+                      // Expanded(
+                      //   child: RadioListTile<String>(
+                      //     title: const Text('공지사항'),
+                      //     value: "NOTIFICATION",
+                      //     groupValue: _selectedDomain,
+                      //     onChanged: (String? value) {
+                      //       setState(() {
+                      //         _selectedDomain = value;
+                      //       });
+                      //     },
+                      //   ),
+                      // ),
                     ],
                   ),
                   TextField(

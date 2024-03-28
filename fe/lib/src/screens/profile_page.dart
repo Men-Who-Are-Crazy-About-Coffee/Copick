@@ -27,10 +27,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   void logout() async {
     String? refreshToekn = await storage.read(key: "REFRESH_TOKEN");
-    Response response =
-        await apiService.delete('/api/auth/logout?refreshToken=$refreshToekn');
-    Future.delayed(const Duration(milliseconds: 5000), () async {});
-    print(response.data);
+    await apiService.delete('/api/auth/logout?refreshToken=$refreshToekn');
     deleteStorage.deleteAll();
     Navigator.pushNamed(context, '/login');
   }

@@ -7,6 +7,8 @@ class BoardProvider extends ChangeNotifier {
   List<Widget> items = [];
   int currentIndex = 0;
   bool isMore = false;
+  bool _isLoading = true;
+  get isLoading => _isLoading;
 
   int size = 5;
   ApiService apiService = ApiService();
@@ -15,7 +17,7 @@ class BoardProvider extends ChangeNotifier {
     Response response = await apiService
         .get('/api/board/search?domain=GENERAL&size=$size&page=0');
     var boards = response.data['list'];
-    // print(boards);
+    _isLoading = false;
     for (var board in boards) {
       String userImg = "";
       board['userProfileImage'] == null
@@ -48,7 +50,7 @@ class BoardProvider extends ChangeNotifier {
         Response response = await apiService.get(
             '/api/board/search?domain=GENERAL&size=$size&page=$currentIndex');
         var boards = response.data['list'];
-        print(boards);
+        // print(boards);
         for (var board in boards) {
           String userImg = "";
           board['userProfileImage'] == null

@@ -52,7 +52,9 @@ class _CommunityPageState extends State<CommunityPage> {
                       ),
                     ],
                   ),
-                  if (value.items.isEmpty)
+                  if (value.isLoading)
+                    const CircularProgressIndicator()
+                  else if (value.items.isEmpty && !value.isLoading)
                     const Column(
                       children: [
                         SizedBox(
