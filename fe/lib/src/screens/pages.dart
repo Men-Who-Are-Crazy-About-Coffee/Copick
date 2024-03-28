@@ -22,11 +22,14 @@ class Pages extends StatefulWidget {
 }
 
 class _PagesState extends State<Pages> {
+  late PageController _pageController;
   int _selectedIndex = 0; // 현재 선택된 탭 인덱스
   late List<Widget> widgetOptions;
+
   @override
   void initState() {
     super.initState();
+    _pageController = PageController();
     isLogin();
   }
 
@@ -40,17 +43,11 @@ class _PagesState extends State<Pages> {
     widgetOptions = [
       const StatPage(),
       const GalleryPage(),
-      const SelectionPage(),
+      // CameraPage(camera: camera!),
+      // const Text(''),
       const CommunityPage(),
       const ProfilePage()
     ];
-  }
-
-  Future<void> getToken() async {
-    // String? token1 = await storage.read(key: 'REFRESH_TOKEN');
-    // String? token2 = await storage.read(key: 'ACCESS_TOKEN');
-    // print("token1 : $token1");
-    // print("token2 : $token2");
   }
 
   @override
@@ -92,10 +89,19 @@ class _PagesState extends State<Pages> {
       child: ChangeNotifierProvider(
         create: (context) => UserProvider()..fetchUserData(),
         child: Scaffold(
-          body: widgetOptions.elementAt(_selectedIndex),
+          body: PageView(
+            controller: _pageController,
+            onPageChanged: (index) {
+              setState(() {
+                _selectedIndex = index;
+                // 페이지 변경 시 스크롤 물리 상태 업데이트
+              });
+            },
+            children: widgetOptions,
+          ),
           floatingActionButton: SizedBox(
-            width: 80,
-            height: 80,
+            width: 60,
+            height: 60,
             child: FloatingActionButton(
               backgroundColor: themeColors.color5,
               child: const Icon(Icons.camera, size: 40),
@@ -114,10 +120,10 @@ class _PagesState extends State<Pages> {
   }
 
   void onItemTapped(int index) {
-    setState(
-      () {
-        _selectedIndex = index;
-      },
-    );
+    setState(() {
+      _selectedIndex = index;
+    });
+    _pageController.jumpToPage(index);
+    // 카메라 페이지를 스킵하기 위한 로직
   }
 }

@@ -1,7 +1,6 @@
-import 'package:fe/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:fe/constants.dart'; // ThemeColors 정의 포함
 
-// BottomNavbar.dart 파일 내용 수정
 class BottomNavbar extends StatelessWidget {
   final int currentIndex; // 현재 선택된 인덱스
   final Function(int) onItemTapped; // 탭 변경 시 호출될 콜백
@@ -15,46 +14,70 @@ class BottomNavbar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ThemeColors themeColors = ThemeColors();
-    return Material(
-      child: BottomNavigationBar(
-        currentIndex: currentIndex,
-        onTap: onItemTapped, // 외부에서 제공된 콜백을 사용
-        items: [
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.stacked_bar_chart_sharp),
+
+    return BottomAppBar(
+      shape: const CircularNotchedRectangle(),
+      notchMargin: 6.0,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: <Widget>[
+          // IconButton을 Column과 Text로 묶어 아이콘 아래에 레이블 추가
+          _buildTabItem(
+            icon: Icons.stacked_bar_chart_sharp,
             label: 'Statistics',
+            index: 0,
+            themeColors: themeColors,
+            isSelected: currentIndex == 0,
+            onTap: onItemTapped,
           ),
-          BottomNavigationBarItem(
-            icon: currentIndex == 1
-                ? Image.asset(
-                    'assets/images/coffeeBean2.png',
-                    width: 24,
-                    height: 24,
-                  )
-                : Image.asset(
-                    'assets/images/coffeeBean1.png',
-                    width: 24,
-                    height: 24,
-                  ),
+          _buildTabItem(
+            icon: Icons.photo,
             label: 'Gallery',
+            index: 1,
+            themeColors: themeColors,
+            isSelected: currentIndex == 1,
+            onTap: onItemTapped,
           ),
-          const BottomNavigationBarItem(
-            icon: SizedBox(width: 50),
-            label: '', // 레이블 없음
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.people_alt),
+          const SizedBox(width: 48), // FloatingActionButton을 위한 공간
+          _buildTabItem(
+            icon: Icons.people_alt,
             label: 'Community',
+            index: 3,
+            themeColors: themeColors,
+            isSelected: currentIndex == 2,
+            onTap: onItemTapped,
           ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle_rounded),
+          _buildTabItem(
+            icon: Icons.account_circle_rounded,
             label: 'Settings',
+            index: 4,
+            themeColors: themeColors,
+            isSelected: currentIndex == 3,
+            onTap: onItemTapped,
           ),
         ],
-        selectedItemColor: themeColors.color5,
-        unselectedItemColor: Colors.grey,
-        showUnselectedLabels: true,
-        type: BottomNavigationBarType.fixed,
+      ),
+    );
+  }
+
+  Widget _buildTabItem({
+    required IconData icon,
+    required String label,
+    required int index,
+    required ThemeColors themeColors,
+    required bool isSelected,
+    required Function(int) onTap,
+  }) {
+    return InkWell(
+      onTap: () => onTap(index),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Icon(icon, color: isSelected ? themeColors.color5 : Colors.grey),
+          Text(label,
+              style: TextStyle(
+                  color: isSelected ? themeColors.color5 : Colors.grey)),
+        ],
       ),
     );
   }
