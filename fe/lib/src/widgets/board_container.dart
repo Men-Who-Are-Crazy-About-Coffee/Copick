@@ -15,19 +15,22 @@ class BoardContainer extends StatefulWidget {
   final bool isLiked;
   final int like;
   final int userId;
+  final int commentCnt;
+  final String regDate;
 
-  const BoardContainer({
-    super.key,
-    required this.index,
-    required this.userId,
-    required this.memberImg,
-    required this.memberNickName,
-    required this.coffeeImg,
-    required this.title,
-    required this.content,
-    required this.isLiked,
-    required this.like,
-  });
+  const BoardContainer(
+      {super.key,
+      required this.index,
+      required this.userId,
+      required this.memberImg,
+      required this.memberNickName,
+      required this.coffeeImg,
+      required this.title,
+      required this.content,
+      required this.isLiked,
+      required this.like,
+      required this.commentCnt,
+      required this.regDate});
 
   @override
   State<BoardContainer> createState() => _BoardContainerState();
@@ -41,10 +44,11 @@ class _BoardContainerState extends State<BoardContainer> {
   String? _content;
   bool _isLiked = false;
   int _like = 0;
+  final int _commentCnt = 0;
   int _userId = 0;
   int? _index;
   bool _isExpanded = false;
-  bool _isDeleted = false;
+  String _regDate = "";
   ApiService apiService = ApiService();
 
   @override
@@ -59,6 +63,7 @@ class _BoardContainerState extends State<BoardContainer> {
     _like = widget.like;
     _index = widget.index;
     _userId = widget.userId;
+    _regDate = widget.regDate;
   }
 
   ThemeColors themeColors = ThemeColors();
@@ -84,14 +89,7 @@ class _BoardContainerState extends State<BoardContainer> {
             TextButton(
               child: const Text('네'),
               onPressed: () async {
-                Response response =
-                    await apiService.delete('/api/board/$_index');
-                print(response.statusCode);
-                if (response.statusCode == 204) {
-                  setState(() {
-                    _isDeleted = true;
-                  });
-                }
+                await apiService.delete('/api/board/$_index');
                 Navigator.of(context).pop();
               },
             ),
@@ -257,7 +255,7 @@ class _BoardContainerState extends State<BoardContainer> {
                 const SizedBox(width: 10),
                 ClipOval(
                   child: Image.network(
-                    widget.memberImg,
+                    _memberImg!,
                     height: 40,
                     width: 40,
                     fit: BoxFit.cover,
@@ -265,7 +263,7 @@ class _BoardContainerState extends State<BoardContainer> {
                 ),
                 const SizedBox(width: 10),
                 Text("$_memberNickName"),
-                _memberNickName == user.user.nickname
+                (_userId == user.user.index) || (user.user.index == 12)
                     ? Row(
                         children: [
                           const SizedBox(
@@ -328,6 +326,16 @@ class _BoardContainerState extends State<BoardContainer> {
                       const Text("좋아요 "),
                       Text("$_like"),
                       const Text("개"),
+                      const SizedBox(
+                        width: 15,
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      const Text("댓글 "),
+                      Text("$_commentCnt"),
+                      const Text("개"),
                     ],
                   ),
                   Row(
@@ -365,7 +373,18 @@ class _BoardContainerState extends State<BoardContainer> {
                           child: Text(_isExpanded ? "접기" : "더보기"),
                         ),
                       ],
-                    )
+                    ),
+                  Row(
+                    children: [
+                      Text(
+                        _regDate.toString().substring(0, 10),
+                        style: const TextStyle(
+                          fontSize: 10,
+                          color: Colors.grey,
+                        ),
+                      )
+                    ],
+                  ),
                 ],
               ),
             )
