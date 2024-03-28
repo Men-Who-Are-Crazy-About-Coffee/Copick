@@ -75,8 +75,6 @@ class _LoginState extends State<Login> {
         },
       );
     }
-
-    // print(response.data);
   }
 
   @override

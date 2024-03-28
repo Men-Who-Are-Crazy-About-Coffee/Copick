@@ -46,13 +46,6 @@ class _PagesState extends State<Pages> {
     ];
   }
 
-  Future<void> getToken() async {
-    // String? token1 = await storage.read(key: 'REFRESH_TOKEN');
-    // String? token2 = await storage.read(key: 'ACCESS_TOKEN');
-    // print("token1 : $token1");
-    // print("token2 : $token2");
-  }
-
   @override
   Widget build(BuildContext context) {
     final cameraProvider = Provider.of<CameraProvider>(context);

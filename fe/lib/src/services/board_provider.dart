@@ -18,6 +18,7 @@ class BoardProvider extends ChangeNotifier {
         .get('/api/board/search?domain=GENERAL&size=$size&page=0');
     var boards = response.data['list'];
     _isLoading = false;
+    print(boards);
     for (var board in boards) {
       String userImg = "";
       board['userProfileImage'] == null
@@ -35,6 +36,8 @@ class BoardProvider extends ChangeNotifier {
           content: board['content'],
           like: board['likes'],
           isLiked: board['liked'],
+          commentCnt: board['comments'],
+          regDate: board['regDate'],
         ),
       );
     }
@@ -68,6 +71,8 @@ class BoardProvider extends ChangeNotifier {
               content: board['content'],
               like: board['likes'],
               isLiked: board['liked'],
+              commentCnt: board['comments'],
+              regDate: board['regDate'],
             ),
           );
         }

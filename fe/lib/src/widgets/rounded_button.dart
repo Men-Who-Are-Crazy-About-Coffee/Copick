@@ -29,7 +29,7 @@ class _RoundedButtonState extends State<RoundedButton> {
       ),
       child: Text(
         widget.maintext, // 'widget.'를 사용하여 상위 위젯의 변수에 접근
-        style: const TextStyle(color: Colors.white, fontSize: 22),
+        style: const TextStyle(color: Colors.white, fontSize: 17),
       ),
     );
   }

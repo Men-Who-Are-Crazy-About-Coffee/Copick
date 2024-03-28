@@ -121,51 +121,8 @@ class _RegisterState extends State<Register> {
                           const SizedBox(
                             height: 20,
                           ),
-                          InputField(
-                            label: '나이',
-                            controller: ageController,
-                          ),
                           const SizedBox(
                             height: 30.0,
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text('성별'),
-                              const SizedBox(
-                                height: 10.0,
-                              ),
-                              Row(
-                                children: <Widget>[
-                                  Flexible(
-                                    child: ListTile(
-                                      title: const Text('남자'),
-                                      leading: Radio<Gender>(
-                                        value: Gender.male,
-                                        groupValue: _selectedGender,
-                                        onChanged: _handleRadioValueChange,
-                                      ),
-                                    ),
-                                  ),
-                                  Flexible(
-                                    child: ListTile(
-                                      title: const Text('여자'),
-                                      leading: Radio<Gender>(
-                                        value: Gender.female,
-                                        groupValue: _selectedGender,
-                                        onChanged: _handleRadioValueChange,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-
-                          // Text(
-                          //     'Selected gender: ${_selectedGender.toString().split('.').last}'),
-                          const SizedBox(
-                            height: 15,
                           ),
                           RoundedButton(
                             maintext: '회원가입',
