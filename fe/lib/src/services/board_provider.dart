@@ -18,7 +18,6 @@ class BoardProvider extends ChangeNotifier {
         .get('/api/board/search?domain=GENERAL&size=$size&page=0');
     var boards = response.data['list'];
     _isLoading = false;
-    print(boards);
     for (var board in boards) {
       String userImg = "";
       board['userProfileImage'] == null
@@ -53,7 +52,6 @@ class BoardProvider extends ChangeNotifier {
         Response response = await apiService.get(
             '/api/board/search?domain=GENERAL&size=$size&page=$currentIndex');
         var boards = response.data['list'];
-        // print(boards);
         for (var board in boards) {
           String userImg = "";
           board['userProfileImage'] == null
