@@ -44,7 +44,7 @@ class _BoardContainerState extends State<BoardContainer> {
   String? _content;
   bool _isLiked = false;
   int _like = 0;
-  final int _commentCnt = 0;
+  int _commentCnt = 0;
   int _userId = 0;
   int? _index;
   bool _isExpanded = false;
@@ -63,6 +63,7 @@ class _BoardContainerState extends State<BoardContainer> {
     _like = widget.like;
     _index = widget.index;
     _userId = widget.userId;
+    _commentCnt = widget.commentCnt;
     _regDate = widget.regDate;
   }
 
@@ -200,7 +201,7 @@ class _BoardContainerState extends State<BoardContainer> {
                       IconButton(
                         icon: const Icon(Icons.send),
                         onPressed: () {
-                          setState(() {
+                          setState(() async {
                             addComment();
                             commentController.clear();
                           });

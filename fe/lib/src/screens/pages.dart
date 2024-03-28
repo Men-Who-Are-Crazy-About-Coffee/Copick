@@ -43,8 +43,6 @@ class _PagesState extends State<Pages> {
     widgetOptions = [
       const StatPage(),
       const GalleryPage(),
-      // CameraPage(camera: camera!),
-      // const Text(''),
       const CommunityPage(),
       const ProfilePage()
     ];
