@@ -103,8 +103,11 @@ class _ProfilePageState extends State<ProfilePage> {
     }
 
     return Scaffold(
-      appBar:
-          AppBar(automaticallyImplyLeading: false, title: const Text("프로필")),
+      appBar: AppBar(
+        backgroundColor: themeColors.color5,
+        automaticallyImplyLeading: false,
+        title: const Text("프로필"),
+      ),
       body: SingleChildScrollView(
         child: Center(
           child: Column(

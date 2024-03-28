@@ -1,3 +1,4 @@
+import 'package:fe/constants.dart';
 import 'package:fe/src/services/api_service.dart';
 import 'package:fe/src/services/board_provider.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ class CommunityPage extends StatefulWidget {
 }
 
 class _CommunityPageState extends State<CommunityPage> {
+  final ThemeColors _themeColors = ThemeColors();
   ApiService apiService = ApiService();
   List<Widget> boardWidgets = [];
 
@@ -34,6 +36,7 @@ class _CommunityPageState extends State<CommunityPage> {
       child: Consumer<BoardProvider>(builder: (context, value, child) {
         return Scaffold(
           appBar: AppBar(
+            backgroundColor: _themeColors.color5,
             title: const Text('자유 게시판'),
             automaticallyImplyLeading: false,
           ),
