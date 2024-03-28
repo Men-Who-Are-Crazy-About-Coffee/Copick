@@ -93,7 +93,7 @@ class _BoardContainerState extends State<BoardContainer> {
               child: const Text('네'),
               onPressed: () async {
                 await apiService.delete('/api/board/$_index');
-                Navigator.of(context).pop();
+                Navigator.pop(context);
               },
             ),
             TextButton(

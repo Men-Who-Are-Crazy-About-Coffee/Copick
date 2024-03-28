@@ -47,6 +47,7 @@ class BoardProvider extends ChangeNotifier {
   }
 
   Future<void> update() async {
+    _isLoading = true;
     items.clear();
     await started();
     notifyListeners();
