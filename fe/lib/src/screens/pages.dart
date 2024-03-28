@@ -101,6 +101,7 @@ class _PagesState extends State<Pages> {
             width: 80,
             height: 80,
             child: FloatingActionButton(
+              shape: const StadiumBorder(),
               backgroundColor: themeColors.color5,
               child: const Icon(Icons.camera, size: 40),
               onPressed: () => Navigator.push(

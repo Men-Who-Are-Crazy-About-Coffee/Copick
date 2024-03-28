@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:fe/constants.dart';
 import 'package:fe/src/services/api_service.dart';
@@ -216,8 +217,28 @@ class _GalleryPageState extends State<GalleryPage> {
               ],
               if (loadingState == LoadingState.loading)
                 const CircularProgressIndicator(),
-              if (loadingState == LoadingState.empty)
-                const Text("현재 갤러리에 업로드된 이미지가 없어요..."),
+              if (loadingState == LoadingState.empty) ...[
+                const SizedBox(
+                  height: 50,
+                ),
+                const Text(
+                  "현재 갤러리에 업로드된 이미지가 없어요...",
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(
+                  height: 30,
+                ),
+                const Text(
+                  "사진을 찍어 업로드 해보세요.",
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
               if (loadingState == LoadingState.completed)
                 ...groupedItems.entries
                     .map((entry) => buildDateSection(entry.key, entry.value)),
@@ -281,8 +302,9 @@ class _GalleryPageState extends State<GalleryPage> {
                             fit: BoxFit.cover,
                             loadingBuilder: (BuildContext context, Widget child,
                                 ImageChunkEvent? loadingProgress) {
-                              if (loadingProgress == null)
+                              if (loadingProgress == null) {
                                 return child; // 이미지 로딩 완료
+                              }
                               return Center(
                                 child: CircularProgressIndicator(
                                   value: loadingProgress.expectedTotalBytes !=
@@ -318,6 +340,9 @@ class _GalleryPageState extends State<GalleryPage> {
                   ),
                 );
               },
+            ),
+            const SizedBox(
+              height: 30,
             ),
           ],
         ),

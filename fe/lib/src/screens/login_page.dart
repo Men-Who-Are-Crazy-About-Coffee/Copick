@@ -90,99 +90,101 @@ class _LoginState extends State<Login> {
       Navigator.pushNamed(context, '/register');
     }
 
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const SizedBox(
-              height: 50,
-            ),
-            const Center(
-              child: Text(
-                '로그인',
-                style: TextStyle(
-                  fontSize: 40,
+    return Center(
+      child: Scaffold(
+        body: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SizedBox(
+                height: 115,
+              ),
+              const Center(
+                child: Text(
+                  '로그인',
+                  style: TextStyle(
+                    fontSize: 40,
+                  ),
                 ),
               ),
-            ),
-            Form(
-              child: Theme(
-                data: ThemeData(
-                    primaryColor: Colors.grey,
-                    inputDecorationTheme: const InputDecorationTheme(
-                        labelStyle:
-                            TextStyle(color: Colors.grey, fontSize: 15.0))),
-                child: Container(
-                    width: 500,
-                    padding: const EdgeInsets.all(40.0),
-                    // 키보드가 올라와서 만약 스크린 영역을 차지하는 경우 스크롤이 되도록
-                    // SingleChildScrollView으로 감싸 줌
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          InputField(
-                            controller: idController,
-                            label: 'Id',
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          InputField(
-                            label: 'password',
-                            controller: pwController,
-                          ),
-                          const SizedBox(
-                            height: 40.0,
-                          ),
-                          RoundedButton(
-                            maintext: '로그인',
-                            bgcolor: themeColors.color1,
-                            onPressed: () {
-                              login(idController.text, pwController.text);
-                            },
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          RoundedButton(
-                            maintext: '회원가입',
-                            bgcolor: themeColors.color2,
-                            onPressed: navigateToSignUp,
-                          ),
-                          const SizedBox(
-                            height: 30,
-                          ),
-                          const Divider(),
-                          const SizedBox(
-                            height: 30,
-                          ),
-                          // Card(
-                          //   elevation: 18,
-                          //   clipBehavior: Clip.antiAlias,
-                          //   child: Ink.image(
-                          //     image:
-                          //         const AssetImage('assets/images/kakao.png'),
-                          //     fit: BoxFit.cover, // 이미지 채우기 방식 지정
-                          //     width: 300,
-                          //     height: 60,
-                          //     child: InkWell(
-                          //       onTap: () {},
+              Form(
+                child: Theme(
+                  data: ThemeData(
+                      primaryColor: Colors.grey,
+                      inputDecorationTheme: const InputDecorationTheme(
+                          labelStyle:
+                              TextStyle(color: Colors.grey, fontSize: 15.0))),
+                  child: Container(
+                      width: 500,
+                      padding: const EdgeInsets.all(40.0),
+                      // 키보드가 올라와서 만약 스크린 영역을 차지하는 경우 스크롤이 되도록
+                      // SingleChildScrollView으로 감싸 줌
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            InputField(
+                              controller: idController,
+                              label: 'Id',
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            InputField(
+                              label: 'password',
+                              controller: pwController,
+                            ),
+                            const SizedBox(
+                              height: 40.0,
+                            ),
+                            RoundedButton(
+                              maintext: '로그인',
+                              bgcolor: themeColors.color1,
+                              onPressed: () {
+                                login(idController.text, pwController.text);
+                              },
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            RoundedButton(
+                              maintext: '회원가입',
+                              bgcolor: themeColors.color2,
+                              onPressed: navigateToSignUp,
+                            ),
+                            const SizedBox(
+                              height: 30,
+                            ),
+                            const Divider(),
+                            const SizedBox(
+                              height: 30,
+                            ),
+                            // Card(
+                            //   elevation: 18,
+                            //   clipBehavior: Clip.antiAlias,
+                            //   child: Ink.image(
+                            //     image:
+                            //         const AssetImage('assets/images/kakao.png'),
+                            //     fit: BoxFit.cover, // 이미지 채우기 방식 지정
+                            //     width: 300,
+                            //     height: 60,
+                            //     child: InkWell(
+                            //       onTap: () {},
 
-                          //       // InkWell이 꽉 찬 영역에 반응하도록 Container 등으로 감싸거나 크기를 지정
-                          //       child: const SizedBox(
-                          //         width: 500, // InkWell의 크기를 지정
-                          //         height: 60,
-                          //       ),
-                          //     ),
-                          //   ),
-                          // ),
-                        ],
-                      ),
-                    )),
+                            //       // InkWell이 꽉 찬 영역에 반응하도록 Container 등으로 감싸거나 크기를 지정
+                            //       child: const SizedBox(
+                            //         width: 500, // InkWell의 크기를 지정
+                            //         height: 60,
+                            //       ),
+                            //     ),
+                            //   ),
+                            // ),
+                          ],
+                        ),
+                      )),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
