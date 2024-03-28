@@ -65,6 +65,7 @@ class _BoardContainerState extends State<BoardContainer> {
     _userId = widget.userId;
     _commentCnt = widget.commentCnt;
     _regDate = widget.regDate;
+    _commentCnt = widget.commentCnt;
   }
 
   ThemeColors themeColors = ThemeColors();
@@ -204,9 +205,9 @@ class _BoardContainerState extends State<BoardContainer> {
                           setState(() async {
                             addComment();
                             commentController.clear();
+                            Navigator.pop(context);
                           });
                           // 모달을 닫고 싶지 않으면 아래 줄을 주석 처리하세요.
-                          Navigator.of(context).pop();
                         },
                       ),
                     ],

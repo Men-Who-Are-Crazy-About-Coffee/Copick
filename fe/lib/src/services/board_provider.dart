@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 class BoardProvider extends ChangeNotifier {
   List<Widget> items = [];
   int currentIndex = 0;
+  int endPage = 1;
   bool isMore = false;
   bool _isLoading = true;
   get isLoading => _isLoading;
@@ -17,6 +18,7 @@ class BoardProvider extends ChangeNotifier {
     Response response = await apiService
         .get('/api/board/search?domain=GENERAL&size=$size&page=0');
     var boards = response.data['list'];
+    endPage = response.data['totalPages'];
     _isLoading = false;
     for (var board in boards) {
       String userImg = "";
@@ -58,6 +60,7 @@ class BoardProvider extends ChangeNotifier {
               ? userImg =
                   "https://jariyo-s3.s3.ap-northeast-2.amazonaws.com/memeber/anonymous.png"
               : userImg = board['userProfileImage'];
+
           items.add(
             BoardContainer(
               index: board['index'],
@@ -83,7 +86,8 @@ class BoardProvider extends ChangeNotifier {
 
   void listner(ScrollUpdateNotification notification) {
     if (notification.metrics.maxScrollExtent * 0.85 <
-        notification.metrics.pixels) {
+            notification.metrics.pixels &&
+        currentIndex < endPage) {
       _addItem();
     }
   }
