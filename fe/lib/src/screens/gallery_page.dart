@@ -196,53 +196,56 @@ class _GalleryPageState extends State<GalleryPage> {
         ],
         title: const Text('결함 원두 분류 사진'),
       ),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            children: [
-              if (!isSelectMode) ...[
-                const SizedBox(height: 50),
-                const Text('각 이미지를 클릭하면 상세하게 볼 수 있어요.'),
-                const SizedBox(height: 20),
-                const Text('이미지를 꾹 누르면 선택해서 올바르게 검출되지 않은 원두를'),
-                const Text('서버에 전송할 수 있어요.'),
-                const SizedBox(height: 20),
-              ],
-              if (isSelectMode) ...[
-                const SizedBox(height: 50),
-                const Text('전송할 이미지를 선택해주세요.'),
-                const SizedBox(height: 20),
-                const Text('전송한 이미지는 갤러리에서 삭제됩니다.'),
-                const SizedBox(height: 40),
-              ],
-              if (loadingState == LoadingState.loading)
-                const CircularProgressIndicator(),
-              if (loadingState == LoadingState.empty) ...[
-                const SizedBox(
-                  height: 50,
-                ),
-                const Text(
-                  "현재 갤러리에 업로드된 이미지가 없어요...",
-                  style: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w600,
+      body: RefreshIndicator(
+        onRefresh: getData,
+        child: SingleChildScrollView(
+          child: Center(
+            child: Column(
+              children: [
+                if (!isSelectMode) ...[
+                  const SizedBox(height: 50),
+                  const Text('각 이미지를 클릭하면 상세하게 볼 수 있어요.'),
+                  const SizedBox(height: 20),
+                  const Text('이미지를 꾹 누르면 선택해서 올바르게 검출되지 않은 원두를'),
+                  const Text('서버에 전송할 수 있어요.'),
+                  const SizedBox(height: 20),
+                ],
+                if (isSelectMode) ...[
+                  const SizedBox(height: 50),
+                  const Text('전송할 이미지를 선택해주세요.'),
+                  const SizedBox(height: 20),
+                  const Text('전송한 이미지는 갤러리에서 삭제됩니다.'),
+                  const SizedBox(height: 40),
+                ],
+                if (loadingState == LoadingState.loading)
+                  const CircularProgressIndicator(),
+                if (loadingState == LoadingState.empty) ...[
+                  const SizedBox(
+                    height: 50,
                   ),
-                ),
-                const SizedBox(
-                  height: 30,
-                ),
-                const Text(
-                  "사진을 찍어 업로드 해보세요.",
-                  style: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w600,
+                  const Text(
+                    "현재 갤러리에 업로드된 이미지가 없어요...",
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                ),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  const Text(
+                    "사진을 찍어 업로드 해보세요.",
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+                if (loadingState == LoadingState.completed)
+                  ...groupedItems.entries
+                      .map((entry) => buildDateSection(entry.key, entry.value)),
               ],
-              if (loadingState == LoadingState.completed)
-                ...groupedItems.entries
-                    .map((entry) => buildDateSection(entry.key, entry.value)),
-            ],
+            ),
           ),
         ),
       ),
