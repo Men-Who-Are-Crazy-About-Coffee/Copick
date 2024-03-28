@@ -22,18 +22,16 @@ class GalleryPage extends StatefulWidget {
 }
 
 class _GalleryPageState extends State<GalleryPage> {
-  Map<String, List<Map<String, dynamic>>> groupedItems = {}; // 데이터 저장용 상태 변수
+  Map<String, List<Map<String, dynamic>>> groupedItems = {};
+  final ThemeColors _themeColors = ThemeColors(); // 데이터 저장용 상태 변수
   List<String> selectedImages = [];
   List<dynamic> errorList = [];
   bool isSelectMode = false;
   LoadingState loadingState = LoadingState.loading;
+
   @override
   void initState() {
     super.initState();
-    getData();
-  }
-
-  void Reload() {
     getData();
   }
 
@@ -83,7 +81,7 @@ class _GalleryPageState extends State<GalleryPage> {
         errorList.add(image['flawIndex']);
         // 체크 시 errorList에 추가
       } else {
-        errorList.remove(image['flawIndex']);
+        errorList.removeWhere((element) => element == image['flawIndex']);
       }
     });
   }
@@ -121,8 +119,11 @@ class _GalleryPageState extends State<GalleryPage> {
               TextButton(
                 child: const Text('확인'),
                 onPressed: () {
-                  isSelectMode = false;
-                  Reload();
+                  setState(() {
+                    isSelectMode = false;
+                    errorList.clear();
+                    Reload();
+                  });
                   Navigator.of(context).pop(); // 대화상자 닫기
                 },
               ),
@@ -133,6 +134,10 @@ class _GalleryPageState extends State<GalleryPage> {
     } on DioException catch (e) {
       print(e);
     }
+  }
+
+  void Reload() {
+    getData();
   }
 
   Future<void> detail(String imageurl) async {
@@ -148,8 +153,7 @@ class _GalleryPageState extends State<GalleryPage> {
           ),
           content: Image.network(
             imageurl,
-            height: 250,
-            width: 100,
+            fit: BoxFit.cover,
           ),
           actions: <Widget>[
             TextButton(
@@ -173,27 +177,19 @@ class _GalleryPageState extends State<GalleryPage> {
         automaticallyImplyLeading: false,
         actions: [
           if (isSelectMode) ...[
-            Row(
-              children: [
-                IconButton(
-                  icon: const Text('전송'),
-                  onPressed: () {
-                    sendError();
-                  },
-                ),
-                const SizedBox(
-                  width: 20,
-                ),
-                IconButton(
-                  icon: const Text('취소'),
-                  onPressed: () {
-                    setState(() {
-                      isSelectMode = false;
-                    });
-                  },
-                ),
-              ],
-            )
+            IconButton(
+              icon: const Icon(Icons.send),
+              onPressed: sendError,
+            ),
+            IconButton(
+              icon: const Icon(Icons.cancel),
+              onPressed: () {
+                setState(() {
+                  isSelectMode = false;
+                  errorList.clear();
+                });
+              },
+            ),
           ],
         ],
         title: const Text('결함 원두 분류 사진'),
@@ -203,196 +199,105 @@ class _GalleryPageState extends State<GalleryPage> {
           child: Column(
             children: [
               if (!isSelectMode) ...[
-                const SizedBox(
-                  height: 50,
-                ),
+                const SizedBox(height: 50),
                 const Text('각 이미지를 클릭하면 상세하게 볼 수 있어요.'),
-                const SizedBox(
-                  height: 20,
-                ),
+                const SizedBox(height: 20),
                 const Text('이미지를 꾹 누르면 선택해서 올바르게 검출되지 않은 원두를'),
                 const Text('서버에 전송할 수 있어요.'),
-                const SizedBox(
-                  height: 20,
-                ),
+                const SizedBox(height: 20),
               ],
               if (isSelectMode) ...[
-                const SizedBox(
-                  height: 50,
-                ),
+                const SizedBox(height: 50),
                 const Text('전송할 이미지를 선택해주세요.'),
-                const SizedBox(
-                  height: 20,
-                ),
+                const SizedBox(height: 20),
                 const Text('전송한 이미지는 갤러리에서 삭제됩니다.'),
-                const SizedBox(
-                  height: 40,
-                ),
+                const SizedBox(height: 40),
               ],
-              SizedBox(
-                width: 600,
-                child: Column(
-                  children: loadingState == LoadingState.loading
-                      ? [
-                          const SizedBox(
-                            height: 100,
-                          ),
-                          const CircularProgressIndicator()
-                        ]
-                      : loadingState == LoadingState.empty
-                          ? [
-                              const SizedBox(height: 100),
-                              const Text(
-                                '현재 갤러리에 업로드된 이미지가 없어요...',
-                                style: TextStyle(fontSize: 18),
-                              ),
-                              const SizedBox(height: 20),
-                              const Text(
-                                '원두를 촬영하고 사진을 등록해보는건 어떨까요?',
-                                style: TextStyle(fontSize: 18),
-                              ),
-                            ]
-                          : groupedItems.entries.map(
-                              (entry) {
-                                return Column(
-                                  children: [
-                                    Container(
-                                      color: themeColors.white,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(16.0),
-                                        child: Center(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    left: 0),
-                                                child: Text(
-                                                  entry.key,
-                                                  style: const TextStyle(
-                                                      fontSize: 20,
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                ),
-                                              ),
-                                              const SizedBox(
-                                                height: 20,
-                                              ),
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 1.0),
-                                                child: Wrap(
-                                                  spacing: 8.0,
-                                                  runSpacing: 8.0,
-                                                  alignment:
-                                                      WrapAlignment.center,
-                                                  children: List.generate(
-                                                      entry.value.length,
-                                                      (index) {
-                                                    var imageurl = entry
-                                                        .value[index]['image'];
-                                                    var isChecked =
-                                                        entry.value[index]
-                                                            ['isChecked'];
-                                                    return Row(
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      children: [
-                                                        InkWell(
-                                                          onLongPress: () {
-                                                            // 이미지를 길게 누르면 선택 모드 활성화
-                                                            setState(() {
-                                                              isSelectMode =
-                                                                  true;
-                                                            });
-                                                          },
-                                                          onTap: () {
-                                                            if (!isSelectMode) {
-                                                              // 선택 모드가 아닐 때만 상세보기 함수 호출
-                                                              detail(imageurl);
-                                                            } else {
-                                                              // 선택 모드일 때는 이미지 탭으로 체크박스 토글
-                                                              toggleCheckbox(
-                                                                  entry.key,
-                                                                  index,
-                                                                  !isChecked);
-                                                            }
-                                                          },
-                                                          child: Stack(
-                                                            children: [
-                                                              SizedBox(
-                                                                width: 88,
-                                                                height: 88,
-                                                                child:
-                                                                    ClipRRect(
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              10.0), // 이미지에 둥근 모서리 추가 (선택적)
-                                                                  child: Image
-                                                                      .network(
-                                                                    imageurl,
-                                                                    fit: BoxFit
-                                                                        .cover,
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                              if (isSelectMode) // 선택 모드가 활성화되었을 때만 체크박스 표시
-                                                                Positioned(
-                                                                  top: 0,
-                                                                  right: 0,
-                                                                  child:
-                                                                      Checkbox(
-                                                                    activeColor:
-                                                                        themeColors
-                                                                            .color5,
-                                                                    shape:
-                                                                        RoundedRectangleBorder(
-                                                                      borderRadius:
-                                                                          BorderRadius.circular(
-                                                                              15),
-                                                                    ),
-                                                                    value:
-                                                                        isChecked,
-                                                                    onChanged:
-                                                                        (bool?
-                                                                            value) {
-                                                                      toggleCheckbox(
-                                                                          entry
-                                                                              .key,
-                                                                          index,
-                                                                          value);
-                                                                    },
-                                                                  ),
-                                                                ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    );
-                                                  }),
-                                                ),
-                                              ),
-                                              const SizedBox(height: 20),
-                                              const Divider(),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      height: 8,
-                                    )
-                                  ],
-                                );
-                              },
-                            ).toList(),
-                ),
-              ),
+              ...groupedItems.entries.map((entry) {
+                return buildDateSection(entry.key, entry.value);
+              }),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildDateSection(String date, List<Map<String, dynamic>> images) {
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 600),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                date,
+                style:
+                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+            ),
+            GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 5,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+              ),
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: images.length,
+              itemBuilder: (BuildContext context, int index) {
+                var image = images[index];
+                return GestureDetector(
+                  onTap: () {
+                    if (isSelectMode) {
+                      toggleCheckbox(date, index, !image['isChecked']);
+                    } else {
+                      detail(image['image']);
+                    }
+                  },
+                  onLongPress: () {
+                    enableSelectMode();
+                    toggleCheckbox(date, index, true);
+                  },
+                  child: Container(
+                    constraints: const BoxConstraints(
+                      maxWidth: 50,
+                      maxHeight: 50,
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          Image.network(image['image'], fit: BoxFit.cover),
+                          if (isSelectMode)
+                            Positioned(
+                              right: 0,
+                              top: 0,
+                              child: Transform.scale(
+                                scale: 1.25,
+                                child: Checkbox(
+                                  side: const BorderSide(
+                                      color: Colors.white, width: 2),
+                                  shape: const CircleBorder(),
+                                  activeColor: _themeColors.color5,
+                                  value: image['isChecked'],
+                                  onChanged: (bool? value) {
+                                    toggleCheckbox(date, index, value);
+                                  },
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
         ),
       ),
     );

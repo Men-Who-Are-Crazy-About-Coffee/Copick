@@ -98,12 +98,15 @@ class _PagesState extends State<Pages> {
             children: widgetOptions,
           ),
           floatingActionButton: SizedBox(
-            width: 60,
-            height: 60,
+            width: 80,
+            height: 80,
             child: FloatingActionButton(
               backgroundColor: themeColors.color5,
               child: const Icon(Icons.camera, size: 40),
-              onPressed: () => onItemTapped(2),
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SelectionPage()),
+              ),
             ),
           ),
           floatingActionButtonLocation:
