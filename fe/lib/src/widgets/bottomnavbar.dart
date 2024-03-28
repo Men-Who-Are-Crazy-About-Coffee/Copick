@@ -42,7 +42,7 @@ class BottomNavbar extends StatelessWidget {
           _buildTabItem(
             icon: Icons.people_alt,
             label: 'Community',
-            index: 3,
+            index: 2,
             themeColors: themeColors,
             isSelected: currentIndex == 2,
             onTap: onItemTapped,
@@ -50,7 +50,7 @@ class BottomNavbar extends StatelessWidget {
           _buildTabItem(
             icon: Icons.account_circle_rounded,
             label: 'Settings',
-            index: 4,
+            index: 3,
             themeColors: themeColors,
             isSelected: currentIndex == 3,
             onTap: onItemTapped,
