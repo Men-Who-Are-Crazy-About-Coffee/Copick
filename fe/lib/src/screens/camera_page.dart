@@ -1,10 +1,9 @@
-import 'dart:typed_data';
-
+import 'package:fe/src/screens/result_page.dart';
 import 'package:fe/src/services/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:dio/dio.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:fe/src/services/api_service.dart';
 
 // 사진 찍기 화면
 class CameraPage extends StatefulWidget {
@@ -21,27 +20,12 @@ class CameraPageState extends State<CameraPage> {
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
   ApiService apiService = ApiService();
-  String? resultIndex;
+  int? resultIndex; // resultIndex는 int? 타입으로 선언
 
   @override
   void initState() {
     super.initState();
     initializeCamera();
-  }
-
-  Future<void> initializeCamera() async {
-    // 카메라 컨트롤러 생성 및 초기화
-    _controller = CameraController(widget.camera, ResolutionPreset.medium);
-    _initializeControllerFuture = _controller.initialize();
-
-    // 서버로부터 resultIndex 받기
-    try {
-      Response response = await apiService
-          .get('/api/result/init/${widget.coffeeTypeValue.toString()}');
-      resultIndex = response.data;
-    } catch (e) {
-      print("resultIndex를 받아오는데 실패했습니다: $e");
-    }
   }
 
   @override
@@ -50,29 +34,37 @@ class CameraPageState extends State<CameraPage> {
     super.dispose();
   }
 
-  Future<String?> sendImage(XFile file) async {
-    Dio dio = Dio();
-    var url = 'https://ai.copick.duckdns.org/api/python/analyze';
-    Uint8List fileBytes = await file.readAsBytes();
-    MultipartFile multipartFile =
-        MultipartFile.fromBytes(fileBytes, filename: file.name);
-
-    FormData formData = FormData.fromMap({
-      "resultIndex": resultIndex,
-      "file": multipartFile,
-    });
+  Future<void> initializeCamera() async {
+    _controller = CameraController(widget.camera, ResolutionPreset.medium);
+    _initializeControllerFuture = _controller.initialize();
 
     try {
-      Response response = await dio.post(url, data: formData);
-      if (response.statusCode == 200) {
-        String imageUrl = response.data;
-        return imageUrl;
+      Response response =
+          await apiService.get('/api/result/init/${widget.coffeeTypeValue}');
+      if (response.data is int) {
+        // 서버로부터 받은 데이터가 int 타입인지 확인
+        resultIndex = response.data as int;
+        print(resultIndex);
       } else {
-        print("서버 오류: ${response.statusCode}");
-        return null;
+        print("서버로부터 받은 resultIndex가 int 타입이 아닙니다.");
       }
     } catch (e) {
-      print("업로드 실패: $e");
+      print("resultIndex를 받아오는데 실패했습니다: $e");
+    }
+  }
+
+  Future<String?> sendImage(XFile image) async {
+    // 수정: resultIndex를 매개변수로 받지 않음
+    if (resultIndex == null) {
+      print("resultIndex가 없습니다.");
+      return null;
+    }
+
+    try {
+      String? imageUrl = await apiService.sendImage(image, resultIndex!);
+      return imageUrl;
+    } catch (e) {
+      print("이미지 업로드 실패: $e");
       return null;
     }
   }
@@ -108,8 +100,8 @@ class CameraPageState extends State<CameraPage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) =>
-                        DisplayPictureScreen(imagePath: imageUrl)),
+                    builder: (context) => DisplayPictureScreen(
+                        imagePath: imageUrl, resultIndex: resultIndex)),
               );
             } else {
               print("이미지 업로드 실패 또는 URL을 받지 못함.");
@@ -126,15 +118,30 @@ class CameraPageState extends State<CameraPage> {
 // 사진을 표시하는 화면
 class DisplayPictureScreen extends StatelessWidget {
   final String imagePath;
+  final int? resultIndex;
 
-  const DisplayPictureScreen({super.key, required this.imagePath});
+  const DisplayPictureScreen({
+    super.key,
+    required this.imagePath,
+    this.resultIndex,
+  });
 
   @override
   Widget build(BuildContext context) {
-    // 네트워크 이미지를 표시합니다.
     return Scaffold(
       appBar: AppBar(title: const Text('찍힌 사진 보기')),
       body: Image.network(imagePath),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.arrow_forward),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    ResultPage(resultIndex: resultIndex)), // 올바른 타입으로 전달
+          );
+        },
+      ),
     );
   }
 }
