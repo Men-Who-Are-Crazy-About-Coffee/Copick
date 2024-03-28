@@ -39,7 +39,9 @@ void main() async {
         builder: (context, child) {
           final MediaQueryData data = MediaQuery.of(context);
           return MediaQuery(
-            data: data.copyWith(textScaler: const TextScaler.linear(1.3)),
+            data: data.copyWith(
+              textScaler: const TextScaler.linear(1.3),
+            ),
             child: child!,
           );
         },

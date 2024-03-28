@@ -35,7 +35,10 @@ class CameraPageState extends State<CameraPage> {
   }
 
   Future<void> initializeCamera() async {
-    _controller = CameraController(widget.camera, ResolutionPreset.medium);
+    _controller = CameraController(
+      widget.camera,
+      ResolutionPreset.max,
+    );
     _initializeControllerFuture = _controller.initialize();
 
     try {
