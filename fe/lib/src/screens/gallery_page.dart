@@ -37,6 +37,7 @@ class _GalleryPageState extends State<GalleryPage> {
 
   Future<void> getData() async {
     ApiService apiService = ApiService();
+    loadingState = LoadingState.loading;
     try {
       Response response = await apiService.get('/api/result/flaws');
 
@@ -213,9 +214,13 @@ class _GalleryPageState extends State<GalleryPage> {
                 const Text('전송한 이미지는 갤러리에서 삭제됩니다.'),
                 const SizedBox(height: 40),
               ],
-              ...groupedItems.entries.map((entry) {
-                return buildDateSection(entry.key, entry.value);
-              }),
+              if (loadingState == LoadingState.loading)
+                const CircularProgressIndicator(),
+              if (loadingState == LoadingState.empty)
+                const Text("현재 갤러리에 업로드된 이미지가 없어요..."),
+              if (loadingState == LoadingState.completed)
+                ...groupedItems.entries
+                    .map((entry) => buildDateSection(entry.key, entry.value)),
             ],
           ),
         ),
@@ -271,7 +276,24 @@ class _GalleryPageState extends State<GalleryPage> {
                       child: Stack(
                         fit: StackFit.expand,
                         children: [
-                          Image.network(image['image'], fit: BoxFit.cover),
+                          Image.network(
+                            image['image'],
+                            fit: BoxFit.cover,
+                            loadingBuilder: (BuildContext context, Widget child,
+                                ImageChunkEvent? loadingProgress) {
+                              if (loadingProgress == null)
+                                return child; // 이미지 로딩 완료
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes !=
+                                          null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                          loadingProgress.expectedTotalBytes!
+                                      : null, // 로딩 진행 상태 표시
+                                ),
+                              );
+                            },
+                          ),
                           if (isSelectMode)
                             Positioned(
                               right: 0,
