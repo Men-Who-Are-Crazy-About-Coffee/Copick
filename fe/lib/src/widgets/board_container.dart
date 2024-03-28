@@ -44,7 +44,7 @@ class _BoardContainerState extends State<BoardContainer> {
   String? _content;
   bool _isLiked = false;
   int _like = 0;
-  final int _commentCnt = 0;
+  int _commentCnt = 0;
   int _userId = 0;
   int? _index;
   bool _isExpanded = false;
@@ -64,6 +64,7 @@ class _BoardContainerState extends State<BoardContainer> {
     _index = widget.index;
     _userId = widget.userId;
     _regDate = widget.regDate;
+    _commentCnt = widget.commentCnt;
   }
 
   ThemeColors themeColors = ThemeColors();
@@ -200,12 +201,12 @@ class _BoardContainerState extends State<BoardContainer> {
                       IconButton(
                         icon: const Icon(Icons.send),
                         onPressed: () {
-                          setState(() {
+                          setState(() async {
                             addComment();
                             commentController.clear();
+                            Navigator.pop(context);
                           });
                           // 모달을 닫고 싶지 않으면 아래 줄을 주석 처리하세요.
-                          Navigator.of(context).pop();
                         },
                       ),
                     ],
