@@ -199,12 +199,7 @@ class _PagesState extends State<Pages> {
                 child: const Icon(Icons.camera, size: 40),
                 onPressed: () {
                   selectBean();
-                }
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(builder: (context) => const SelectionPage()),
-                // ),
-                ),
+                }),
           ),
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerDocked,

@@ -31,7 +31,7 @@ class _StatPageState extends State<StatPage> {
   double normal = 0;
   double flaw = 0;
   double other = 0;
-  String formattedDateRange = '날짜를 선택해주세요.';
+  String formattedDateRange = '';
 
   // 날짜 범위 선택기를 표시하는 함수
   Future<void> _pickDateRange(BuildContext context) async {

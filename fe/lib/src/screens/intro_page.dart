@@ -73,7 +73,7 @@ class _MainState extends State<IntroPage> with SingleTickerProviderStateMixin {
               height: 30,
             ),
             const Text(
-              '호날두를 통해 빠르고 쉽게 원두를 선별해보세요',
+              'Copick을 통해 빠르고 쉽게 원두를 선별해보세요',
             ),
             const SizedBox(
               height: 30,
