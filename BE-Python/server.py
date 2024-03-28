@@ -45,7 +45,7 @@ def test_api():
 
 @app.post("/api/python/analyze")
 async def analyze_flaw(request: Request,
-                        resultIndex: str = Form(...), file: UploadFile = File(...)):
+                        resultIndex: int = Form(...), file: UploadFile = File(...)):
         db_session = None
         try:
             authorization_header = request.headers.get('Authorization')
@@ -54,12 +54,11 @@ async def analyze_flaw(request: Request,
             await functions.check_token(access_token)
             # member_index = payload["userIndex"]
 
-            result_index = resultIndex[0]
+            result_index = str(resultIndex)
             
             image_byte_stream,result_normal,result_flaw,cropped_images = await functions.manufacture_image(file)
             file_name = str(uuid.uuid4())+".jpg"
-            file_path = "result/"+result_index+"/"+file_name
-            s3_path = os.environ["AWS_S3_URL"]+"/"+file_path
+            s3_path = os.environ["AWS_S3_URL"]+"/result/"+result_index+"/sequence/"+file_name
 
             db_session = db_session_maker()
             DB_utils.posgreSQL_save_sequence(result_index,file_name,result_normal,result_flaw,db_session)
@@ -73,9 +72,10 @@ async def analyze_flaw(request: Request,
 
             db_session.commit()
             return s3_path
-        except JWTError:
+        except JWTError as e:
             return"Invalid token"
-        except TypeError:
+        except TypeError as e:
+            print("Error:",e)
             return "No header attribute"
         except Exception as e:
             print("Error:",e)
