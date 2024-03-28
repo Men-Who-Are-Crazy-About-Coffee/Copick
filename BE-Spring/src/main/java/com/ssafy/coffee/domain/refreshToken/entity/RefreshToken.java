@@ -1,4 +1,4 @@
-package com.ssafy.coffee.domain.RefreshToken.entity;
+package com.ssafy.coffee.domain.refreshToken.entity;
 
 
 import com.ssafy.coffee.global.constant.AuthType;

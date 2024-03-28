@@ -33,7 +33,8 @@ public class Board extends AuditableBaseObject {
     private BoardDomain domain;
 
     @Builder
-    public Board(String title, String content, BoardDomain domain, Member createdBy) {
+    public Board(Long index,String title, String content, BoardDomain domain, Member createdBy) {
+        this.index = index;
         this.title = title;
         this.content = content;
         this.domain = domain;

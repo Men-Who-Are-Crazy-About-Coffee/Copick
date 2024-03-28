@@ -11,12 +11,12 @@ import java.util.stream.Collectors;
 
 import javax.crypto.SecretKey;
 
-import com.ssafy.coffee.domain.RefreshToken.entity.RefreshToken;
+import com.ssafy.coffee.domain.refreshToken.entity.RefreshToken;
 import com.ssafy.coffee.domain.member.entity.Member;
 import com.ssafy.coffee.domain.member.repository.MemberRepository;
 import com.ssafy.coffee.domain.auth.dto.PrincipalMember;
 import com.ssafy.coffee.domain.auth.dto.TokenInfoDto;
-import com.ssafy.coffee.domain.RefreshToken.repository.RefreshTokenRepository;
+import com.ssafy.coffee.domain.refreshToken.repository.RefreshTokenRepository;
 import com.ssafy.coffee.global.constant.AuthType;
 import com.ssafy.coffee.global.constant.Role;
 import com.ssafy.coffee.global.util.JwtUtil;
@@ -38,7 +38,6 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
-import org.springframework.util.StringUtils;
 
 /**
  * 토큰 관련 메소드 제공 유틸, 서비스 클래스

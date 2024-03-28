@@ -79,7 +79,7 @@ public class MemberService {
         member.setDeleted(true);
     }
 
-    @Scheduled(cron = "0 0 1 * * *") // 테스트용 이므로 1시간
+    @Scheduled(cron = "0 0 5 * * *") // 매 새벽 5시 베타버전용
     public void permanentDeleteMemberSchedule(){
 
         List<Member> deleteMemberList= memberRepository.findByIsDeletedTrueAndModDateBefore(LocalDateTime.now().minusMinutes(60));
