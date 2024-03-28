@@ -1,11 +1,11 @@
 import 'package:camera/camera.dart';
 import 'package:fe/constants.dart';
+import 'package:fe/src/screens/camera_page.dart';
 import 'package:fe/src/services/camera_provider.dart';
 import 'package:fe/src/screens/community_page.dart';
 import 'package:fe/src/screens/gallery_page.dart';
 import 'package:fe/src/screens/stat_page.dart';
 import 'package:fe/src/screens/profile_page.dart';
-import 'package:fe/src/screens/selection_page.dart';
 import 'package:fe/src/services/user_provider.dart';
 import 'package:fe/src/widgets/bottomnavbar.dart';
 import 'package:flutter/foundation.dart';
@@ -25,6 +25,21 @@ class _PagesState extends State<Pages> {
   late PageController _pageController;
   int _selectedIndex = 0; // 현재 선택된 탭 인덱스
   late List<Widget> widgetOptions;
+  String _selectedCoffeeType = '아라비카';
+  String _selectedMediaType = '사진';
+
+  int getCoffeeTypeValue(String coffeeType) {
+    switch (coffeeType) {
+      case '아라비카':
+        return 1;
+      case '로부스타':
+        return 2;
+      case '리베리카':
+        return 3;
+      default:
+        return 0; // 기본값 혹은 알 수 없는 값
+    }
+  }
 
   @override
   void initState() {
@@ -46,6 +61,85 @@ class _PagesState extends State<Pages> {
       const CommunityPage(),
       const ProfilePage()
     ];
+  }
+
+  void selectBean() {
+    showDialog(
+      context: context,
+      builder: (
+        __,
+      ) {
+        return AlertDialog(
+          title: const Text('검출 시작 설정'),
+          content: StatefulBuilder(builder: (__, StateSetter setDialogState) {
+            return SizedBox(
+              height: 200,
+              child: Column(
+                children: [
+                  ListTile(
+                    title: const Text('사진'),
+                    leading: Radio<String>(
+                      value: '사진',
+                      groupValue: _selectedMediaType,
+                      onChanged: (String? value) {
+                        setDialogState(() => _selectedMediaType = value!);
+                        setState(() {});
+                      },
+                    ),
+                  ),
+                  ListTile(
+                    title: const Text('동영상'),
+                    leading: Radio<String>(
+                      value: '동영상',
+                      groupValue: _selectedMediaType,
+                      onChanged: (String? value) {
+                        setDialogState(() => _selectedMediaType = value!);
+                        setState(() {});
+                      },
+                    ),
+                  ),
+                  if (_selectedMediaType == '사진')
+                    DropdownButton<String>(
+                      value: _selectedCoffeeType,
+                      items: <String>['아라비카', '로부스타', '리베리카']
+                          .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                      onChanged: (String? newValue) {
+                        setDialogState(() => _selectedCoffeeType = newValue!);
+                        setState(() {});
+                      },
+                    ),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (_selectedMediaType == '사진') {
+                        final coffeeTypeValue =
+                            getCoffeeTypeValue(_selectedCoffeeType);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => CameraPage(
+                                    camera: Provider.of<CameraProvider>(context,
+                                            listen: false)
+                                        .camera as CameraDescription,
+                                    coffeeTypeValue:
+                                        coffeeTypeValue))); // 숫자 값을 CameraPage에 전달
+                      } else if (_selectedMediaType == '동영상') {
+                        Navigator.pushNamed(context, '/video');
+                      }
+                    },
+                    child: const Text('시작'),
+                  ),
+                ],
+              ),
+            );
+          }),
+        );
+      },
+    );
   }
 
   @override
@@ -101,13 +195,16 @@ class _PagesState extends State<Pages> {
             width: 80,
             height: 80,
             child: FloatingActionButton(
-              backgroundColor: themeColors.color5,
-              child: const Icon(Icons.camera, size: 40),
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const SelectionPage()),
-              ),
-            ),
+                backgroundColor: themeColors.color5,
+                child: const Icon(Icons.camera, size: 40),
+                onPressed: () {
+                  selectBean();
+                }
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(builder: (context) => const SelectionPage()),
+                // ),
+                ),
           ),
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerDocked,

@@ -3,14 +3,13 @@ import 'package:fe/src/services/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:dio/dio.dart';
-import 'package:fe/src/services/api_service.dart';
 
 // 사진 찍기 화면
 class CameraPage extends StatefulWidget {
   final CameraDescription camera;
-  final int coffeeTypeValue;
+  final int? coffeeTypeValue;
 
-  const CameraPage({super.key, required this.camera, this.coffeeTypeValue = 1});
+  const CameraPage({super.key, required this.camera, this.coffeeTypeValue});
 
   @override
   CameraPageState createState() => CameraPageState();

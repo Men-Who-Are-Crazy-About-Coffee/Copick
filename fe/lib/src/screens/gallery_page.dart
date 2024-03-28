@@ -105,7 +105,7 @@ class _GalleryPageState extends State<GalleryPage> {
     String jsonData = jsonEncode(errorList);
 
     try {
-      Response response = await apiService.post(
+      await apiService.post(
         '/api/result/flaws/update',
         data: jsonData,
       );
