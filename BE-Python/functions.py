@@ -165,7 +165,7 @@ def get_stream_video():
 def manufacture_video(frame_data,model):
     try:
         image = Image.open(io.BytesIO(frame_data))
-        image = image.convert("RGB") #for safe
+        # image = image.convert("RGB") #for safe
 
         # model = YOLO('best.pt')
         results = model(image)
@@ -184,7 +184,7 @@ def manufacture_video(frame_data,model):
         img_byte_arr = io.BytesIO()
         image.save(img_byte_arr, format='JPEG')
         # 바이트 스트림을 반환
-        img_byte_arr.seek(0)  # Seek to the start of the stream
+        # img_byte_arr.seek(0)  # Seek to the start of the stream
         return img_byte_arr.getvalue()
     except Exception as e:
         print("Error:",e)

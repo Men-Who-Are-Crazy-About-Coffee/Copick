@@ -36,7 +36,7 @@ db_session_maker = DB_utils.posgreSQL_connection()
 ai_model = YOLO('best.pt')
 
 @app.get("/")
-def read_root():
+def read_root(): 
     return {"Hello": "World"}
 
 @app.get("/api/python/test")
@@ -104,13 +104,8 @@ async def websocket_endpoint(websocket: WebSocket):
         while True:
             try:
                 # 5초 동안 데이터를 기다립니다.
-                frame_data = await wait_for(websocket.receive_bytes(), timeout=30)
-                # 데이터를 처리합니다. 예: 영상 프레임 처리
-                # image = Image.open(io.BytesIO(data))
-                # 처리 결과를 다시 클라이언트로 보냅니다.
-                # print(data)
-                
-                # await websocket.send_bytes(functions.manufacture_video(frame_data))
+                frame_data = await wait_for(websocket.receive_bytes(), timeout=5)
+
                 await websocket.send_bytes(functions.manufacture_video(frame_data,ai_model))
                 # await websocket.send_bytes(frame_data)
             except TimeoutError:
