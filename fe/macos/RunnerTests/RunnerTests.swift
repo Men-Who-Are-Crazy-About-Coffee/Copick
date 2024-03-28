@@ -1,3 +1,12 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:4613cb61fbe1710c7d81e6c37f1a6c6c29b6f8b23bbeb437469697077a36d1b3
-size 290
+import FlutterMacOS
+import Cocoa
+import XCTest
+
+class RunnerTests: XCTestCase {
+
+  func testExample() {
+    // If you add code to the Runner application, consider adding tests here.
+    // See https://developer.apple.com/documentation/xctest for more information about using XCTest.
+  }
+
+}
