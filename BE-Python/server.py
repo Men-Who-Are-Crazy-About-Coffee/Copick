@@ -95,7 +95,7 @@ async def analyze_roasting(image_link:str):
     
 @app.get("/api/python/video")
 def streaming():
-    return StreamingResponse(functions.get_stream_video(), media_type="multipart/x-mixed-replace; boundary=frame")
+    return StreamingResponse(functions.get_stream_video(ai_model), media_type="multipart/x-mixed-replace; boundary=frame")
 
 @app.websocket("/ws/python/video")
 async def websocket_endpoint(websocket: WebSocket):

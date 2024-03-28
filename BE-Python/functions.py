@@ -82,7 +82,7 @@ async def manufacture_image(file: UploadFile = File(...)):
         image = image.convert("RGB") #for safe
 
         model = YOLO('best.pt')
-        results = model(image)
+        results = model(source=image, conf=0.8)
 
         draw = ImageDraw.Draw(image)
         flaw_count = 0
@@ -103,13 +103,14 @@ async def manufacture_image(file: UploadFile = File(...)):
             cropped_images.append(img_byte_arr)  # 리스트에 추가
         # 이미지에 박스 그리기
         for i, box in enumerate(results[0].obb.xyxy):   # cls 텐서와 바운딩 박스 정보를 이용해 클래스가 0인 경우만 그리기
+            x1, y1, x2, y2 = box.tolist()  # Tensor를 리스트로 변환
             # 클래스가 0이 아니면 다음 바운딩 박스로 넘어갑니다.
             if results[0].obb.cls[i] != 0:
+                draw.rectangle([x1, y1, x2, y2], outline="green", width=3)
                 continue
-            x1, y1, x2, y2 = box.tolist()  # Tensor를 리스트로 변환
-
             draw.rectangle([x1, y1, x2, y2], outline="red", width=3)
             flaw_count += 1
+
         normal_count = results[0].obb.cls.size()[0] - flaw_count
         # 바이트 스트림으로 이미지 저장
         img_byte_arr = io.BytesIO()
@@ -121,11 +122,9 @@ async def manufacture_image(file: UploadFile = File(...)):
     except Exception as e:
         print("Error:",e)   
 
-def get_stream_video():
+def get_stream_video(model):
     # camera 정의
     cam = cv2.VideoCapture(0)
-
-    model = YOLO('best.pt')  # 모델을 루프 바깥에서 한 번만 로드
 
     while True:
         # 카메라 값 불러오기
@@ -136,25 +135,29 @@ def get_stream_video():
         else:
             ret, buffer = cv2.imencode('.jpg', frame)
             image = Image.open(io.BytesIO(buffer))
-            image = image.convert("RGB")  # for safe
+            # image = image.convert("RGB")  # for safe
 
-            results = model(image)
+            results = model(source=image, classes=[0], conf=0.8)
 
-            draw = ImageDraw.Draw(image)
+            # print(results)
 
-            # 이미지에 박스 그리기
-            for i, box in enumerate(results[0].obb.xyxy):
-                # 클래스가 0이 아니면 다음 바운딩 박스로 넘어갑니다.
-                if results[0].obb.cls[i] != 0:
-                    continue
-                x1, y1, x2, y2 = box.tolist()  # Tensor를 리스트로 변환
-                draw.rectangle([x1, y1, x2, y2], outline="red", width=3)
+            for r in results:
+                im_array = r.plot()  # plot a BGR numpy array of predictions
+                image = Image.fromarray(im_array[..., ::-1])  # RGB PIL image
 
-            img_byte_arr = io.BytesIO()
-            image.save(img_byte_arr, format='JPEG')
-            img_byte_arr.seek(0)  # 스트림의 시작 위치로 커서 이동
+            # draw = ImageDraw.Draw(image)
+
+            # # 이미지에 박스 그리기
+            # for i, box in enumerate(results[0].obb.xyxy):
+            #     # 클래스가 0이 아니면 다음 바운딩 박스로 넘어갑니다.
+            #     if results[0].obb.cls[i] != 0:
+            #         continue
+            #     x1, y1, x2, y2 = box.tolist()  # Tensor를 리스트로 변환
+            #     draw.rectangle([x1, y1, x2, y2], outline="red", width=3)
 
             # `frame`에 최종 이미지의 바이트 데이터를 할당
+            img_byte_arr = io.BytesIO()
+            image.save(img_byte_arr, format='JPEG')
             frame = img_byte_arr.getvalue()  # 수정된 부분
 
             # yield로 하나씩 넘겨준다.
@@ -167,24 +170,17 @@ def manufacture_video(frame_data,model):
         image = Image.open(io.BytesIO(frame_data))
         # image = image.convert("RGB") #for safe
 
-        # model = YOLO('best.pt')
-        results = model(image)
+        results = model(source=image, classes=[0], conf=0.8)
 
-        draw = ImageDraw.Draw(image)
+        for r in results:
+                im_array = r.plot(labels=False)  # plot a BGR numpy array of predictions
+                image = Image.fromarray(im_array[..., ::-1])  # RGB PIL image
 
-        # 이미지에 박스 그리기
-        for i, box in enumerate(results[0].obb.xyxy):   # cls 텐서와 바운딩 박스 정보를 이용해 클래스가 0인 경우만 그리기
-            # 클래스가 0이 아니면 다음 바운딩 박스로 넘어갑니다.
-            if results[0].obb.cls[i] != 0:
-                continue
-            x1, y1, x2, y2 = box.tolist()  # Tensor를 리스트로 변환
-
-            draw.rectangle([x1, y1, x2, y2], outline="red", width=3)
         # 바이트 스트림으로 이미지 저장
         img_byte_arr = io.BytesIO()
         image.save(img_byte_arr, format='JPEG')
-        # 바이트 스트림을 반환
         # img_byte_arr.seek(0)  # Seek to the start of the stream
+        # 바이트 스트림을 반환
         return img_byte_arr.getvalue()
     except Exception as e:
         print("Error:",e)
