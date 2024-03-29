@@ -1,3 +1,17 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:96345475f1a3c66bd32d28178fba151ab1506b35b1f7857b8f7651863093ea11
-size 291
+flutter/ephemeral/
+
+# Visual Studio user-specific files.
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Visual Studio build-related files.
+x64/
+x86/
+
+# Visual Studio cache files
+# files ending in .cache can be ignored
+*.[Cc]ache
+# but keep track of directories ending in .cache
+!*.[Cc]ache/
