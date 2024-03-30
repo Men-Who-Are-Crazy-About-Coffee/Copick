@@ -1,11 +1,10 @@
 import 'dart:ui';
 
 import 'package:camera/camera.dart';
-import 'package:fe/constants.dart';
 import 'package:fe/routes.dart';
+import 'package:fe/src/models/screen_params.dart';
 import 'package:fe/src/services/camera_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_config/flutter_config.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 
@@ -37,6 +36,7 @@ void main() async {
       child: MaterialApp(
         scrollBehavior: AppScrollBehavior(),
         builder: (context, child) {
+          ScreenParams.screenSize = MediaQuery.of(context).size;
           final MediaQueryData data = MediaQuery.of(context);
           return MediaQuery(
             data: data.copyWith(

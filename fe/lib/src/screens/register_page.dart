@@ -18,13 +18,6 @@ class _RegisterState extends State<Register> {
   final TextEditingController pwController = TextEditingController();
   final TextEditingController nicknameController = TextEditingController();
   final TextEditingController ageController = TextEditingController();
-  Gender? _selectedGender = Gender.male;
-
-  void _handleRadioValueChange(Gender? value) {
-    setState(() {
-      _selectedGender = value;
-    });
-  }
 
   void join() {
     if (idController.text == "" ||

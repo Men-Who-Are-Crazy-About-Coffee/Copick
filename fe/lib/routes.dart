@@ -7,7 +7,7 @@ import 'package:fe/src/screens/login_page.dart';
 import 'package:fe/src/screens/pages.dart';
 import 'package:fe/src/screens/redirect_page.dart';
 import 'package:fe/src/screens/register_page.dart';
-import 'package:fe/src/screens/video_page.dart';
+import 'package:fe/src/screens/video_page_embedded.dart';
 import 'package:fe/src/services/camera_provider.dart';
 import 'package:provider/provider.dart';
 

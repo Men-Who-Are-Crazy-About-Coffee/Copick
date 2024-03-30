@@ -3,7 +3,6 @@ import 'package:fe/constants.dart';
 import 'package:fe/src/services/api_service.dart';
 import 'package:fe/src/services/user_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 
 class BoardContainer extends StatefulWidget {
