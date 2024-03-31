@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'package:dio/dio.dart';
 import 'package:fe/src/models/screen_params.dart'; // 앱 전역에서 사용되는 화면 매개변수 모델
+import 'package:fe/src/services/api_service.dart';
 import 'package:fe/src/yolo/bbox.dart'; // YOLOv8 모델에서 사용되는 경계 상자 모델
 import 'package:fe/src/yolo//detector_service.dart'; // 객체 감지 서비스
 import 'package:camera/camera.dart'; // 카메라 플러그인
@@ -28,6 +30,9 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
   List<List<double>> bboxes = []; // 감지된 객체의 경계 상자 좌표
   List<double> scores = []; // 감지된 객체의 점수
 
+  final apiService = ApiService();
+  int? resultIndex;
+
   @override
   void initState() {
     super.initState();
@@ -55,10 +60,10 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
   }
 
   // 카메라 초기화
-  void _initializeCamera() async {
+  Future<void> _initializeCamera() async {
     _cameraController = CameraController(
       widget.camera,
-      ResolutionPreset.low,
+      ResolutionPreset.max,
       enableAudio: false,
     )..initialize().then((_) async {
         await _controller
@@ -67,6 +72,18 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
         ScreenParams.previewSize =
             _controller.value.previewSize!; // 화면 매개변수 업데이트
       });
+
+    try {
+      Response response = await apiService.get('/api/result/init/1');
+      if (response.data is int) {
+        resultIndex = response.data as int;
+        print(resultIndex);
+      } else {
+        print("서버로부터 받은 resultIndex가 int 타입이 아닙니다.");
+      }
+    } catch (e) {
+      print("resultIndex를 받아오는데 실패했습니다: $e");
+    }
   }
 
   // 앱 생명주기 상태 변경 시 호출
