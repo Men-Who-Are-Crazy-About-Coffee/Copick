@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:fe/src/models/screen_params.dart'; // 앱 전역에서 사용되는 화면 매개변수 모델
+import 'package:fe/src/screens/result_page.dart';
 import 'package:fe/src/services/api_service.dart';
 import 'package:fe/src/yolo/bbox.dart'; // YOLOv8 모델에서 사용되는 경계 상자 모델
 import 'package:fe/src/yolo//detector_service.dart'; // 객체 감지 서비스
@@ -109,6 +110,55 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
     _detector?.processFrame(cameraImage); // 이미지를 객체 감지기로 전달하여 처리
   }
 
+  Future<String?> sendImage(XFile image) async {
+    // 수정: resultIndex를 매개변수로 받지 않음
+    if (resultIndex == null) {
+      print("resultIndex가 없습니다.");
+      return null;
+    }
+
+    try {
+      String? imageUrl = await apiService.sendImage(image, resultIndex!);
+      return imageUrl;
+    } catch (e) {
+      print("이미지 업로드 실패: $e");
+      return null;
+    }
+  }
+
+  Future<void> _captureAndSendImage() async {
+    if (_cameraController == null || !_cameraController!.value.isInitialized) {
+      print("Camera is not initialized");
+      return;
+    }
+
+    try {
+      // 화면 캡처
+      final XFile image = await _cameraController!.takePicture();
+
+      // 이미지 전송 및 URL 받기 (sendImage 함수 이용, 이미 구현된 로직을 재사용)
+      final String? imageUrl = await sendImage(image);
+
+      if (imageUrl != null) {
+        // 이미지 전송 성공, DisplayPictureScreen으로 이동
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DisplayPictureScreen(
+              imagePath: imageUrl, // 서버로부터 받은 이미지의 URL
+              resultIndex: resultIndex, // 결과 인덱스 전달
+            ),
+          ),
+        );
+      } else {
+        // 이미지 전송 실패 처리
+        print("Failed to upload image");
+      }
+    } catch (e) {
+      print("Failed to capture or send image: $e");
+    }
+  }
+
   // 감지된 객체 주위에 경계 상자를 그리는 위젯
   Widget _boundingBoxes() {
     List<Bbox> bboxesWidgets = [];
@@ -126,7 +176,6 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
 
   @override
   void dispose() {
-    // 앱 종료 시 리소스 해제
     WidgetsBinding.instance.removeObserver(this);
     _cameraController?.dispose();
     _detector?.stop();
@@ -170,6 +219,41 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
             child: _boundingBoxes(), // 경계 상자 위젯
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _captureAndSendImage,
+        tooltip: 'Capture',
+        child: Icon(Icons.camera),
+      ),
+    );
+  }
+}
+
+// 사진을 표시하는 화면
+class DisplayPictureScreen extends StatelessWidget {
+  final String imagePath;
+  final int? resultIndex;
+
+  const DisplayPictureScreen({
+    super.key,
+    required this.imagePath,
+    this.resultIndex,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('찍힌 사진 보기')),
+      body: Image.network(imagePath),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.arrow_forward),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ResultPage(resultIndex: resultIndex)),
+          );
+        },
       ),
     );
   }
