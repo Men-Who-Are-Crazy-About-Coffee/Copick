@@ -2,7 +2,6 @@
 
 import 'package:dio/dio.dart';
 import 'package:fe/constants.dart';
-import 'package:fe/src/services/api_service.dart';
 import 'package:fe/src/widgets/rounded_button.dart';
 import 'package:fe/src/widgets/inputfield.dart';
 import 'package:flutter/material.dart';

@@ -60,12 +60,11 @@ class _ResultPageState extends State<ResultPage> {
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-              // 스크롤 가능하게 만듦
               child: Column(
                 children: <Widget>[
-                  if (sequenceLinks != null) // 이미지가 있을 경우에만 표시
+                  if (sequenceLinks != null)
                     Container(
-                      height: 250, // 이미지 슬라이더의 높이
+                      height: 250,
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
                         itemCount: sequenceLinks!.length,
@@ -96,6 +95,15 @@ class _ResultPageState extends State<ResultPage> {
                 ],
               ),
             ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // '/page'로 이동하면서 그 이전의 모든 페이지를 스택에서 제거
+          Navigator.of(context).pushNamedAndRemoveUntil(
+              '/pages', (Route<dynamic> route) => false);
+        },
+        tooltip: 'Go to Main Page',
+        child: Icon(Icons.home),
+      ),
     );
   }
 }
