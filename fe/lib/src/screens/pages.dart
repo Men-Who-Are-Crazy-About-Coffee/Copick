@@ -70,31 +70,36 @@ class _PagesState extends State<Pages> {
     // 로그인되지 않았을 경우 로그인 페이지를 리스트에 추가
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) => {
-        kIsWeb
-            ? const Text('ndkdkdk')
-            : showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Text('알림'),
-                    content: const Text('앱을 종료할까요?'),
-                    actions: <Widget>[
-                      TextButton(
-                        onPressed: () =>
-                            Navigator.of(context).pop(false), // 앱을 종료하지 않음
-                        child: const Text('아니요'),
-                      ),
-                      TextButton(
-                        onPressed: () => {
-                          SystemNavigator.pop(),
-                        }, // 앱 종료
-                        child: const Text('예'),
-                      ),
-                    ],
-                  );
-                },
-              )
+      onPopInvoked: (didPop) {
+        Future.microtask(() => {
+              if (kIsWeb)
+                {const Text('ndkdkdk')}
+              else
+                {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('알림'),
+                        content: const Text('앱을 종료할까요?'),
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () =>
+                                Navigator.of(context).pop(false), // 앱을 종료하지 않음
+                            child: const Text('아니요'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              SystemNavigator.pop(); // 앱 종료
+                            },
+                            child: const Text('예'),
+                          ),
+                        ],
+                      );
+                    },
+                  )
+                }
+            });
       },
       child: ChangeNotifierProvider(
         create: (context) => UserProvider()..fetchUserData(),

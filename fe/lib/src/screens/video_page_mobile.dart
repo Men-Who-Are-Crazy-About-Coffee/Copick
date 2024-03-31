@@ -141,15 +141,16 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
 
       if (imageUrl != null) {
         // 이미지 전송 성공, DisplayPictureScreen으로 이동
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => DisplayPictureScreen(
-              imagePath: imageUrl, // 서버로부터 받은 이미지의 URL
-              resultIndex: resultIndex, // 결과 인덱스 전달
-            ),
-          ),
-        );
+        // Navigator.push를 Future.microtask 내에서 호출
+        Future.microtask(() => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => DisplayPictureScreen(
+                  imagePath: imageUrl, // 서버로부터 받은 이미지의 URL
+                  resultIndex: resultIndex, // 결과 인덱스 전달
+                ),
+              ),
+            ));
       } else {
         // 이미지 전송 실패 처리
         print("Failed to upload image");
