@@ -17,21 +17,31 @@ class AppScrollBehavior extends MaterialScrollBehavior {
       };
 }
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  // 사용 가능한 카메라 목록을 가져옵니다.#
-  final cameras = await availableCameras();
-  print("cameras : ");
+void _logError(String code, String? message) {
+  // ignore: avoid_print
+  print('Error: $code${message == null ? '' : '\nError Message: $message'}');
+}
 
-  // 첫 번째 카메라를 선택합니다.
-  final firstCamera = cameras.first;
+void main() async {
+  CameraDescription? firstCamera;
+  try {
+    WidgetsFlutterBinding.ensureInitialized();
+    WidgetsFlutterBinding.ensureInitialized();
+    final cameras = await availableCameras(); // 사용 가능한 카메라 목록을 가져옵니다.#
+    firstCamera = cameras.first; // 첫 번째 카메라를 선택합니다.
+  } on CameraException catch (e) {
+    _logError(e.code, e.description);
+  }
   await dotenv.load(fileName: ".env");
 
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-            create: (context) => CameraProvider()..setCamera(firstCamera)),
+        ChangeNotifierProvider(create: (context) {
+          if (firstCamera != null) {
+            CameraProvider().setCamera(firstCamera);
+          }
+        }),
       ],
       child: MaterialApp(
         scrollBehavior: AppScrollBehavior(),
