@@ -1,6 +1,7 @@
 import 'package:fe/src/services/api_service.dart';
 import 'package:fe/src/services/board_provider.dart';
 import 'package:fe/src/services/profile_content_provider.dart';
+import 'package:fe/src/services/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
@@ -30,14 +31,20 @@ class _MyContentPageState extends State<MyContentPage> {
   @override
   void initState() {
     super.initState();
+    if(!context.mounted) return;
     _profileContentType= widget.profileContentType;
     isLogin();
   }
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<ProfileContentProvider>(
-      create: (_) => ProfileContentProvider()..started(_profileContentType),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<ProfileContentProvider>(
+          create: (_) => ProfileContentProvider()..started(_profileContentType,user: Provider.of<UserProvider>(_,listen: false).user)),
+        ChangeNotifierProvider<UserProvider>(
+            create: (context) => UserProvider()..fetchUserData()),
+      ],
       child: Consumer<ProfileContentProvider>(builder: (context, value, child) {
         return Scaffold(
           appBar: AppBar(

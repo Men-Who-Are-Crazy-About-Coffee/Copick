@@ -9,8 +9,8 @@ import 'comment_container.dart';
 
 class BoardContainer extends StatefulWidget {
   final int index;
-  final String memberImg;
-  final String memberNickName;
+  final String? memberImg;
+  final String? memberNickName;
   final List<dynamic> coffeeImg;
   final String title;
   final String content;

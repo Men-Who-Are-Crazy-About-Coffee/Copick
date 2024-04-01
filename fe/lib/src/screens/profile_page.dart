@@ -233,13 +233,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     Row(
                       children: [
                         TextButton(
-                          onPressed: (){
-                            print("테스트");
-                            Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context)=>
-                            const MyContentPage(profileContentType: ProfileContentType.board)));
-                            },
+                          onPressed: ()=>Navigator.pushNamed(context, "/my_content",arguments: ProfileContentType.board),
                           child: const Text("내 게시글 보기"),
                         ),
                       ],
@@ -252,7 +246,11 @@ class _ProfilePageState extends State<ProfilePage> {
                     Row(
                       children: [
                         TextButton(
-                          onPressed: ()=>showMyContentPage(ProfileContentType.comment),
+                          onPressed:  ()=>
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context)=>
+                                  const MyContentPage(profileContentType: ProfileContentType.comment))),
                           child: const Text("내 댓글 보기"),
                         ),
                       ],
@@ -265,7 +263,11 @@ class _ProfilePageState extends State<ProfilePage> {
                     Row(
                       children: [
                         TextButton(
-                          onPressed: ()=>showMyContentPage(ProfileContentType.like),
+                          onPressed:  ()=>
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context)=>
+                                  const MyContentPage(profileContentType: ProfileContentType.like))),
                           child: const Text("내가 좋아요 한 글 보기"),
                         ),
                       ],

@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:fe/constants.dart';
+import 'package:fe/src/models/board.dart';
 import 'package:fe/src/services/api_service.dart';
 import 'package:fe/src/services/user_provider.dart';
 import 'package:fe/src/widgets/board_container.dart';
@@ -50,6 +51,7 @@ class _CommentContainerState extends State<CommentContainer> {
     _memberNickName = widget.memberNickName;
     _index = widget.index;
     _boardIndex = widget.boardIndex;
+    _content=widget.content;
     _userId = widget.userId;
     _regDate = widget.regDate;
     _isProfile = widget.isProfile;
@@ -57,7 +59,7 @@ class _CommentContainerState extends State<CommentContainer> {
 
   ThemeColors themeColors = ThemeColors();
   TextEditingController commentController = TextEditingController();
-  late BoardContainer _board;
+  Board _board=Board();
 
   void deleteComment() async {
     showDialog(
@@ -98,30 +100,54 @@ class _CommentContainerState extends State<CommentContainer> {
                   fontSize: 16,
                 ),
               ),
-              content: BoardContainer(
-                title: _board.title,
-                coffeeImg: _board.coffeeImg,
-                index: _board.index,
-                memberImg: _board.memberImg,
-                memberNickName: _board.memberNickName,
-                content: _board.content,
-                regDate: _board.regDate,
-                isLiked: _board.isLiked,
+              content: ChangeNotifierProvider<UserProvider>(
+                  create: (context) => UserProvider()..fetchUserData(),
+                  child:BoardContainer(
+                title: _board.title!,
+                coffeeImg: _board.coffeeImg!,
+                index: _board.index!,
+                memberImg: _board.userProfileImage ?? "https://jariyo-s3.s3.ap-northeast-2.amazonaws.com/memeber/anonymous.png",
+                memberNickName: _board.userNickname!,
+                content: _board.content!,
+                regDate: _board.regDate!,
+                isLiked: _board.liked,
                 like: _board.like,
-                userId: _board.userId,
+                userId: _board.userId!,
                 commentCnt: _board.commentCnt,
               )
+          ),
           );
         }
     );
   }
 
   void getBoard() async {
+    try{
+
     Response response =
-    await apiService.get("/api/board/board/$_boardIndex");
-    _board = response.data;
+    await apiService.get("/api/board/$_boardIndex");
+    _board = Board.fromJson(response.data);
 
     _showBoardModal();
+    }catch(e){
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('오류'),
+            content: const Text('게시글을 불러오는데 실패했습니다.'),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('확인'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   @override

@@ -12,6 +12,10 @@ class Board {
   final String? content;
   final String? domain;
   final String? regDate;
+  final List<String>? coffeeImg;
+  final int commentCnt;
+  final bool liked;
+  final int like;
 
   Board({
     this.index,
@@ -22,6 +26,10 @@ class Board {
     this.content,
     this.domain,
     this.regDate,
+    this.coffeeImg,
+    this.commentCnt=0,
+    this.like=0,
+    this.liked=false,
   });
 
   // JSON 직렬화 및 역직렬화를 위한 메서드

@@ -4,6 +4,7 @@ import 'package:camera/camera.dart';
 import 'package:fe/constants.dart';
 import 'package:fe/routes.dart';
 import 'package:fe/src/services/camera_provider.dart';
+import 'package:fe/src/services/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_config/flutter_config.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -33,6 +34,8 @@ void main() async {
       providers: [
         ChangeNotifierProvider(
             create: (context) => CameraProvider()..setCamera(firstCamera)),
+        ChangeNotifierProvider<UserProvider>(
+            create: (context) => UserProvider()..fetchUserData()),
       ],
       child: MaterialApp(
         scrollBehavior: AppScrollBehavior(),
