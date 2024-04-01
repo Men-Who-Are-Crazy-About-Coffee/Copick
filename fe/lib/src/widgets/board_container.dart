@@ -140,7 +140,7 @@ class _BoardContainerState extends State<BoardContainer> {
                             ),
                           ),
                           SizedBox(
-                            width: 500,
+                            width: 300,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
