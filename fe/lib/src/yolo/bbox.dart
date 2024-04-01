@@ -18,7 +18,11 @@ class Bbox extends StatelessWidget {
     final double height = box[3] * ScreenParams.screenSize.height;
     final double left = (box[0] * ScreenParams.screenSize.width) - (width / 2);
     final double top = (box[1] * ScreenParams.screenSize.height) - (height / 2);
-    debugPrint('$box $name $score');
+
+    //print(name + "" + score.toString());
+    // 태두리 색상을 name 값에 따라 조건부로 설정합니다.
+    final Color borderColor = name == 'good' ? Colors.green : Colors.red;
+
     return Positioned(
       left: left,
       top: top,
@@ -28,7 +32,7 @@ class Bbox extends StatelessWidget {
         width: width,
         height: height,
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.white, width: 1),
+          border: Border.all(color: borderColor, width: 1), // 조건부 색상 적용
         ),
         child: Align(
           alignment: Alignment.topCenter,

@@ -19,7 +19,7 @@ class _Command {
 }
 
 class Detector {
-  static const String _modelPath = 'assets/models/best_float16.tflite';
+  static const String _modelPath = 'assets/models/best_float32.tflite';
   static const String _labelPath = 'assets/models/label.txt';
 
   Detector._(this._isolate, this._interpreter, this._labels);
@@ -181,20 +181,9 @@ class _DetectorServer {
 
     final output = _runInference(imageMatrix);
 
-    //*/
-    // 드디어 가져왔음,, ㅎㅎㅎㅎ 이제 nms 로 여기서 결과를 추출하면 된다.
     List<List<double>> rawOutput =
         (output.first as List).first as List<List<double>>;
-    // List<List<double>> rawOutput = [];
-    // for (var object in output) {
-    //   // debugPrint('object length ${(object as List).length}');
-    //   List obj = object as List;
-    //   for (var o in obj) {
-    //     // debugPrint('o length ${(o as List).length}');
-    //     rawOutput = o as List<List<double>>;
-    //   }
-    // }
-    // korail_lens [1, 55, 8400] [1, 55, 1029] yolov8n [1 84 8400] 에서 값 추출하기
+
     List<int> idx = [];
     List<String> cls = [];
     List<List<double>> box = [];
@@ -203,11 +192,22 @@ class _DetectorServer {
     final numOfLabels = _labels?.length ?? 0;
     final count = numOfLabels + 4;
     (idx, box, conf) =
-        nms(rawOutput, count, confidenceThreshold: 0.1, iouThreshold: 0.4);
-    // debugPrint('cls $cls box $box conf $conf');
+        nms(rawOutput, count, confidenceThreshold: 0.75, iouThreshold: 0.4);
+
     if (idx.isNotEmpty) {
       cls = idx.map((e) => _labels![e]).toList();
     }
+
+    // for (var i = 0; i < cls.length; i++) {
+    //   debugPrint('cls item: ${cls[i]}');
+    //   debugPrint('box item: ${box[i]}');
+    //   debugPrint('conf item: ${conf[i]}');
+
+    //   if (cls[i] == 'bad' && conf[i] < 0.8) {
+    //     cls[i] = 'good';
+    //     debugPrint('!!!change item: ${cls[i]}');
+    //   }
+    // }
 
     var inferenceElapsedTime =
         DateTime.now().millisecondsSinceEpoch - inferenceTimeStart;
