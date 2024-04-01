@@ -84,7 +84,7 @@ async def manufacture_image(file,model):
 
         # model = YOLO('best.pt')
         # results = model(source=image, conf=0.8)
-        results = model(source())
+        results = model(source=image)
 
         draw = ImageDraw.Draw(image)
         flaw_count = 0
