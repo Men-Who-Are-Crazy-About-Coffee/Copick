@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 
 import 'comment_container.dart';
 
-class BoardContainer extends StatefulWidget {
+class LikedBoardContainer extends StatefulWidget {
   final int index;
   final String memberImg;
   final String memberNickName;
@@ -20,25 +20,26 @@ class BoardContainer extends StatefulWidget {
   final int commentCnt;
   final String regDate;
 
-  const BoardContainer(
+
+  const LikedBoardContainer(
       {super.key,
-      required this.index,
-      required this.userId,
-      required this.memberImg,
-      required this.memberNickName,
-      required this.coffeeImg,
-      required this.title,
-      required this.content,
-      required this.isLiked,
-      required this.like,
-      required this.commentCnt,
-      required this.regDate});
+        required this.index,
+        required this.userId,
+        required this.memberImg,
+        required this.memberNickName,
+        required this.coffeeImg,
+        required this.title,
+        required this.content,
+        required this.isLiked,
+        required this.like,
+        required this.commentCnt,
+        required this.regDate});
 
   @override
-  State<BoardContainer> createState() => _BoardContainerState();
+  State<LikedBoardContainer> createState() => _LikedBoardContainerState();
 }
 
-class _BoardContainerState extends State<BoardContainer> {
+class _LikedBoardContainerState extends State<LikedBoardContainer> {
   String? _memberImg;
   String? _memberNickName;
   String? _coffeeImg;
@@ -67,7 +68,6 @@ class _BoardContainerState extends State<BoardContainer> {
     _userId = widget.userId;
     _commentCnt = widget.commentCnt;
     _regDate = widget.regDate;
-    _commentCnt = widget.commentCnt;
   }
 
   ThemeColors themeColors = ThemeColors();
@@ -82,36 +82,7 @@ class _BoardContainerState extends State<BoardContainer> {
     apiService.delete('/api/board/$_index/like');
   }
 
-  void deleteBoard() async {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('게시글 삭제'),
-          content: const Text('정말 게시글을 삭제하시겠습니까?'),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('네'),
-              onPressed: () async {
-                await apiService.delete('/api/board/$_index');
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: const Text('아니요'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void unRegister() {}
-
-  void _showModalBottomSheet() {
+  void _showBoardDialog() {
     showModalBottomSheet(
       context: context,
       builder: (context) {
@@ -132,14 +103,14 @@ class _BoardContainerState extends State<BoardContainer> {
                           CommentContainer(
                             userId: _comments[index]["memberIndex"],
                             index: _comments[index]["index"],
-                            content: _comments[index]["index"],
+                            content: _comments[index]["content"],
                             memberNickName: _comments[index]["memberName"],
                             boardIndex: _comments[index]["boardIndex"],
                             regDate: _comments[index]["regDate"],
                             memberImg: _comments[index]["memberPrifileImage"],
 
                           )
-                                  ],
+                        ],
                       ),
                     );
                   },
@@ -193,10 +164,10 @@ class _BoardContainerState extends State<BoardContainer> {
 
   void getComment() async {
     Response response =
-        await apiService.get("/api/comment/board/$_index?sort=index");
+    await apiService.get("/api/comment/board/$_index?sort=index");
     _comments = response.data['list'];
 
-    _showModalBottomSheet();
+    _showBoardDialog();
   }
 
   @override
@@ -227,21 +198,20 @@ class _BoardContainerState extends State<BoardContainer> {
                 Text("$_memberNickName"),
                 (_userId == user.user.index) || (user.user.role == "ADMIN")
                     ? Row(
-                        children: [
-                          const SizedBox(
-                            width: 20,
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              deleteBoard();
-                            },
-                            child: const Text(
-                              "삭제",
-                              style: TextStyle(color: Colors.grey),
-                            ),
-                          ),
-                        ],
-                      )
+                  children: [
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    TextButton(
+                      onPressed: () {
+                      },
+                      child: const Text(
+                        "삭제",
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ),
+                  ],
+                )
                     : const Text("")
               ],
             ),
@@ -274,8 +244,8 @@ class _BoardContainerState extends State<BoardContainer> {
                     Icons.mode_comment_outlined,
                     color: Colors.grey,
                   ),
-                  onPressed:
-                      getComment, // 댓글 아이콘을 탭할 때 _showCommentDialog 함수를 호출
+                  onPressed:()=>
+                  getComment, // 댓글 아이콘을 탭할 때 _showCommentDialog 함수를 호출
                 ),
               ],
             ),

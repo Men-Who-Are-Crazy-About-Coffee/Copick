@@ -2,8 +2,10 @@ import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:fe/constants.dart';
+import 'package:fe/src/screens/my_content_page.dart';
 import 'package:fe/src/services/api_service.dart';
 import 'package:fe/src/services/delete_storage.dart';
+import 'package:fe/src/services/profile_content_provider.dart';
 import 'package:fe/src/services/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -231,7 +233,13 @@ class _ProfilePageState extends State<ProfilePage> {
                     Row(
                       children: [
                         TextButton(
-                          onPressed: () {},
+                          onPressed: (){
+                            print("테스트");
+                            Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context)=>
+                            const MyContentPage(profileContentType: ProfileContentType.board)));
+                            },
                           child: const Text("내 게시글 보기"),
                         ),
                       ],
@@ -244,9 +252,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     Row(
                       children: [
                         TextButton(
-                          onPressed: () {
-                            print('TextButton이 눌렸습니다.');
-                          },
+                          onPressed: ()=>showMyContentPage(ProfileContentType.comment),
                           child: const Text("내 댓글 보기"),
                         ),
                       ],
@@ -259,7 +265,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     Row(
                       children: [
                         TextButton(
-                          onPressed: () {},
+                          onPressed: ()=>showMyContentPage(ProfileContentType.like),
                           child: const Text("내가 좋아요 한 글 보기"),
                         ),
                       ],
@@ -308,5 +314,12 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
       ),
     );
+  }
+
+  void showMyContentPage(ProfileContentType profileContentType) {
+     MyContentPage(
+      profileContentType: profileContentType,
+    );
+
   }
 }
