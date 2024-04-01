@@ -75,14 +75,12 @@ async def classify_roasting(rgb_color):
     # return f"Roasting Stage {len(boundaries_difference)}"
     return len(boundaries_difference)
 
-# async def manufacture_image(file: UploadFile = File(...),model):
 async def manufacture_image(file,model):
     try:
         image_data = await file.read()
         image = Image.open(io.BytesIO(image_data))
         image = image.convert("RGB") #for safe
 
-        # model = YOLO('best.pt')
         # results = model(source=image, conf=0.8)
         results = model(source=image)
 
@@ -90,28 +88,35 @@ async def manufacture_image(file,model):
         flaw_count = 0
         cropped_images = []
 
-        # flaw 이미지 자르기
+        # flaw 이미지 자르기 & sequence 이미지에 박스 그리기
         for i, box in enumerate(results[0].obb.xyxy):
-            # 클래스가 0이 아니면 다음 바운딩 박스로 넘어갑니다.
-            if results[0].obb.cls[i] != 0:
-                continue
             x1, y1, x2, y2 = box.tolist()  # Tensor를 리스트로 변환
+            # 클래스가 0이 아니거나(Good 이거나) conf가 0.8이하면 (Bad의 정확도가 0.8미만이면)
+            if results[0].obb.cls[i] != 0:
+                draw.rectangle([x1, y1, x2, y2], outline="green", width=4)
+                continue
+            if results[0].obb.conf[i] < 0.8:
+                draw.rectangle([x1, y1, x2, y2], outline="green", width=4)
+                continue
             #flaw 크롭된 이미지 생성
             crop = image.crop((x1, y1, x2, y2))
             # 크롭된 이미지를 바이트 스트림으로 변환
-            img_byte_arr = io.BytesIO()
-            crop.save(img_byte_arr, format='JPEG')
-            img_byte_arr.seek(0)  # 스트림의 시작 위치로 커서 이동
-            cropped_images.append(img_byte_arr)  # 리스트에 추가
-        # 이미지에 박스 그리기
-        for i, box in enumerate(results[0].obb.xyxy):   # cls 텐서와 바운딩 박스 정보를 이용해 클래스가 0인 경우만 그리기
-            x1, y1, x2, y2 = box.tolist()  # Tensor를 리스트로 변환
-            # 클래스가 0이 아니면 다음 바운딩 박스로 넘어갑니다.
-            if results[0].obb.cls[i] != 0:
-                draw.rectangle([x1, y1, x2, y2], outline="green", width=3)
-                continue
-            draw.rectangle([x1, y1, x2, y2], outline="red", width=3)
+            cropped_img_byte_arr = io.BytesIO()
+            crop.save(cropped_img_byte_arr, format='JPEG')
+            cropped_img_byte_arr.seek(0)  # 스트림의 시작 위치로 커서 이동
+            cropped_images.append(cropped_img_byte_arr)  # 리스트에 추가
+
+            draw.rectangle([x1, y1, x2, y2], outline="red", width=4)
             flaw_count += 1
+        # # 이미지에 박스 그리기
+        # for i, box in enumerate(results[0].obb.xyxy):
+        #     x1, y1, x2, y2 = box.tolist()  # Tensor를 리스트로 변환
+        #     # 클래스가 0이 아니거나(Good 이거나) conf가 0.8이하면 (Bad의 정확도가 0.8미만이면)
+        #     if results[0].obb.cls[i] != 0 | results[0].obb.conf[i] < 0.8:  
+        #         draw.rectangle([x1, y1, x2, y2], outline="green", width=4)
+        #         continue
+        #     draw.rectangle([x1, y1, x2, y2], outline="red", width=4)
+        #     flaw_count += 1
 
         normal_count = results[0].obb.cls.size()[0] - flaw_count
         # 바이트 스트림으로 이미지 저장
