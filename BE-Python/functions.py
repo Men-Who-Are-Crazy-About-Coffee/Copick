@@ -75,14 +75,16 @@ async def classify_roasting(rgb_color):
     # return f"Roasting Stage {len(boundaries_difference)}"
     return len(boundaries_difference)
 
-async def manufacture_image(file: UploadFile = File(...)):
+# async def manufacture_image(file: UploadFile = File(...),model):
+async def manufacture_image(file,model):
     try:
         image_data = await file.read()
         image = Image.open(io.BytesIO(image_data))
         image = image.convert("RGB") #for safe
 
-        model = YOLO('best.pt')
-        results = model(source=image, conf=0.8)
+        # model = YOLO('best.pt')
+        # results = model(source=image, conf=0.8)
+        results = model(source())
 
         draw = ImageDraw.Draw(image)
         flaw_count = 0
