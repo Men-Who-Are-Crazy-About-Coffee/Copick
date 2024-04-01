@@ -56,7 +56,7 @@ async def analyze_flaw(request: Request,
 
             result_index = str(resultIndex)
             
-            image_byte_stream,result_normal,result_flaw,cropped_images = await functions.manufacture_image(file)
+            image_byte_stream,result_normal,result_flaw,cropped_images = await functions.manufacture_image(file,ai_model)
             file_name = str(uuid.uuid4())+".jpg"
             s3_path = os.environ["AWS_S3_URL"]+"/result/"+result_index+"/sequence/"+file_name
 
