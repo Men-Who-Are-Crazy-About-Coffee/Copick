@@ -26,7 +26,6 @@ void main() async {
   CameraDescription? firstCamera;
   try {
     WidgetsFlutterBinding.ensureInitialized();
-    WidgetsFlutterBinding.ensureInitialized();
     final cameras = await availableCameras(); // 사용 가능한 카메라 목록을 가져옵니다.#
     firstCamera = cameras.first; // 첫 번째 카메라를 선택합니다.
   } on CameraException catch (e) {
@@ -37,11 +36,8 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) {
-          if (firstCamera != null) {
-            CameraProvider().setCamera(firstCamera);
-          }
-        }),
+        ChangeNotifierProvider(
+            create: (context) => CameraProvider()..setCamera(firstCamera!)),
       ],
       child: MaterialApp(
         scrollBehavior: AppScrollBehavior(),

@@ -1,5 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:fe/constants.dart';
+import 'package:fe/src/screens/video_page.dart';
 import 'package:fe/src/services/camera_provider.dart';
 import 'package:fe/src/screens/community_page.dart';
 import 'package:fe/src/screens/gallery_page.dart';
@@ -51,7 +52,7 @@ class _PagesState extends State<Pages> {
     if (accessToekn == null) Navigator.pushNamed(context, '/');
   }
 
-  void addWidgets(CameraDescription? camera) {
+  void addWidgets() {
     widgetOptions = [
       const StatPage(),
       const GalleryPage(),
@@ -62,9 +63,7 @@ class _PagesState extends State<Pages> {
 
   @override
   Widget build(BuildContext context) {
-    final cameraProvider = Provider.of<CameraProvider>(context);
-    final camera = cameraProvider.camera;
-    addWidgets(camera);
+    addWidgets();
 
     ThemeColors themeColors = ThemeColors();
     // 로그인되지 않았을 경우 로그인 페이지를 리스트에 추가
@@ -146,8 +145,27 @@ class _PagesState extends State<Pages> {
                   //   // 웹이 아닐 경우, `/video` 페이지로 네비게이션
                   //   Navigator.pushNamed(context, '/video');
                   // }
-
-                  Navigator.pushNamed(context, '/video');
+                  try {
+                    Navigator.pushNamed(context, '/video');
+                  } catch (e) {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('경고'),
+                          content: const Text('카메라를 찾을 수 없습니다.'),
+                          actions: <Widget>[
+                            TextButton(
+                              child: const Text('확인'),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  }
                 }),
           ),
           floatingActionButtonLocation:
