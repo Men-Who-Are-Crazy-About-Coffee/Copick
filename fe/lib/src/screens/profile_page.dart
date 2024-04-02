@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
@@ -5,6 +6,7 @@ import 'package:fe/constants.dart';
 import 'package:fe/src/services/api_service.dart';
 import 'package:fe/src/services/delete_storage.dart';
 import 'package:fe/src/services/user_provider.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:image_picker/image_picker.dart';
@@ -153,12 +155,28 @@ class _ProfilePageState extends State<ProfilePage> {
                                         },
                                         child: Stack(
                                           children: [
-                                            Image.network(
-                                              user.user.profileImage == ""
-                                                  ? defaultImg
-                                                  : user.user.profileImage!,
-                                              fit: BoxFit.cover,
-                                            ),
+                                            kIsWeb
+                                                ? Image.network(
+                                                    _image != null
+                                                        ? _image!.path
+                                                        : user.user.profileImage ==
+                                                                ""
+                                                            ? defaultImg
+                                                            : user.user
+                                                                .profileImage!,
+                                                    fit: BoxFit.cover,
+                                                  )
+                                                : _image != null
+                                                    ? Image.file(
+                                                        File(_image!.path))
+                                                    : Image.network(
+                                                        user.user.profileImage ==
+                                                                ""
+                                                            ? defaultImg
+                                                            : user.user
+                                                                .profileImage!,
+                                                        fit: BoxFit.cover,
+                                                      ),
                                             const Positioned(
                                               height: 70,
                                               width: 70,

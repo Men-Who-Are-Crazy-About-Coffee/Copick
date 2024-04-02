@@ -90,7 +90,7 @@ class _ResultPageState extends State<ResultPage> {
                     Stack(
                       children: [
                         SizedBox(
-                          height: 400,
+                          height: 300,
                           child: CarouselSlider(
                             carouselController: _controller,
                             options: CarouselOptions(
