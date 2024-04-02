@@ -1,3 +1,4 @@
+import 'package:fe/constants.dart';
 import 'package:fe/src/services/api_service.dart';
 import 'package:fe/src/services/board_provider.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ class CommunityPage extends StatefulWidget {
 }
 
 class _CommunityPageState extends State<CommunityPage> {
+  final ThemeColors _themeColors = ThemeColors();
   ApiService apiService = ApiService();
 
   final storage = const FlutterSecureStorage();
@@ -31,68 +33,77 @@ class _CommunityPageState extends State<CommunityPage> {
     return ChangeNotifierProvider<BoardProvider>(
       create: (_) => BoardProvider()..started(),
       child: Consumer<BoardProvider>(builder: (context, value, child) {
-        return Scaffold(
-          appBar: AppBar(
-            title: const Text('자유 게시판'),
-            automaticallyImplyLeading: false,
-          ),
-          body: Center(
-            child: SizedBox(
-              width: 500,
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      IconButton(
-                        onPressed: () =>
-                            Navigator.pushNamed(context, '/community_write'),
-                        icon: const Icon(Icons.post_add),
-                      ),
-                    ],
-                  ),
-                  if (value.isLoading)
-                    const CircularProgressIndicator()
-                  else if (value.items.isEmpty && !value.isLoading)
-                    const Column(
+        return RefreshIndicator(
+          onRefresh: () async {
+            value.update();
+            setState(() {});
+          },
+          child: Scaffold(
+            appBar: AppBar(
+              backgroundColor: _themeColors.color5,
+              title: const Text('자유 게시판'),
+              automaticallyImplyLeading: false,
+            ),
+            body: Center(
+              child: SizedBox(
+                width: 500,
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        SizedBox(
-                          height: 200,
+                        IconButton(
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/community_write');
+                          },
+                          icon: const Icon(Icons.post_add),
                         ),
-                        Text(
-                          "게시글이 없습니다.",
-                          style: TextStyle(fontSize: 40),
-                        )
                       ],
                     ),
-                  Expanded(
-                    child: NotificationListener<ScrollUpdateNotification>(
-                      onNotification: (ScrollUpdateNotification notification) {
-                        value.listner(notification);
-                        return false;
-                      },
-                      child: ListView.builder(
-                        itemCount: value.items.length,
-                        itemBuilder: (context, index) {
-                          return Column(
-                            children: [
-                              value.items[index],
-                              if (value.isMore &&
-                                  value.currentIndex == index + 1) ...[
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 40),
-                                  child: CircularProgressIndicator(
-                                    color: Colors.deepOrange,
-                                  ),
-                                ),
-                              ],
-                            ],
-                          );
+                    if (value.isLoading)
+                      const CircularProgressIndicator()
+                    else if (value.items.isEmpty && !value.isLoading)
+                      const Column(
+                        children: [
+                          SizedBox(
+                            height: 200,
+                          ),
+                          Text(
+                            "게시글이 없습니다.",
+                            style: TextStyle(fontSize: 40),
+                          )
+                        ],
+                      ),
+                    Expanded(
+                      child: NotificationListener<ScrollUpdateNotification>(
+                        onNotification:
+                            (ScrollUpdateNotification notification) {
+                          value.listner(notification);
+                          return false;
                         },
+                        child: ListView.builder(
+                          itemCount: value.items.length,
+                          itemBuilder: (context, index) {
+                            return Column(
+                              children: [
+                                value.items[index],
+                                if (value.isMore &&
+                                    value.currentIndex == index + 1) ...[
+                                  const Padding(
+                                    padding: EdgeInsets.symmetric(vertical: 40),
+                                    child: CircularProgressIndicator(
+                                      color: Colors.deepOrange,
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            );
+                          },
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

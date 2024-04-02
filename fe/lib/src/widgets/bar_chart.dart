@@ -133,7 +133,7 @@ class _BarChartState extends State<_BarChart>
                       ? Text(
                           '다른 사용자들의 평균보다 ${(widget.endValue * 10 - widget.otherValue * 10) / 10}%p만큼 높아요.')
                       : Text(
-                          '다른 사용자들의 평균보다 ${widget.otherValue - widget.endValue}%p만큼 낮아요.'),
+                          '다른 사용자들의 평균보다 ${(widget.otherValue * 10 - widget.endValue * 10) / 10}%p만큼 낮아요.'),
           const SizedBox(
             height: 70,
           ),

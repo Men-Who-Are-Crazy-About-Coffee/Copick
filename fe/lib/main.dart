@@ -1,12 +1,11 @@
 import 'dart:ui';
 
 import 'package:camera/camera.dart';
-import 'package:fe/constants.dart';
 import 'package:fe/routes.dart';
+import 'package:fe/src/models/screen_params.dart';
 import 'package:fe/src/services/camera_provider.dart';
 import 'package:fe/src/services/user_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_config/flutter_config.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 
@@ -19,30 +18,39 @@ class AppScrollBehavior extends MaterialScrollBehavior {
       };
 }
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  // 사용 가능한 카메라 목록을 가져옵니다.#
-  final cameras = await availableCameras();
-  print("cameras : ");
+void _logError(String code, String? message) {
+  // ignore: avoid_print
+  print('Error: $code${message == null ? '' : '\nError Message: $message'}');
+}
 
-  // 첫 번째 카메라를 선택합니다.
-  final firstCamera = cameras.first;
+void main() async {
+  CameraDescription? firstCamera;
+  try {
+    WidgetsFlutterBinding.ensureInitialized();
+    final cameras = await availableCameras(); // 사용 가능한 카메라 목록을 가져옵니다.#
+    firstCamera = cameras.first; // 첫 번째 카메라를 선택합니다.
+  } on CameraException catch (e) {
+    _logError(e.code, e.description);
+  }
   await dotenv.load(fileName: ".env");
 
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-            create: (context) => CameraProvider()..setCamera(firstCamera)),
+            create: (context) => CameraProvider()..setCamera(firstCamera!)),
         ChangeNotifierProvider<UserProvider>(
             create: (context) => UserProvider()..fetchUserData()),
       ],
       child: MaterialApp(
         scrollBehavior: AppScrollBehavior(),
         builder: (context, child) {
+          ScreenParams.screenSize = MediaQuery.of(context).size;
           final MediaQueryData data = MediaQuery.of(context);
           return MediaQuery(
-            data: data.copyWith(textScaler: const TextScaler.linear(1.3)),
+            data: data.copyWith(
+              textScaler: const TextScaler.linear(1.3),
+            ),
             child: child!,
           );
         },

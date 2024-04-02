@@ -46,6 +46,13 @@ class BoardProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> update() async {
+    _isLoading = true;
+    items.clear();
+    await started();
+    notifyListeners();
+  }
+
   Future<void> _addItem() async {
     if (!isMore) {
       isMore = true;
