@@ -51,6 +51,8 @@ dependencies:
   tflite_flutter: ^0.10.4
   image: ^4.0.17
   exif: ^3.3.0
+  carousel_slider: ^4.2.1
+  photo_view: ^0.14.0
 
 dev_dependencies:
   build_runner: ^2.4.8

@@ -24,7 +24,7 @@ class GalleryPage extends StatefulWidget {
 
 class _GalleryPageState extends State<GalleryPage> {
   Map<String, List<Map<String, dynamic>>> groupedItems = {};
-  final ThemeColors _themeColors = ThemeColors(); // 데이터 저장용 상태 변수
+  final ThemeColors _themeColors = ThemeColors();
   List<String> selectedImages = [];
   List<dynamic> errorList = [];
   bool isSelectMode = false;
@@ -38,11 +38,14 @@ class _GalleryPageState extends State<GalleryPage> {
 
   Future<void> getData() async {
     ApiService apiService = ApiService();
-    loadingState = LoadingState.loading;
+    setState(() {
+      loadingState = LoadingState.loading;
+    });
+
     try {
       Response response = await apiService.get('/api/result/flaws');
-
       Map<String, List<Map<String, dynamic>>> tempGroupedItems = {};
+
       for (var item in response.data) {
         String formattedDate =
             DateFormat('yyyy-MM-dd').format(DateTime.parse(item['regDate']));
@@ -53,19 +56,28 @@ class _GalleryPageState extends State<GalleryPage> {
           'flawIndex': item['flawIndex'],
         });
       }
+
       if (tempGroupedItems.isEmpty) {
         setState(() {
           loadingState = LoadingState.empty;
         });
       } else {
+        // 날짜를 기준으로 tempGroupedItems의 키를 내림차순으로 정렬합니다.
+        var sortedKeys = tempGroupedItems.keys.toList()
+          ..sort((a, b) => DateTime.parse(b).compareTo(DateTime.parse(a)));
+        Map<String, List<Map<String, dynamic>>> sortedGroupedItems = {
+          for (var key in sortedKeys) key: tempGroupedItems[key]!,
+        };
+
         setState(() {
-          groupedItems = tempGroupedItems;
+          groupedItems = sortedGroupedItems;
           loadingState = LoadingState.completed;
         });
       }
-    } on DioException catch (e) {
-      print(e);
-      loadingState = LoadingState.empty;
+    } catch (e) {
+      setState(() {
+        loadingState = LoadingState.empty;
+      });
     }
   }
 
@@ -175,6 +187,7 @@ class _GalleryPageState extends State<GalleryPage> {
     ThemeColors themeColors = ThemeColors();
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         backgroundColor: themeColors.color5,
         automaticallyImplyLeading: false,
         actions: [
@@ -263,8 +276,10 @@ class _GalleryPageState extends State<GalleryPage> {
               padding: const EdgeInsets.all(8.0),
               child: Text(
                 date,
-                style:
-                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             GridView.builder(

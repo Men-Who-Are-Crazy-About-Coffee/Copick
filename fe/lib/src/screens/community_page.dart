@@ -41,6 +41,7 @@ class _CommunityPageState extends State<CommunityPage> {
           },
           child: Scaffold(
             appBar: AppBar(
+              centerTitle: true,
               backgroundColor: _themeColors.color5,
               title: const Text('자유 게시판'),
               automaticallyImplyLeading: false,

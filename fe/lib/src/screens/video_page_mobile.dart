@@ -1,18 +1,23 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:dio/dio.dart';
+import 'package:fe/constants.dart';
 import 'package:fe/src/models/screen_params.dart'; // 앱 전역에서 사용되는 화면 매개변수 모델
 import 'package:fe/src/screens/result_page.dart';
 import 'package:fe/src/services/api_service.dart';
 import 'package:fe/src/yolo/bbox.dart'; // YOLOv8 모델에서 사용되는 경계 상자 모델
 import 'package:fe/src/yolo//detector_service.dart'; // 객체 감지 서비스
 import 'package:camera/camera.dart'; // 카메라 플러그인
-import 'package:flutter/material.dart'; // Flutter의 머티리얼 디자인 위젯
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart'; // Flutter의 머티리얼 디자인 위젯
 
 // YOLO 객체 감지 페이지를 위한 StatefulWidget
 class VideoPage extends StatefulWidget {
   final CameraDescription camera;
 
-  const VideoPage({Key? key, required this.camera}) : super(key: key);
+  const VideoPage({super.key, required this.camera});
 
   @override
   _VideoPageState createState() => _VideoPageState();
@@ -20,6 +25,7 @@ class VideoPage extends StatefulWidget {
 
 // YoloPage의 상태 관리 클래스
 class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
+  ThemeColors themeColors = ThemeColors();
   CameraController? _cameraController; // 카메라 컨트롤러
   get _controller => _cameraController; // 초기화되었을 때만 사용됨, null이 아님
   Detector? _detector; // 객체 감지기
@@ -193,16 +199,15 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
     var aspect = 1 / _controller.value.aspectRatio;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('RealTime Test'),
+        title: const Text('실시간 불량 검출하기'),
         centerTitle: true,
-        backgroundColor: Colors.black38,
-        foregroundColor: Colors.white,
+        backgroundColor: themeColors.color5,
+        foregroundColor: Colors.black,
         leading: IconButton(
-          onPressed: () =>
-              Navigator.popUntil(context, ModalRoute.withName("/")),
+          onPressed: () => Navigator.pop(context),
           icon: const Icon(
             Icons.arrow_back,
-            color: Colors.white,
+            color: Colors.black,
           ),
         ),
       ),
@@ -222,9 +227,24 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _captureAndSendImage,
+        backgroundColor: themeColors.color5,
+        onPressed: () async {
+          // SnackBar 생성
+          const snackBar = SnackBar(
+            content: Text('처리 중... 조금만 기다려 주세요.'),
+            duration: Duration(hours: 1), // 임시로 긴 시간 설정
+          );
+
+          // 현재 Scaffold에 SnackBar 표시
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+          await _captureAndSendImage(); // 이미지 캡처 및 전송
+
+          // 작업 완료 후 SnackBar 닫기
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        },
         tooltip: 'Capture',
-        child: Icon(Icons.camera),
+        child: const Icon(Icons.camera),
       ),
     );
   }
@@ -243,11 +263,41 @@ class DisplayPictureScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ThemeColors themeColors = ThemeColors();
     return Scaffold(
-      appBar: AppBar(title: const Text('찍힌 사진 보기')),
-      body: Image.network(imagePath),
+      appBar: AppBar(
+        backgroundColor: themeColors.color5,
+        centerTitle: true,
+        title: const Text('촬영한 사진 보기'),
+      ),
+      body: Center(
+        child: Column(
+          children: [
+            const SizedBox(
+              height: 125,
+            ),
+            // 이미지 회전 전에
+            Transform.rotate(
+              angle: pi / 2,
+              child: SizedBox(
+                height: 300,
+                child: Image.network(
+                  imagePath,
+                  fit: BoxFit.fill,
+                ),
+              ),
+            ),
+            const SizedBox(
+              height: 100,
+            ),
+            const Text('뒤로가기 버튼을 눌러 추가 촬영을 진행하거나'),
+            const Text('분석 버튼을 눌러 촬영한 사진의 분석 결과를 확인하세요.'),
+          ],
+        ),
+      ),
       floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.arrow_forward),
+        backgroundColor: themeColors.color5,
+        child: const Icon(Icons.analytics),
         onPressed: () {
           Navigator.push(
             context,

@@ -122,31 +122,6 @@ class _PagesState extends State<Pages> {
                 backgroundColor: themeColors.color5,
                 child: const Icon(Icons.camera, size: 40),
                 onPressed: () {
-                  // 웹 플랫폼인지 확인
-                  // if (kIsWeb) {
-                  //   // 웹 플랫폼일 경우, 알림 대화상자를 표시
-                  //   showDialog(
-                  //     context: context,
-                  //     builder: (BuildContext context) {
-                  //       return AlertDialog(
-                  //         title: Text('알림'),
-                  //         content: Text('이 서비스는 웹 플랫폼에서 지원되지 않습니다.'),
-                  //         actions: <Widget>[
-                  //           TextButton(
-                  //             child: Text('확인'),
-                  //             onPressed: () {
-                  //               Navigator.of(context).pop(); // 대화상자 닫기
-                  //             },
-                  //           ),
-                  //         ],
-                  //       );
-                  //     },
-                  //   );
-                  // } else {
-                  //   // 웹이 아닐 경우, `/video` 페이지로 네비게이션
-                  //   Navigator.pushNamed(context, '/video');
-                  // }
-
                   Navigator.pushNamed(context, '/video');
                 }),
           ),
