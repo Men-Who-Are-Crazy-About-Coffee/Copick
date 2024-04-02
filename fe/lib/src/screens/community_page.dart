@@ -15,7 +15,6 @@ class CommunityPage extends StatefulWidget {
 class _CommunityPageState extends State<CommunityPage> {
   final ThemeColors _themeColors = ThemeColors();
   ApiService apiService = ApiService();
-  List<Widget> boardWidgets = [];
 
   final storage = const FlutterSecureStorage();
   Future<void> isLogin() async {

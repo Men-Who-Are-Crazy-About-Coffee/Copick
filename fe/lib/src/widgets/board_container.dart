@@ -5,10 +5,12 @@ import 'package:fe/src/services/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'comment_container.dart';
+
 class BoardContainer extends StatefulWidget {
   final int index;
-  final String memberImg;
-  final String memberNickName;
+  final String? memberImg;
+  final String? memberNickName;
   final List<dynamic> coffeeImg;
   final String title;
   final String content;
@@ -128,59 +130,17 @@ class _BoardContainerState extends State<BoardContainer> {
                       padding: const EdgeInsets.all(12.0),
                       child: Row(
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: ClipOval(
-                              child: Image.network(
-                                _comments[index]['memberPrifileImage'] ??
-                                    "https://jariyo-s3.s3.ap-northeast-2.amazonaws.com/memeber/anonymous.png",
-                                height: 40,
-                                width: 40,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            width: 300,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Text(
-                                      _comments[index]['memberName'],
-                                      style: const TextStyle(
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w800),
-                                    ),
-                                    const SizedBox(
-                                      width: 12,
-                                    ),
-                                    Text(
-                                      (_comments[index]['regDate'])
-                                          .toString()
-                                          .substring(0, 10),
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey,
-                                      ),
-                                    )
+                          CommentContainer(
+                            userId: _comments[index]["memberIndex"],
+                            index: _comments[index]["index"],
+                            content: _comments[index]["content"],
+                            memberNickName: _comments[index]["memberName"],
+                            boardIndex: _comments[index]["boardIndex"],
+                            regDate: _comments[index]["regDate"],
+                            memberImg: _comments[index]["memberPrifileImage"],
+                            isProfile: false,
+                          )
                                   ],
-                                ),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        _comments[index]['content'],
-                                        style: const TextStyle(fontSize: 13),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
                       ),
                     );
                   },
@@ -234,7 +194,7 @@ class _BoardContainerState extends State<BoardContainer> {
 
   void getComment() async {
     Response response =
-        await apiService.get("/api/comment/board/$_index?sort=index");
+        await apiService.get("/api/comment/board/$_index?size=2000&sort=index");
     _comments = response.data['list'];
 
     _showModalBottomSheet();
@@ -266,7 +226,7 @@ class _BoardContainerState extends State<BoardContainer> {
                 ),
                 const SizedBox(width: 10),
                 Text("$_memberNickName"),
-                (_userId == user.user.index) || (user.user.index == 12)
+                (_userId == user.user.index) || (user.user.role == "ADMIN")
                     ? Row(
                         children: [
                           const SizedBox(
