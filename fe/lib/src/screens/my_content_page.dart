@@ -1,5 +1,4 @@
 import 'package:fe/src/services/api_service.dart';
-import 'package:fe/src/services/board_provider.dart';
 import 'package:fe/src/services/profile_content_provider.dart';
 import 'package:fe/src/services/user_provider.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +18,6 @@ class MyContentPage extends StatefulWidget {
 
 class _MyContentPageState extends State<MyContentPage> {
   ApiService apiService = ApiService();
-  List<Widget> boardWidgets = [];
   late ProfileContentType _profileContentType;
 
   final storage = const FlutterSecureStorage();
@@ -35,25 +33,29 @@ class _MyContentPageState extends State<MyContentPage> {
     _profileContentType= widget.profileContentType;
     isLogin();
   }
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
 
   @override
   Widget build(BuildContext context) {
+    var user =Provider.of<UserProvider>(context);
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<ProfileContentProvider>(
-          create: (_) => ProfileContentProvider()..started(_profileContentType,user: Provider.of<UserProvider>(_,listen: false).user)),
-        ChangeNotifierProvider<UserProvider>(
-            create: (context) => UserProvider()..fetchUserData()),
+          create: (_) => ProfileContentProvider()..started(_profileContentType,user: user.user)),
       ],
       child: Consumer<ProfileContentProvider>(builder: (context, value, child) {
         return Scaffold(
           appBar: AppBar(
-            title: const Text('내 게시글 보기'),
+            title: Text("내 ${_profileContentType.type} 보기"),
             automaticallyImplyLeading: false,
           ),
           body: Center(
             child: SizedBox(
-              width: 500,
+              width: 600,
               child: Column(
                 children: [
                   Row(
@@ -69,17 +71,18 @@ class _MyContentPageState extends State<MyContentPage> {
                   if (value.isLoading)
                     const CircularProgressIndicator()
                   else if (value.items.isEmpty && !value.isLoading)
-                    const Column(
+                    Column(
                       children: [
                         SizedBox(
                           height: 200,
                         ),
                         Text(
-                          "내가 쓴 게시글이 없습니다.",
-                          style: TextStyle(fontSize: 40),
+                          "내가 쓴 ${_profileContentType.type}이 없습니다.",
+                          style: const TextStyle(fontSize: 40),
                         )
                       ],
                     ),
+                  if(_profileContentType.view == "List")
                   Expanded(
                     child: NotificationListener<ScrollUpdateNotification>(
                       onNotification: (ScrollUpdateNotification notification) {
@@ -107,6 +110,28 @@ class _MyContentPageState extends State<MyContentPage> {
                       ),
                     ),
                   ),
+                  if(_profileContentType.view=="Grid")
+                    Expanded(
+                      child: NotificationListener<ScrollUpdateNotification>(
+                        onNotification: (ScrollUpdateNotification notification) {
+                          value.listner(notification);
+                          return false;
+                        },
+                        child: GridView.builder(
+                          itemCount: value.items.length,
+                          scrollDirection: Axis.vertical,
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3,
+                              mainAxisSpacing: 20,
+                              crossAxisSpacing: 10),
+                          itemBuilder: (context, index) {
+                            return Expanded(
+                              child: value.items[index],
+                              );
+                          },
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),

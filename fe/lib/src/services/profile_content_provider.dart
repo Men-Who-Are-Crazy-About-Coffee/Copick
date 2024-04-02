@@ -1,27 +1,27 @@
-import 'dart:js_interop';
+
 
 import 'package:dio/dio.dart';
 import 'package:fe/src/models/user.dart';
 import 'package:fe/src/services/api_service.dart';
-import 'package:fe/src/services/user_provider.dart';
 import 'package:fe/src/widgets/board_container.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../widgets/comment_container.dart';
 import '../widgets/liked_board_container.dart';
 
 enum ProfileContentType {
-  board(type: "게시글",size: 5),
-  comment(type: "댓글",size: 10),
-  like(type: "좋아요",size: 10);
+  board(type: "게시글",size: 5, view: "List"),
+  comment(type: "댓글",size: 2000, view: "List"),
+  like(type: "좋아요",size: 20, view: "Grid");
 
   final String type;
   final int size;
+  final String view;
 
   const ProfileContentType({
     required this.type,
-    required this.size
+    required this.size,
+    required this.view
   });
 }
 
@@ -41,6 +41,8 @@ class ProfileContentProvider extends ChangeNotifier {
 
   Future<void> started(ProfileContentType contentType, {required User user ,int? s}) async {
     size = s ?? contentType.size;
+    currentIndex=0;
+    items.clear();
     switch (contentType) {
       case ProfileContentType.board:
         Response response = await apiService
@@ -75,6 +77,8 @@ class ProfileContentProvider extends ChangeNotifier {
         Response response = await apiService.get(
             '/api/comment/user/${user.index}?size=$size&page=$currentIndex');
         var comments = response.data['list'];
+        endPage = response.data['totalPages'];
+        _isLoading = false;
         for (var comment in comments) {
           String userImg = "";
           comment['memberPrifileImage'] == null
@@ -96,14 +100,16 @@ class ProfileContentProvider extends ChangeNotifier {
         }
       case ProfileContentType.like:
         Response response = await apiService.get(
-            '/api/board/my/posts?size=$size&page=$currentIndex');
+            '/api/board/my/likes?size=$size&page=$currentIndex');
         var likedBoards = response.data['list'];
+        endPage = response.data['totalPages'];
+        _isLoading = false;
         for (var board in likedBoards) {
           String userImg = "";
-          board['userPrifileImage'] == null
+          board['userProfileImage'] == null
               ? userImg =
           "https://jariyo-s3.s3.ap-northeast-2.amazonaws.com/memeber/anonymous.png"
-              : userImg = board['userPrifileImage'];
+              : userImg = board['userProfileImage'];
 
           items.add(
               LikedBoardContainer(
@@ -115,9 +121,10 @@ class ProfileContentProvider extends ChangeNotifier {
                 content: board['content'],
                 regDate: board['regDate'],
                 title: board['title'],
-                isLiked: board['isLiked'],
-                like: board['like'],
-                commentCnt: board['commentCnt'],
+                isLiked: board['liked'],
+                like: board['likes'],
+                commentCnt: board['comments'],
+                isProfile: true,
               ));
         }
       default:
@@ -165,21 +172,21 @@ class ProfileContentProvider extends ChangeNotifier {
             }
           case ProfileContentType.comment:
             Response response = await apiService.get(
-                '/api/board/my/posts?size=$size&page=$currentIndex');
+                '/api/comment/user/${user.index}?size=$size&page=$currentIndex');
             var comments = response.data['list'];
             for (var comment in comments) {
               String userImg = "";
-              comment['userPrifileImage'] == null
+              comment['memberPrifileImage'] == null
                   ? userImg =
               "https://jariyo-s3.s3.ap-northeast-2.amazonaws.com/memeber/anonymous.png"
-                  : userImg = comment['userPrifileImage'];
+                  : userImg = comment['memberPrifileImage'];
 
               items.add(
                   CommentContainer(
                     index: comment['index'],
                     boardIndex: comment['boardIndex'],
-                    userId: comment['userId'],
-                    memberNickName: comment['userNickname'],
+                    userId: comment['memberIndex'],
+                    memberNickName: comment['memberName'],
                     isProfile: true,
                     memberImg: userImg,
                     content: comment['content'],
@@ -188,14 +195,16 @@ class ProfileContentProvider extends ChangeNotifier {
             }
           case ProfileContentType.like:
             Response response = await apiService.get(
-                '/api/board/my/posts?size=$size&page=$currentIndex');
+                '/api/board/my/likes?size=$size&page=$currentIndex');
             var likedBoards = response.data['list'];
+            endPage = response.data['totalPages'];
+            _isLoading = false;
             for (var board in likedBoards) {
               String userImg = "";
-              board['userPrifileImage'] == null
+              board['userProfileImage'] == null
                   ? userImg =
               "https://jariyo-s3.s3.ap-northeast-2.amazonaws.com/memeber/anonymous.png"
-                  : userImg = board['userPrifileImage'];
+                  : userImg = board['userProfileImage'];
 
               items.add(
                   LikedBoardContainer(
@@ -207,9 +216,10 @@ class ProfileContentProvider extends ChangeNotifier {
                     content: board['content'],
                     regDate: board['regDate'],
                     title: board['title'],
-                    isLiked: board['isLiked'],
-                    like: board['like'],
-                    commentCnt: board['commentCnt'],
+                    isLiked: board['liked'],
+                    like: board['likes'],
+                    commentCnt: board['comments'],
+                    isProfile: true,
                   ));
             }
           default:

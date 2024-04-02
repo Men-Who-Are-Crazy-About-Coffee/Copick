@@ -132,12 +132,12 @@ class _BoardContainerState extends State<BoardContainer> {
                           CommentContainer(
                             userId: _comments[index]["memberIndex"],
                             index: _comments[index]["index"],
-                            content: _comments[index]["index"],
+                            content: _comments[index]["content"],
                             memberNickName: _comments[index]["memberName"],
                             boardIndex: _comments[index]["boardIndex"],
                             regDate: _comments[index]["regDate"],
                             memberImg: _comments[index]["memberPrifileImage"],
-
+                            isProfile: false,
                           )
                                   ],
                       ),
@@ -193,7 +193,7 @@ class _BoardContainerState extends State<BoardContainer> {
 
   void getComment() async {
     Response response =
-        await apiService.get("/api/comment/board/$_index?sort=index");
+        await apiService.get("/api/comment/board/$_index?size=2000&sort=index");
     _comments = response.data['list'];
 
     _showModalBottomSheet();

@@ -1,24 +1,26 @@
-import 'package:dio/dio.dart';
+
 import 'package:fe/constants.dart';
 import 'package:fe/src/services/api_service.dart';
 import 'package:fe/src/services/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'comment_container.dart';
+import 'board_container.dart';
+
 
 class LikedBoardContainer extends StatefulWidget {
   final int index;
-  final String memberImg;
+  final String? memberImg;
   final String memberNickName;
   final List<dynamic> coffeeImg;
-  final String title;
+  final String? title;
   final String content;
   final bool isLiked;
   final int like;
   final int userId;
   final int commentCnt;
   final String regDate;
+  final bool? isProfile;
 
 
   const LikedBoardContainer(
@@ -33,7 +35,9 @@ class LikedBoardContainer extends StatefulWidget {
         required this.isLiked,
         required this.like,
         required this.commentCnt,
-        required this.regDate});
+        required this.regDate,
+        this.isProfile,
+      });
 
   @override
   State<LikedBoardContainer> createState() => _LikedBoardContainerState();
@@ -42,7 +46,7 @@ class LikedBoardContainer extends StatefulWidget {
 class _LikedBoardContainerState extends State<LikedBoardContainer> {
   String? _memberImg;
   String? _memberNickName;
-  String? _coffeeImg;
+  List<dynamic>? _coffeeImg;
   String? _title;
   String? _content;
   bool _isLiked = false;
@@ -50,7 +54,7 @@ class _LikedBoardContainerState extends State<LikedBoardContainer> {
   int _commentCnt = 0;
   int _userId = 0;
   int? _index;
-  bool _isExpanded = false;
+  bool _isProfile = false;
   String _regDate = "";
   ApiService apiService = ApiService();
 
@@ -59,7 +63,7 @@ class _LikedBoardContainerState extends State<LikedBoardContainer> {
     super.initState();
     _memberImg = widget.memberImg;
     _memberNickName = widget.memberNickName;
-    _coffeeImg = widget.coffeeImg[0];
+    _coffeeImg = widget.coffeeImg;
     _title = widget.title;
     _content = widget.content;
     _isLiked = widget.isLiked;
@@ -68,11 +72,11 @@ class _LikedBoardContainerState extends State<LikedBoardContainer> {
     _userId = widget.userId;
     _commentCnt = widget.commentCnt;
     _regDate = widget.regDate;
+    _isProfile= widget.isProfile ?? false;
   }
 
   ThemeColors themeColors = ThemeColors();
   TextEditingController commentController = TextEditingController();
-  late List<dynamic> _comments = [];
 
   void setLike() async {
     apiService.post('/api/board/$_index/like');
@@ -81,99 +85,71 @@ class _LikedBoardContainerState extends State<LikedBoardContainer> {
   void deleteLike() async {
     apiService.delete('/api/board/$_index/like');
   }
-
-  void _showBoardDialog() {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return SingleChildScrollView(
-          child: Padding(
-            padding: MediaQuery.of(context).viewInsets,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: _comments.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Row(
-                        children: [
-                          CommentContainer(
-                            userId: _comments[index]["memberIndex"],
-                            index: _comments[index]["index"],
-                            content: _comments[index]["content"],
-                            memberNickName: _comments[index]["memberName"],
-                            boardIndex: _comments[index]["boardIndex"],
-                            regDate: _comments[index]["regDate"],
-                            memberImg: _comments[index]["memberPrifileImage"],
-
-                          )
-                        ],
-                      ),
-                    );
-                  },
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: TextField(
-                            controller: commentController,
-                            decoration: const InputDecoration(
-                              hintText: '댓글 추가...',
-                            ),
-                          ),
-                        ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.send),
-                        onPressed: () {
-                          setState(() async {
-                            addComment();
-                            commentController.clear();
-                            Navigator.pop(context);
-                          });
-                          // 모달을 닫고 싶지 않으면 아래 줄을 주석 처리하세요.
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+  void getBoard() async {
+    try{
+      _showBoardModal();
+    }catch(e){
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('오류'),
+            content: const Text('게시글을 불러오는데 실패했습니다.'),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('확인'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+  void _showBoardModal() {
+    showDialog(
+        barrierDismissible: true,
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text(
+              '상세 보기',
+              style: TextStyle(
+                fontSize: 16,
+              ),
             ),
-          ),
-        );
-      },
+            content:SingleChildScrollView(
+                child: BoardContainer(
+                  title: _title!,
+                  coffeeImg: _coffeeImg!,
+                  index: _index!,
+                  memberImg: _memberImg ?? "https://jariyo-s3.s3.ap-northeast-2.amazonaws.com/memeber/anonymous.png",
+                  memberNickName: _memberNickName!,
+                  content: _content!,
+                  regDate: _regDate,
+                  isLiked: _isLiked,
+                  like: _like,
+                  userId: _userId,
+                  commentCnt: _commentCnt,
+                )
+            ),
+          );
+        }
     );
-  }
-
-  void addComment() async {
-    await apiService.post(
-      "/api/comment",
-      data: {
-        "boardIndex": _index,
-        "content": commentController.text,
-      },
-    );
-  }
-
-  void getComment() async {
-    Response response =
-    await apiService.get("/api/comment/board/$_index?sort=index");
-    _comments = response.data['list'];
-
-    _showBoardDialog();
   }
 
   @override
   Widget build(BuildContext context) {
-    var user = Provider.of<UserProvider>(context); // Counter 인스턴스에 접근
-    return Padding(
+    Provider.of<UserProvider>(context); // Counter 인스턴스에 접근
+    return GestureDetector(
+        onTap: (){
+      if(_isProfile){
+        getBoard();
+      }
+    },
+    child: Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: Container(
         width: 500,
@@ -181,148 +157,38 @@ class _LikedBoardContainerState extends State<LikedBoardContainer> {
           borderRadius: BorderRadius.circular(10),
           // border: Border.all(width: 1, color: Colors.black),
         ),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                const SizedBox(width: 10),
-                ClipOval(
-                  child: Image.network(
-                    _memberImg!,
-                    height: 40,
-                    width: 40,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Text("$_memberNickName"),
-                (_userId == user.user.index) || (user.user.role == "ADMIN")
-                    ? Row(
-                  children: [
-                    const SizedBox(
-                      width: 20,
-                    ),
-                    TextButton(
-                      onPressed: () {
-                      },
-                      child: const Text(
-                        "삭제",
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    ),
-                  ],
-                )
-                    : const Text("")
-              ],
+        child: Stack(
+          fit: StackFit.expand,
+    children: [
+    Image.network(
+              _coffeeImg![0] as String,
+              fit: BoxFit.fill,
             ),
-            const SizedBox(height: 10),
-            Image.network(
-              _coffeeImg!,
-              fit: BoxFit.scaleDown,
-            ),
-            Row(
-              children: [
-                IconButton(
-                  icon: Icon(
-                    _isLiked
-                        ? Icons.coffee_sharp // '좋아요' 상태에 따라 아이콘 변경
-                        : Icons.coffee_outlined,
-                    color: _isLiked
-                        ? themeColors.color5 // '좋아요' 상태에 따라 아이콘 색상 변경
-                        : Colors.grey,
-                  ),
-                  onPressed: () {
-                    _isLiked ? deleteLike() : setLike();
-                    setState(() {
-                      _isLiked = !_isLiked; // 버튼을 탭할 때마다 '좋아요' 상태 토글
-                      _isLiked ? _like += 1 : _like -= 1;
-                    });
-                  },
-                ),
-                IconButton(
-                  icon: const Icon(
-                    Icons.mode_comment_outlined,
-                    color: Colors.grey,
-                  ),
-                  onPressed:()=>
-                  getComment, // 댓글 아이콘을 탭할 때 _showCommentDialog 함수를 호출
-                ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      const Text("좋아요 "),
-                      Text("$_like"),
-                      const Text("개"),
-                      const SizedBox(
-                        width: 15,
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      const Text("댓글 "),
-                      Text("$_commentCnt"),
-                      const Text("개"),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Text("$_title"),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Flexible(
-                        child: AnimatedCrossFade(
-                          firstChild: Text(
-                            _content!,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          secondChild: Text(_content!),
-                          crossFadeState: _isExpanded
-                              ? CrossFadeState.showSecond
-                              : CrossFadeState.showFirst,
-                          duration: const Duration(milliseconds: 200),
-                        ),
-                      ),
-                    ],
-                  ),
-                  if (_content!.length > 50)
-                    Row(
-                      children: [
-                        TextButton(
-                          onPressed: () {
-                            setState(() {
-                              _isExpanded = !_isExpanded;
-                            });
-                          },
-                          child: Text(_isExpanded ? "접기" : "더보기"),
-                        ),
-                      ],
-                    ),
-                  Row(
-                    children: [
-                      Text(
-                        _regDate.toString().substring(0, 10),
-                        style: const TextStyle(
-                          fontSize: 10,
-                          color: Colors.grey,
-                        ),
-                      )
-                    ],
-                  ),
-                ],
-              ),
-            )
-          ],
-        ), //전체 컬럼
+    Positioned(
+      bottom: 10,
+    right: 10,
+    child: IconButton(
+    icon: Icon(
+        _isLiked
+        ? Icons.coffee_sharp // '좋아요' 상태에 따라 아이콘 변경
+            : Icons.coffee_outlined,
+        color: _isLiked
+        ? themeColors.color5 // '좋아요' 상태에 따라 아이콘 색상 변경
+            : Colors.grey,
+        ),
+        onPressed: () {
+          _isLiked ? deleteLike() : setLike();
+          setState(() {
+            _isLiked = !_isLiked; // 버튼을 탭할 때마다 '좋아요' 상태 토글
+            _isLiked ? _like += 1 : _like -= 1;
+          });
+        }
+    ),
+    ),
+    ],
       ),
+    ),
+    ),
     );
   }
 }

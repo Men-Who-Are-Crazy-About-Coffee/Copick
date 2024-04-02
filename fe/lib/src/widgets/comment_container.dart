@@ -10,7 +10,7 @@ import 'package:provider/provider.dart';
 class CommentContainer extends StatefulWidget {
   final int index;
   final int boardIndex;
-  final String memberImg;
+  final String? memberImg;
   final String memberNickName;
   final String content;
   final int userId;
@@ -100,9 +100,8 @@ class _CommentContainerState extends State<CommentContainer> {
                   fontSize: 16,
                 ),
               ),
-              content: ChangeNotifierProvider<UserProvider>(
-                  create: (context) => UserProvider()..fetchUserData(),
-                  child:BoardContainer(
+              content:SingleChildScrollView(
+          child: BoardContainer(
                 title: _board.title!,
                 coffeeImg: _board.coffeeImg!,
                 index: _board.index!,
@@ -115,7 +114,7 @@ class _CommentContainerState extends State<CommentContainer> {
                 userId: _board.userId!,
                 commentCnt: _board.commentCnt,
               )
-          ),
+              ),
           );
         }
     );
@@ -149,6 +148,11 @@ class _CommentContainerState extends State<CommentContainer> {
       );
     }
   }
+  @override
+  void dispose(){
+    super.dispose();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -174,7 +178,8 @@ class _CommentContainerState extends State<CommentContainer> {
             ),
           ),
           SizedBox(
-            width: 500,
+            width: 400,
+
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
