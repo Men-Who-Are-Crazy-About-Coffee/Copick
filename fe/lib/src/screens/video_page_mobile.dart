@@ -12,7 +12,7 @@ import 'package:flutter/material.dart'; // Flutter의 머티리얼 디자인 위
 class VideoPage extends StatefulWidget {
   final CameraDescription camera;
 
-  const VideoPage({Key? key, required this.camera}) : super(key: key);
+  const VideoPage({super.key, required this.camera});
 
   @override
   _VideoPageState createState() => _VideoPageState();
@@ -227,9 +227,9 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
             context: context,
             barrierDismissible: false, // 사용자가 다이얼로그 바깥을 탭해도 닫히지 않도록
             builder: (BuildContext context) {
-              return Dialog(
+              return const Dialog(
                 child: Padding(
-                  padding: const EdgeInsets.all(20.0),
+                  padding: EdgeInsets.all(20.0),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -246,7 +246,7 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
           Navigator.pop(context); // 작업 완료 후 다이얼로그 닫기
         },
         tooltip: 'Capture',
-        child: Icon(Icons.camera),
+        child: const Icon(Icons.camera),
       ),
     );
   }
