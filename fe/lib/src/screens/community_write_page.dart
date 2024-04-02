@@ -5,6 +5,7 @@ import 'package:fe/src/services/api_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_picker/image_picker.dart';
 
 class CommunityWritePage extends StatefulWidget {
@@ -19,17 +20,50 @@ class _CommunityWritePageState extends State<CommunityWritePage> {
 
   XFile? _image;
 
-  Future getImage() async {
-    final pickedFile = await ImagePicker().pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 25,
-    );
-
-    setState(() {
+  Future<void> getImage() async {
+    // imageQuality 매개변수 없이 이미지 선택
+    if (kIsWeb) {
+      final pickedFile = await ImagePicker().pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 25,
+      );
       if (pickedFile != null) {
-        _image = pickedFile;
+        setState(() {
+          // 압축된 이미지로 _image 업데이트
+          _image = pickedFile;
+        });
       }
-    });
+    } else {
+      final pickedFile = await ImagePicker().pickImage(
+        source: ImageSource.gallery,
+      );
+
+      if (pickedFile != null) {
+        // 파일 확장자 검사
+        String extension = pickedFile.path.split('.').last.toLowerCase();
+
+        if (extension != 'gif') {
+          // GIF가 아닌 경우, 이미지 압축
+          final compressedFile = await FlutterImageCompress.compressAndGetFile(
+            pickedFile.path,
+            '${pickedFile.path}_compressed.jpg', // 압축된 이미지 저장 경로
+            quality: 25, // 압축 품질
+          );
+
+          if (compressedFile != null) {
+            setState(() {
+              // 압축된 이미지로 _image 업데이트
+              _image = XFile(compressedFile.path);
+            });
+          }
+        } else {
+          setState(() {
+            // GIF 이미지인 경우, 원본 이미지로 _image 업데이트
+            _image = pickedFile;
+          });
+        }
+      }
+    }
   }
 
   void getDialog() {

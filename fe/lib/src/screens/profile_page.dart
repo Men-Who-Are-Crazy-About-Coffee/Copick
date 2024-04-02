@@ -41,33 +41,46 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<void> getImage() async {
     // imageQuality 매개변수 없이 이미지 선택
-    final pickedFile = await ImagePicker().pickImage(
-      source: ImageSource.gallery,
-    );
-
-    if (pickedFile != null) {
-      // 파일 확장자 검사
-      String extension = pickedFile.path.split('.').last.toLowerCase();
-
-      if (extension != 'gif') {
-        // GIF가 아닌 경우, 이미지 압축
-        final compressedFile = await FlutterImageCompress.compressAndGetFile(
-          pickedFile.path,
-          '${pickedFile.path}_compressed.jpg', // 압축된 이미지 저장 경로
-          quality: 25, // 압축 품질
-        );
-
-        if (compressedFile != null) {
-          setState(() {
-            // 압축된 이미지로 _image 업데이트
-            _image = XFile(compressedFile.path);
-          });
-        }
-      } else {
+    if (kIsWeb) {
+      final pickedFile = await ImagePicker().pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 25,
+      );
+      if (pickedFile != null) {
         setState(() {
-          // GIF 이미지인 경우, 원본 이미지로 _image 업데이트
+          // 압축된 이미지로 _image 업데이트
           _image = pickedFile;
         });
+      }
+    } else {
+      final pickedFile = await ImagePicker().pickImage(
+        source: ImageSource.gallery,
+      );
+
+      if (pickedFile != null) {
+        // 파일 확장자 검사
+        String extension = pickedFile.path.split('.').last.toLowerCase();
+
+        if (extension != 'gif') {
+          // GIF가 아닌 경우, 이미지 압축
+          final compressedFile = await FlutterImageCompress.compressAndGetFile(
+            pickedFile.path,
+            '${pickedFile.path}_compressed.jpg', // 압축된 이미지 저장 경로
+            quality: 25, // 압축 품질
+          );
+
+          if (compressedFile != null) {
+            setState(() {
+              // 압축된 이미지로 _image 업데이트
+              _image = XFile(compressedFile.path);
+            });
+          }
+        } else {
+          setState(() {
+            // GIF 이미지인 경우, 원본 이미지로 _image 업데이트
+            _image = pickedFile;
+          });
+        }
       }
     }
   }
