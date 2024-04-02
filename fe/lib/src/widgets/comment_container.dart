@@ -17,17 +17,17 @@ class CommentContainer extends StatefulWidget {
   final String regDate;
   final bool isProfile;
 
-  const CommentContainer(
-      {super.key,
-        required this.index,
-        required this.boardIndex,
-        required this.userId,
-        required this.memberImg,
-        required this.memberNickName,
-        required this.content,
-        required this.regDate,
-        this.isProfile= false,
-      });
+  const CommentContainer({
+    super.key,
+    required this.index,
+    required this.boardIndex,
+    required this.userId,
+    required this.memberImg,
+    required this.memberNickName,
+    required this.content,
+    required this.regDate,
+    this.isProfile = false,
+  });
 
   @override
   State<CommentContainer> createState() => _CommentContainerState();
@@ -51,7 +51,7 @@ class _CommentContainerState extends State<CommentContainer> {
     _memberNickName = widget.memberNickName;
     _index = widget.index;
     _boardIndex = widget.boardIndex;
-    _content=widget.content;
+    _content = widget.content;
     _userId = widget.userId;
     _regDate = widget.regDate;
     _isProfile = widget.isProfile;
@@ -59,7 +59,7 @@ class _CommentContainerState extends State<CommentContainer> {
 
   ThemeColors themeColors = ThemeColors();
   TextEditingController commentController = TextEditingController();
-  Board _board=Board();
+  Board _board = Board();
 
   void deleteComment() async {
     showDialog(
@@ -94,41 +94,38 @@ class _CommentContainerState extends State<CommentContainer> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-              title: const Text(
-                '상세 보기',
-                style: TextStyle(
-                  fontSize: 16,
-                ),
+            title: const Text(
+              '상세 보기',
+              style: TextStyle(
+                fontSize: 16,
               ),
-              content:SingleChildScrollView(
-          child: BoardContainer(
-                title: _board.title!,
-                coffeeImg: _board.coffeeImg!,
-                index: _board.index!,
-                memberImg: _board.userProfileImage ?? "https://jariyo-s3.s3.ap-northeast-2.amazonaws.com/memeber/anonymous.png",
-                memberNickName: _board.userNickname!,
-                content: _board.content!,
-                regDate: _board.regDate!,
-                isLiked: _board.liked,
-                like: _board.like,
-                userId: _board.userId!,
-                commentCnt: _board.commentCnt,
-              )
-              ),
+            ),
+            content: SingleChildScrollView(
+                child: BoardContainer(
+              title: _board.title!,
+              coffeeImg: _board.coffeeImg!,
+              index: _board.index!,
+              memberImg: _board.userProfileImage ??
+                  "https://jariyo-s3.s3.ap-northeast-2.amazonaws.com/memeber/anonymous.png",
+              memberNickName: _board.userNickname!,
+              content: _board.content!,
+              regDate: _board.regDate!,
+              isLiked: _board.liked,
+              like: _board.like,
+              userId: _board.userId!,
+              commentCnt: _board.commentCnt,
+            )),
           );
-        }
-    );
+        });
   }
 
   void getBoard() async {
-    try{
+    try {
+      Response response = await apiService.get("/api/board/$_boardIndex");
+      _board = Board.fromJson(response.data);
 
-    Response response =
-    await apiService.get("/api/board/$_boardIndex");
-    _board = Board.fromJson(response.data);
-
-    _showBoardModal();
-    }catch(e){
+      _showBoardModal();
+    } catch (e) {
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -148,18 +145,18 @@ class _CommentContainerState extends State<CommentContainer> {
       );
     }
   }
+
   @override
-  void dispose(){
+  void dispose() {
     super.dispose();
   }
-
 
   @override
   Widget build(BuildContext context) {
     var user = Provider.of<UserProvider>(context); // Counter 인스턴스에 접근
     return GestureDetector(
-      onTap: (){
-        if(_isProfile){
+      onTap: () {
+        if (_isProfile) {
           getBoard();
         }
       },
@@ -178,8 +175,7 @@ class _CommentContainerState extends State<CommentContainer> {
             ),
           ),
           SizedBox(
-            width: 400,
-
+            width: 300,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -188,23 +184,20 @@ class _CommentContainerState extends State<CommentContainer> {
                     Text(
                       _memberNickName ?? user.user.nickname!,
                       style: const TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w800),
+                          fontSize: 13, fontWeight: FontWeight.w800),
                     ),
                     const SizedBox(
                       width: 12,
                     ),
                     (_userId == user.user.index) || (user.user.role == "ADMIN")
                         ? Text(
-                      (_regDate)
-                          .toString()
-                          .substring(0, 10),
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey,
-                      ),
-                    ):
-                        const Text(""),
+                            (_regDate).toString().substring(0, 10),
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey,
+                            ),
+                          )
+                        : const Text(""),
                     TextButton(
                       onPressed: () {
                         deleteComment();
