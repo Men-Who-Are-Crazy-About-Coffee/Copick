@@ -196,6 +196,7 @@ class _ResultPageState extends State<ResultPage> {
             Navigator.of(context).pushNamed('/pages');
           },
           tooltip: 'Go to Main Page',
+          backgroundColor: themeColors.color5,
           child: const Icon(Icons.home),
         ),
       ),
