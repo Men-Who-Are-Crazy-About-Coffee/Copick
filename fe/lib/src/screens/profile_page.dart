@@ -10,6 +10,7 @@ import 'package:fe/src/services/profile_content_provider.dart';
 import 'package:fe/src/services/user_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -37,17 +38,38 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   XFile? _image;
-  Future getImage() async {
+
+  Future<void> getImage() async {
+    // imageQuality 매개변수 없이 이미지 선택
     final pickedFile = await ImagePicker().pickImage(
       source: ImageSource.gallery,
-      imageQuality: 25,
     );
 
-    setState(() {
-      if (pickedFile != null) {
-        _image = pickedFile;
+    if (pickedFile != null) {
+      // 파일 확장자 검사
+      String extension = pickedFile.path.split('.').last.toLowerCase();
+
+      if (extension != 'gif') {
+        // GIF가 아닌 경우, 이미지 압축
+        final compressedFile = await FlutterImageCompress.compressAndGetFile(
+          pickedFile.path,
+          '${pickedFile.path}_compressed.jpg', // 압축된 이미지 저장 경로
+          quality: 25, // 압축 품질
+        );
+
+        if (compressedFile != null) {
+          setState(() {
+            // 압축된 이미지로 _image 업데이트
+            _image = XFile(compressedFile.path);
+          });
+        }
+      } else {
+        setState(() {
+          // GIF 이미지인 경우, 원본 이미지로 _image 업데이트
+          _image = pickedFile;
+        });
       }
-    });
+    }
   }
 
   Future sendImage(int? index, String? nickname) async {
@@ -124,8 +146,9 @@ class _ProfilePageState extends State<ProfilePage> {
           child: Column(
             children: [
               Container(
-                decoration:
-                    BoxDecoration(borderRadius: BorderRadius.circular(10)),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                ),
                 width: 375,
                 child: Column(
                   children: [
