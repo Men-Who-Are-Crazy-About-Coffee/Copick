@@ -273,7 +273,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     Row(
                       children: [
                         TextButton(
-                          onPressed: ()=>Navigator.pushNamed(context, "/my_content",arguments: ProfileContentType.board),
+                          onPressed: () => Navigator.pushNamed(
+                              context, "/my_content",
+                              arguments: ProfileContentType.board),
                           child: const Text("내 게시글 보기"),
                         ),
                       ],
@@ -286,11 +288,12 @@ class _ProfilePageState extends State<ProfilePage> {
                     Row(
                       children: [
                         TextButton(
-                          onPressed:  ()=>
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context)=>
-                                  const MyContentPage(profileContentType: ProfileContentType.comment))),
+                          onPressed: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const MyContentPage(
+                                      profileContentType:
+                                          ProfileContentType.comment))),
                           child: const Text("내 댓글 보기"),
                         ),
                       ],
@@ -303,11 +306,12 @@ class _ProfilePageState extends State<ProfilePage> {
                     Row(
                       children: [
                         TextButton(
-                          onPressed:  ()=>
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context)=>
-                                  const MyContentPage(profileContentType: ProfileContentType.like))),
+                          onPressed: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const MyContentPage(
+                                      profileContentType:
+                                          ProfileContentType.like))),
                           child: const Text("내가 좋아요 한 글 보기"),
                         ),
                       ],
@@ -359,9 +363,8 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void showMyContentPage(ProfileContentType profileContentType) {
-     MyContentPage(
+    MyContentPage(
       profileContentType: profileContentType,
     );
-
   }
 }
