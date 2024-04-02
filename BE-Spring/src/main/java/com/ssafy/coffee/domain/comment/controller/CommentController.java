@@ -59,7 +59,7 @@ public class CommentController {
     @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     @GetMapping("/user/{userIndex}")
     public ResponseEntity<Object> getCommentsByUser(@PathVariable Long userIndex,
-                                                    @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+                                                    @PageableDefault(page = 0, size = 10, sort = "regDate", direction = Sort.Direction.DESC) Pageable pageable) {
         CommentGetListResponseDto commentGetListResponseDto = commentService.getCommentsByUser(userIndex, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(commentGetListResponseDto);
     }
