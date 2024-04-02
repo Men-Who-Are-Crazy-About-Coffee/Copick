@@ -144,6 +144,7 @@ class _StatPageState extends State<StatPage> {
     var user = Provider.of<UserProvider>(context);
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         automaticallyImplyLeading: false,
         backgroundColor: themeColors.color5,
         title: const Text('로스팅 통계'),
