@@ -70,11 +70,13 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  final TextEditingController _nicknameController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     ThemeColors themeColors = ThemeColors();
     var user = Provider.of<UserProvider>(context); // Counter 인스턴스에 접근
-
+    _nicknameController.text = user.user.nickname!;
     void unRegister() {
       showDialog(
         context: context,
@@ -147,9 +149,6 @@ class _ProfilePageState extends State<ProfilePage> {
                                     : OutlinedButton(
                                         onPressed: () async {
                                           await getImage();
-                                          await sendImage(user.user.index,
-                                              user.user.nickname);
-                                          user.fetchUserData();
                                         },
                                         child: Stack(
                                           children: [
@@ -194,7 +193,17 @@ class _ProfilePageState extends State<ProfilePage> {
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w600),
                                             ),
-                                            Text(user.user.nickname!),
+                                            !isEdited
+                                                ? Text(user.user.nickname!)
+                                                : SizedBox(
+                                                    width: 125,
+                                                    height: 50,
+                                                    child: TextField(
+                                                      controller:
+                                                          _nicknameController,
+                                                      maxLength: 7,
+                                                    ),
+                                                  ),
                                           ],
                                         )
                                       ],
@@ -212,10 +221,15 @@ class _ProfilePageState extends State<ProfilePage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         OutlinedButton(
-                            onPressed: () {
+                            onPressed: () async {
                               setState(() {
                                 isEdited = !isEdited;
                               });
+                              if (!isEdited) {
+                                await sendImage(
+                                    user.user.index, _nicknameController.text);
+                                user.fetchUserData();
+                              }
                             },
                             style: OutlinedButton.styleFrom(
                               foregroundColor: themeColors.black,

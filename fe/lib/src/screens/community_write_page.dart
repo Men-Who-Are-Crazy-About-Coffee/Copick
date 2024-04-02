@@ -81,7 +81,6 @@ class _CommunityWritePageState extends State<CommunityWritePage> {
         multipartFile,
       ));
       await apiService.post('/api/board', data: formData);
-      Navigator.pushNamed(context, '/pages');
     } catch (e) {
       getDialog();
       return;
@@ -94,7 +93,11 @@ class _CommunityWritePageState extends State<CommunityWritePage> {
   Widget build(BuildContext context) {
     ThemeColors themeColors = ThemeColors();
     return Scaffold(
-      appBar: AppBar(title: const Text('게시글 작성')),
+      appBar: AppBar(
+        centerTitle: true,
+        title: const Text('게시글 작성'),
+        backgroundColor: themeColors.color5,
+      ),
       body: SingleChildScrollView(
         child: Center(
           child: SizedBox(
@@ -103,33 +106,8 @@ class _CommunityWritePageState extends State<CommunityWritePage> {
               padding: const EdgeInsets.all(12.0),
               child: Column(
                 children: [
-                  const Row(
-                    children: <Widget>[
-                      // Expanded(
-                      //   child: RadioListTile<String>(
-                      //     title: const Text('자유'),
-                      //     value: "GENERAL",
-                      //     groupValue: _selectedDomain,
-                      //     onChanged: (String? value) {
-                      //       setState(() {
-                      //         _selectedDomain = value;
-                      //       });
-                      //     },
-                      //   ),
-                      // ),
-                      // Expanded(
-                      //   child: RadioListTile<String>(
-                      //     title: const Text('공지사항'),
-                      //     value: "NOTIFICATION",
-                      //     groupValue: _selectedDomain,
-                      //     onChanged: (String? value) {
-                      //       setState(() {
-                      //         _selectedDomain = value;
-                      //       });
-                      //     },
-                      //   ),
-                      // ),
-                    ],
+                  const SizedBox(
+                    height: 10,
                   ),
                   TextField(
                     controller: _titleController,
@@ -163,14 +141,40 @@ class _CommunityWritePageState extends State<CommunityWritePage> {
                   FloatingActionButton(
                     onPressed: getImage,
                     tooltip: '이미지 선택',
+                    backgroundColor: themeColors.color5,
                     child: const Icon(Icons.add_a_photo),
                   ),
                   const SizedBox(height: 20),
                   ElevatedButton(
-                    onPressed: () {
-                      write();
+                    onPressed: () async {
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false, // 사용자가 다이얼로그 바깥을 탭해도 닫히지 않도록
+                        builder: (BuildContext context) {
+                          return const Dialog(
+                            child: Padding(
+                              padding: EdgeInsets.all(20.0),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  CircularProgressIndicator(),
+                                  SizedBox(width: 20),
+                                  Text("업로드 중..."),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                      await write();
+                      Navigator.pushNamed(context, '/pages');
                     },
-                    child: const Text('게시글 업로드'),
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: themeColors.color5),
+                    child: const Text(
+                      '게시글 업로드',
+                      style: TextStyle(color: Colors.black),
+                    ),
                   ),
                 ],
               ),
