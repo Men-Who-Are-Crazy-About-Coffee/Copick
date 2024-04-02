@@ -192,7 +192,7 @@ class _DetectorServer {
     final numOfLabels = _labels?.length ?? 0;
     final count = numOfLabels + 4;
     (idx, box, conf) =
-        nms(rawOutput, count, confidenceThreshold: 0.75, iouThreshold: 0.4);
+        nms(rawOutput, count, confidenceThreshold: 0.7, iouThreshold: 0.4);
 
     if (idx.isNotEmpty) {
       cls = idx.map((e) => _labels![e]).toList();
