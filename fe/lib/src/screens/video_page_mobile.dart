@@ -193,7 +193,7 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
     var aspect = 1 / _controller.value.aspectRatio;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('RealTime Test'),
+        title: const Text('실시간 결점두 검출'),
         centerTitle: true,
         backgroundColor: Colors.black38,
         foregroundColor: Colors.white,
