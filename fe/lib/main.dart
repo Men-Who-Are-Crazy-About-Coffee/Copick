@@ -1,5 +1,5 @@
 import 'dart:ui';
-
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:camera/camera.dart';
 import 'package:fe/routes.dart';
 import 'package:fe/src/models/screen_params.dart';
@@ -37,9 +37,17 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-            create: (context) => CameraProvider()..setCamera(firstCamera!)),
+          create: (context) => CameraProvider()..setCamera(firstCamera!),
+        ),
       ],
       child: MaterialApp(
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+        ],
+        supportedLocales: const [
+          Locale('ko', 'KR'),
+        ],
         scrollBehavior: AppScrollBehavior(),
         builder: (context, child) {
           ScreenParams.screenSize = MediaQuery.of(context).size;

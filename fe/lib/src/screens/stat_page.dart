@@ -36,11 +36,65 @@ class _StatPageState extends State<StatPage> {
   // 날짜 범위 선택기를 표시하는 함수
   Future<void> _pickDateRange(BuildContext context) async {
     final DateTimeRange? newDateRange = await showDateRangePicker(
-      context: context,
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2025),
-      initialDateRange: dateRange,
-    );
+        context: context,
+        firstDate: DateTime(2020),
+        lastDate: DateTime(2025),
+        initialDateRange: dateRange,
+        initialEntryMode: DatePickerEntryMode.calendarOnly,
+        helpText: '날짜 범위를 선택해주세요.',
+        saveText: '저장',
+        cancelText: '취소',
+        confirmText: '확인',
+        builder: (BuildContext context, Widget? child) {
+          return Theme(
+            data: ThemeData.light().copyWith(
+              colorScheme: ColorScheme.light(
+                primary: themeColors.color5,
+                secondary: themeColors.color4,
+              ),
+              textTheme: const TextTheme(
+                // 달력 상단 텍스트 스타일
+                titleLarge: TextStyle(
+                  color: Colors.black,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                  fontFamily: 'SDchild',
+                ),
+                // 달력 상단 작은 텍스트 스타일
+                titleSmall: TextStyle(
+                  color: Colors.black,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                  fontFamily: 'SDchild',
+                ),
+
+                // 기간 입력 텍스트 스타일
+                bodyLarge: TextStyle(
+                  color: Colors.black,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  fontFamily: 'SDchild',
+                ),
+
+                // 달력 텍스트 스타일
+                bodyMedium: TextStyle(
+                  color: Colors.black,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                  fontFamily: 'SDchild',
+                ),
+                // 버튼 텍스트 스타일
+                labelLarge: TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  fontFamily: 'SDchild',
+                ),
+              ),
+            ),
+            child: child!,
+          );
+        });
 
     if (newDateRange != null) {
       setState(() {
