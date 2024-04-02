@@ -78,7 +78,9 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     ThemeColors themeColors = ThemeColors();
     var user = Provider.of<UserProvider>(context); // Counter 인스턴스에 접근
-    _nicknameController.text = user.user.nickname!;
+    if (_nicknameController.text == "") {
+      _nicknameController.text = user.user.nickname!;
+    }
     void unRegister() {
       showDialog(
         context: context,
