@@ -51,6 +51,7 @@ dependencies:
   tflite_flutter: ^0.10.4
   image: ^4.0.17
   exif: ^3.3.0
+  flutter_image_compress: ^2.2.0
 
 dev_dependencies:
   build_runner: ^2.4.8

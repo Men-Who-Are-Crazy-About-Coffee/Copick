@@ -5,6 +5,7 @@ import 'package:fe/src/services/api_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_picker/image_picker.dart';
 
 class CommunityWritePage extends StatefulWidget {
@@ -20,8 +21,10 @@ class _CommunityWritePageState extends State<CommunityWritePage> {
   XFile? _image;
 
   Future getImage() async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+    final pickedFile = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 25,
+    );
 
     setState(() {
       if (pickedFile != null) {
@@ -65,6 +68,7 @@ class _CommunityWritePageState extends State<CommunityWritePage> {
       FormData formData = FormData();
 
       Uint8List fileBytes = await _image!.readAsBytes();
+
       MultipartFile multipartFile =
           MultipartFile.fromBytes(fileBytes, filename: "uploaded_file.jpg");
 

@@ -147,25 +147,31 @@ class _GalleryPageState extends State<GalleryPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text(
-            '자세히 보기',
-            style: TextStyle(
-              fontSize: 20,
-            ),
-          ),
-          content: Image.network(
+            // title: const Text(
+            //   '자세히 보기',
+            //   style: TextStyle(
+            //     fontSize: 20,
+            //   ),
+            // ),
+            content: GestureDetector(
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: Image.network(
             imageurl,
             fit: BoxFit.cover,
           ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('확인'),
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-            ),
-          ],
-        );
+        )
+
+            // actions: const <Widget>[
+            // TextButton(
+            //   child: const Text('확인'),
+            //   onPressed: () {
+            //     Navigator.of(context).pop(); // Close the dialog
+            //   },
+            // ),
+            // ],
+            );
       },
     );
   }

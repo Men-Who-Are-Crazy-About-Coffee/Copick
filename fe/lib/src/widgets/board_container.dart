@@ -121,6 +121,7 @@ class _BoardContainerState extends State<BoardContainer> {
               children: <Widget>[
                 ListView.builder(
                   shrinkWrap: true,
+                  physics: const ClampingScrollPhysics(),
                   itemCount: _comments.length,
                   itemBuilder: (context, index) {
                     return Padding(
