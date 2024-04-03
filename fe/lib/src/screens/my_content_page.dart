@@ -114,7 +114,7 @@ class _MyContentPageState extends State<MyContentPage> {
                       ),
                     ),
                   if (_profileContentType.view == "Grid")
-                    Expanded(
+                    Flexible(
                       child: NotificationListener<ScrollUpdateNotification>(
                         onNotification:
                             (ScrollUpdateNotification notification) {
