@@ -31,7 +31,6 @@ class ProfileContentProvider extends ChangeNotifier {
   int endPage = 1;
   bool isMore = false;
   bool _isLoading = true;
-  late User user;
   late ProfileContentType contentType = ProfileContentType.board;
 
   get isLoading => _isLoading;
@@ -39,7 +38,7 @@ class ProfileContentProvider extends ChangeNotifier {
   int size = 5;
   ApiService apiService = ApiService();
 
-  Future<void> started(ProfileContentType contentType, {required User user ,int? s}) async {
+  Future<void> started(ProfileContentType contentType, { int? s}) async {
     size = s ?? contentType.size;
     currentIndex=0;
     items.clear();
@@ -75,7 +74,7 @@ class ProfileContentProvider extends ChangeNotifier {
         }
       case ProfileContentType.comment:
         Response response = await apiService.get(
-            '/api/comment/user/${user.index}?size=$size&page=$currentIndex');
+            '/api/comment/my?size=$size&page=$currentIndex');
         var comments = response.data['list'];
         endPage = response.data['totalPages'];
         _isLoading = false;
@@ -172,7 +171,7 @@ class ProfileContentProvider extends ChangeNotifier {
             }
           case ProfileContentType.comment:
             Response response = await apiService.get(
-                '/api/comment/user/${user.index}?size=$size&page=$currentIndex');
+                '/api/comment/my?size=$size&page=$currentIndex');
             var comments = response.data['list'];
             for (var comment in comments) {
               String userImg = "";
