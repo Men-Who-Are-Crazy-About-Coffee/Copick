@@ -17,7 +17,7 @@ class CommunityWritePage extends StatefulWidget {
 
 class _CommunityWritePageState extends State<CommunityWritePage> {
   final String _selectedDomain = "GENERAL";
-
+  String contentText ="";
   XFile? _image;
 
   Future<void> getImage() async {
@@ -65,6 +65,35 @@ class _CommunityWritePageState extends State<CommunityWritePage> {
       }
     }
   }
+  @override
+  void initState(){
+    super.initState();
+    _contentController.addListener(() {
+      final String text = _contentController.text;
+      _contentController.value = _contentController.value.copyWith(
+        text: text,
+        selection:
+        TextSelection(baseOffset: text.length, extentOffset: text.length),
+        composing: TextRange.empty,
+      );
+    });
+    _titleController.addListener(() {
+      final String text = _titleController.text;
+      _titleController.value = _titleController.value.copyWith(
+        text: text,
+        selection:
+        TextSelection(baseOffset: text.length, extentOffset: text.length),
+        composing: TextRange.empty,
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _contentController.dispose();
+    _titleController.dispose();
+    super.dispose();
+  }
 
   void getDialog() {
     showDialog(
@@ -74,7 +103,7 @@ class _CommunityWritePageState extends State<CommunityWritePage> {
           title: const Text('안내메세지'),
           content: _titleController.text == ""
               ? const Text('글의 제목을 입력해주세요.')
-              : _contentController.text == ""
+              : contentText == ""
                   ? const Text("글의 내용을 입력해주세요.")
                   : const Text("이미지를 추가해주세요."),
           actions: <Widget>[

@@ -191,6 +191,11 @@ class _BoardContainerState extends State<BoardContainer> {
       },
     );
   }
+  @override
+  void dispose(){
+    commentController.dispose();
+    super.dispose();
+  }
 
   void getComment() async {
     Response response =
