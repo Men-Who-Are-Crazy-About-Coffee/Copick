@@ -64,6 +64,18 @@ public class CommentController {
         return ResponseEntity.status(HttpStatus.OK).body(commentGetListResponseDto);
     }
 
+    @Operation(summary = "내 댓글 조회", description = "내가 작성한 모든 댓글을 조회합니다.")
+    @ApiResponse(responseCode = "200", description = "댓글 조회에 성공", content = @Content(schema = @Schema(implementation = CommentGetListResponseDto.class)))
+    @ApiResponse(responseCode = "404", description = "제공된 userIndex로 댓글을 찾을 수 없음")
+    @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터")
+    @ApiResponse(responseCode = "500", description = "서버 내부 오류")
+    @GetMapping("/my")
+    public ResponseEntity<Object> getMyComments(@AuthenticationPrincipal PrincipalMember principalMember,
+                                                    @PageableDefault(page = 0, size = 10, sort = "regDate", direction = Sort.Direction.DESC) Pageable pageable) {
+        CommentGetListResponseDto commentGetListResponseDto = commentService.getCommentsByUser(principalMember.getIndex(), pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(commentGetListResponseDto);
+    }
+
 
     @Operation(summary = "댓글 수정", description = "기존 댓글을 수정합니다.")
     @ApiResponse(responseCode = "204", description = "댓글이 성공적으로 업데이트됨")
