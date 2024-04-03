@@ -192,22 +192,11 @@ class _DetectorServer {
     final numOfLabels = _labels?.length ?? 0;
     final count = numOfLabels + 4;
     (idx, box, conf) =
-        nms(rawOutput, count, confidenceThreshold: 0.7, iouThreshold: 0.4);
+        nms(rawOutput, count, confidenceThreshold: 0.5, iouThreshold: 0.4);
 
     if (idx.isNotEmpty) {
       cls = idx.map((e) => _labels![e]).toList();
     }
-
-    // for (var i = 0; i < cls.length; i++) {
-    //   debugPrint('cls item: ${cls[i]}');
-    //   debugPrint('box item: ${box[i]}');
-    //   debugPrint('conf item: ${conf[i]}');
-
-    //   if (cls[i] == 'bad' && conf[i] < 0.8) {
-    //     cls[i] = 'good';
-    //     debugPrint('!!!change item: ${cls[i]}');
-    //   }
-    // }
 
     var inferenceElapsedTime =
         DateTime.now().millisecondsSinceEpoch - inferenceTimeStart;
@@ -229,16 +218,10 @@ class _DetectorServer {
   }
 
   List<Object> _runInference(List<List<List<num>>> imageMatrix) {
-    // Set input tensor [1, 640, 640, 3] [1, 224, 244, 3]
     final input = [imageMatrix];
-    // korail_lens [1, 55, 8400] [1, 55, 1029] yolov8n [1, 84, 8400]
-    // final outputs =
-    //     List<num>.filled(1 * count * 8400, 0).reshape([1, count, 8400]);
     final numOut = _interpreter?.getOutputTensors().first.shape[0] ?? 1;
     final numOut1 = _interpreter?.getOutputTensors().first.shape[1] ?? 1;
     final numOut2 = _interpreter?.getOutputTensors().first.shape[2] ?? 1;
-    // debugPrint('input ${_interpreter?.getInputTensors().first.shape}');
-    // debugPrint('output ${_interpreter?.getOutputTensors().first.shape}');
     final outputs = List<num>.filled(numOut * numOut1 * numOut2, 0)
         .reshape([numOut, numOut1, numOut2]);
     var map = <int, Object>{};

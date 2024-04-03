@@ -34,38 +34,6 @@ class Bbox extends StatelessWidget {
         decoration: BoxDecoration(
           border: Border.all(color: borderColor, width: 1), // 조건부 색상 적용
         ),
-        child: Align(
-          alignment: Alignment.topCenter,
-          child: FittedBox(
-            child: Container(
-              color: Colors.black38,
-              width: width,
-              child: Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Flexible(
-                      flex: 2,
-                      child: Text(
-                        name,
-                        style: const TextStyle(color: Colors.white),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    Flexible(
-                      flex: 1,
-                      child: Text(
-                        ' ${score.toStringAsFixed(2)}',
-                        style: const TextStyle(color: Colors.white),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
       ),
     );
   }
