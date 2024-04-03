@@ -16,13 +16,15 @@ enum Gender { male, female }
 class _RegisterState extends State<Register> {
   final TextEditingController idController = TextEditingController();
   final TextEditingController pwController = TextEditingController();
+  final TextEditingController pwConfirmController = TextEditingController();
   final TextEditingController nicknameController = TextEditingController();
   final TextEditingController ageController = TextEditingController();
 
   void join() {
     if (idController.text.length == "" ||
         validatePassword(pwController.text) != null ||
-        nicknameController.text == "") {
+        nicknameController.text == "" ||
+        pwController.text != pwConfirmController.text) {
       getDialog();
       return;
     }
@@ -45,7 +47,9 @@ class _RegisterState extends State<Register> {
               ? const Text('아이디를 입력해주세요.')
               : validatePassword(pwController.text) != null
                   ? const Text("특수문자, 문자, 숫자 포함 8자 이상 16자 이내로 입력하세요.")
-                  : const Text("닉네임을 입력해주세요."),
+                  : pwController.text != pwConfirmController.text
+                      ? const Text("입력한 비밀번호가 서로 다릅니다.")
+                      : const Text("닉네임을 입력해주세요."),
           actions: <Widget>[
             TextButton(
               child: const Text('닫기'),
@@ -131,7 +135,15 @@ class _RegisterState extends State<Register> {
                             ],
                           ),
                           const SizedBox(
-                            height: 15,
+                            height: 10,
+                          ),
+                          InputField(
+                            label: 'password',
+                            controller: pwConfirmController,
+                            maxLength: 16,
+                          ),
+                          const SizedBox(
+                            height: 20,
                           ),
                           InputField(
                             label: '닉네임',
@@ -142,7 +154,7 @@ class _RegisterState extends State<Register> {
                             height: 20,
                           ),
                           const SizedBox(
-                            height: 30.0,
+                            height: 25.0,
                           ),
                           RoundedButton(
                             maintext: '회원가입',
