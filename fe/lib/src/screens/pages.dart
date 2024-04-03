@@ -9,6 +9,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 class Pages extends StatefulWidget {
@@ -117,28 +118,25 @@ class _PagesState extends State<Pages> {
                 shape: const StadiumBorder(),
                 backgroundColor: themeColors.color5,
                 child: const Icon(Icons.camera, size: 40),
-                onPressed: () {
-                  try {
-                    Navigator.pushNamed(context, '/video');
-                  } catch (e) {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: const Text('경고'),
-                          content: const Text('카메라를 찾을 수 없습니다.'),
-                          actions: <Widget>[
-                            TextButton(
-                              child: const Text('확인'),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  }
+                onPressed: () async {
+                  Navigator.pushNamed(context, '/video');
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('경고'),
+                        content: const Text('카메라를 찾을 수 없습니다.'),
+                        actions: <Widget>[
+                          TextButton(
+                            child: const Text('확인'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
                 }),
           ),
           floatingActionButtonLocation:
