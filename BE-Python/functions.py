@@ -100,7 +100,7 @@ async def manufacture_image(file,model):
         # flaw 이미지 자르기 & sequence 이미지에 박스 그리기
         for i, box in enumerate(results[0].boxes):
             x1, y1, x2, y2 = box.xyxy[0]
-            if results[0].boxes.cls[i] > 1 and results[0].boxes.conf[i] > 0.5:
+            if results[0].boxes.cls[i] > 1:
                 draw.rectangle([x1, y1, x2, y2], outline="green", width=4)
 
         for i, box in enumerate(results[0].boxes):
