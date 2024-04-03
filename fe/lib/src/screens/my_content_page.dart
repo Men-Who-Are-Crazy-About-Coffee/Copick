@@ -130,9 +130,7 @@ class _MyContentPageState extends State<MyContentPage> {
                                   mainAxisSpacing: 20,
                                   crossAxisSpacing: 10),
                           itemBuilder: (context, index) {
-                            return Expanded(
-                              child: value.items[index],
-                            );
+                            return value.items[index];
                           },
                         ),
                       ),
