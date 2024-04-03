@@ -41,12 +41,11 @@ class _MyContentPageState extends State<MyContentPage> {
   @override
   Widget build(BuildContext context) {
     ThemeColors themeColors = ThemeColors();
-    var user = Provider.of<UserProvider>(context);
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<ProfileContentProvider>(
             create: (_) => ProfileContentProvider()
-              ..started(_profileContentType, user: user.user)),
+              ..started(_profileContentType)),
       ],
       child: Consumer<ProfileContentProvider>(builder: (context, value, child) {
         return Scaffold(
