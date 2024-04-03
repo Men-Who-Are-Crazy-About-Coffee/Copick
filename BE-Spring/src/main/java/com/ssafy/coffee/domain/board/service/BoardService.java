@@ -118,15 +118,17 @@ public class BoardService {
 
     public BoardGetListResponseDto getLikedPostsByMember(Member member, Pageable pageable) {
         Page<BoardLike> likes = boardLikeRepository.findAllByMemberIndex(member.getIndex(), pageable);
-        List<BoardGetResponseDto> content = likes.getContent().stream().map(like -> {
-            Board board = like.getBoard();
-            List<BoardImage> boardImages = boardImageRepository.findAllByBoard(board);
-            List<String> imageUrls = boardImages.stream().map(BoardImage::getImage).collect(Collectors.toList());
+        List<BoardGetResponseDto> content = likes.getContent().stream()
+                .map(BoardLike::getBoard)
+                .filter(board -> !board.isDeleted())
+                .map(board -> {
+                    List<BoardImage> boardImages = boardImageRepository.findAllByBoard(board);
+                    List<String> imageUrls = boardImages.stream().map(BoardImage::getImage).collect(Collectors.toList());
 
-            BoardLikeInfoDto boardLikeInfo = getBoardLikeInfo(board,member);
+                    BoardLikeInfoDto boardLikeInfo = getBoardLikeInfo(board, member);
 
-            return new BoardGetResponseDto(board, imageUrls, boardLikeInfo.isLiked(),boardLikeInfo.getLikesCount(),boardLikeInfo.getCommentCount());
-        }).collect(Collectors.toList());
+                    return new BoardGetResponseDto(board, imageUrls, boardLikeInfo.isLiked(), boardLikeInfo.getLikesCount(), boardLikeInfo.getCommentCount());
+                }).toList();
 
         return new BoardGetListResponseDto(content, likes.getTotalPages(), likes.getTotalElements());
     }

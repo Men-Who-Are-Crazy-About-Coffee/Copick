@@ -88,26 +88,27 @@ async def manufacture_image(file,model):
         flaw_count = 0
         cropped_images = []
 
-        # flaw 이미지 자르기 & sequence 이미지에 박스 그리기
-        for i, box in enumerate(results[0].obb.xyxy):
-            x1, y1, x2, y2 = box.tolist()  # Tensor를 리스트로 변환
-            # 클래스가 0이 아니거나(Good 이거나) conf가 0.8이하면 (Bad의 정확도가 0.8미만이면)
-            if results[0].obb.cls[i] != 0:
-                draw.rectangle([x1, y1, x2, y2], outline="green", width=4)
-                continue
-            if results[0].obb.conf[i] < 0.8:
-                draw.rectangle([x1, y1, x2, y2], outline="green", width=4)
-                continue
-            #flaw 크롭된 이미지 생성
-            crop = image.crop((x1, y1, x2, y2))
-            # 크롭된 이미지를 바이트 스트림으로 변환
-            cropped_img_byte_arr = io.BytesIO()
-            crop.save(cropped_img_byte_arr, format='JPEG')
-            cropped_img_byte_arr.seek(0)  # 스트림의 시작 위치로 커서 이동
-            cropped_images.append(cropped_img_byte_arr)  # 리스트에 추가
+        for i, box in enumerate(results[0].boxes):
+            x1, y1, x2, y2 = box.xyxy[0]
+            if results[0].boxes.cls[i] < 2:
+                crop = image.crop((box.xyxy[0].tolist()))
+                cropped_img_byte_arr = io.BytesIO()
+                crop.save(cropped_img_byte_arr, format='JPEG')
+                cropped_img_byte_arr.seek(0)  # 스트림의 시작 위치로 커서 이동
+                cropped_images.append(cropped_img_byte_arr)  # 리스트에 추가)
 
-            draw.rectangle([x1, y1, x2, y2], outline="red", width=4)
-            flaw_count += 1
+        # flaw 이미지 자르기 & sequence 이미지에 박스 그리기
+        for i, box in enumerate(results[0].boxes):
+            x1, y1, x2, y2 = box.xyxy[0]
+            if results[0].boxes.cls[i] > 1 and results[0].boxes.conf[i] > 0.5:
+                draw.rectangle([x1, y1, x2, y2], outline="green", width=4)
+
+        for i, box in enumerate(results[0].boxes):
+            x1, y1, x2, y2 = box.xyxy[0]
+            if results[0].boxes.cls[i] < 2:
+                draw.rectangle([x1, y1, x2, y2], outline="red", width=4)
+                flaw_count += 1
+
         # # 이미지에 박스 그리기
         # for i, box in enumerate(results[0].obb.xyxy):
         #     x1, y1, x2, y2 = box.tolist()  # Tensor를 리스트로 변환
@@ -118,7 +119,7 @@ async def manufacture_image(file,model):
         #     draw.rectangle([x1, y1, x2, y2], outline="red", width=4)
         #     flaw_count += 1
 
-        normal_count = results[0].obb.cls.size()[0] - flaw_count
+        normal_count = results[0].boxes.cls.size()[0] - flaw_count
         # 바이트 스트림으로 이미지 저장
         img_byte_arr = io.BytesIO()
         image.save(img_byte_arr, format='JPEG')
