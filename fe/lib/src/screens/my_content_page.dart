@@ -44,8 +44,8 @@ class _MyContentPageState extends State<MyContentPage> {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<ProfileContentProvider>(
-            create: (_) => ProfileContentProvider()
-              ..started(_profileContentType)),
+            create: (_) =>
+                ProfileContentProvider()..started(_profileContentType)),
       ],
       child: Consumer<ProfileContentProvider>(builder: (context, value, child) {
         return Scaffold(
