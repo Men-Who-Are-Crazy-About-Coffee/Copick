@@ -119,8 +119,88 @@ class _PagesState extends State<Pages> {
                 backgroundColor: themeColors.color5,
                 child: const Icon(Icons.camera, size: 40),
                 onPressed: () async {
-                  Navigator.pushNamed(context, '/video');
-                  showDialog(
+                  await Permission.camera
+                  .onGrantedCallback(()=> Navigator.pushNamed(context, '/video'))
+                  .onDeniedCallback(()=>showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('알림'),
+                        content: const Text('원두 검출 기능을 위해 카메라 권한이 필요합니다.'),
+                        actions: <Widget>[
+                          TextButton(
+                            child: const Text('확인'),
+                            onPressed: () {
+                              Navigator.of(context).pop(false);
+
+                            },
+                          ),
+                          TextButton(
+                            child: const Text('설정 열기'),
+                            onPressed: () {
+                              openAppSettings();
+
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  ))
+                  .onPermanentlyDeniedCallback(() {
+                    return showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('알림'),
+                          content: const Text('원두 검출 기능을 위해 카메라 권한이 필요합니다.'),
+                          actions: <Widget>[
+                            TextButton(
+                              child: const Text('확인'),
+                              onPressed: () {
+                                Navigator.of(context).pop(false);
+
+                              },
+                            ),
+                            TextButton(
+                              child: const Text('설정 열기'),
+                              onPressed: () {
+                                openAppSettings();
+
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  })
+                  .onLimitedCallback(() {
+                    return showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('알림'),
+                          content: const Text('원두 검출 기능을 위해 카메라 권한이 필요합니다.'),
+                          actions: <Widget>[
+                            TextButton(
+                              child: const Text('확인'),
+                              onPressed: () {
+                                Navigator.of(context).pop(false);
+
+                              },
+                            ),
+                            TextButton(
+                              child: const Text('설정 열기'),
+                              onPressed: () {
+                                openAppSettings();
+
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  })
+                  .onRestrictedCallback(() => showDialog(
                     context: context,
                     builder: (BuildContext context) {
                       return AlertDialog(
@@ -130,13 +210,16 @@ class _PagesState extends State<Pages> {
                           TextButton(
                             child: const Text('확인'),
                             onPressed: () {
-                              Navigator.of(context).pop();
+                              Navigator.of(context).pop(false);
+
                             },
                           ),
                         ],
                       );
                     },
-                  );
+                  ))
+                  .request();
+
                 }),
           ),
           floatingActionButtonLocation:

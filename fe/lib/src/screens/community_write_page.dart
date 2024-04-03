@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class CommunityWritePage extends StatefulWidget {
   const CommunityWritePage({super.key});
@@ -21,8 +22,10 @@ class _CommunityWritePageState extends State<CommunityWritePage> {
   XFile? _image;
 
   Future<void> getImage() async {
+
     // imageQuality 매개변수 없이 이미지 선택
     if (kIsWeb) {
+
       final pickedFile = await ImagePicker().pickImage(
         source: ImageSource.gallery,
         imageQuality: 25,
@@ -34,33 +37,119 @@ class _CommunityWritePageState extends State<CommunityWritePage> {
         });
       }
     } else {
-      final pickedFile = await ImagePicker().pickImage(
-        source: ImageSource.gallery,
-      );
+      if(await Permission.photos
+          .onDeniedCallback(()=>showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('알림'),
+            content: const Text('게시글에는 이미지가 포함되어야합니다.'),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('확인'),
+                onPressed: () {
+                  Navigator.of(context).pop(false);
 
-      if (pickedFile != null) {
-        // 파일 확장자 검사
-        String extension = pickedFile.path.split('.').last.toLowerCase();
+                },
+              ),
+              TextButton(
+                child: const Text('설정 열기'),
+                onPressed: () {
+                  openAppSettings();
 
-        if (extension != 'gif') {
-          // GIF가 아닌 경우, 이미지 압축
-          final compressedFile = await FlutterImageCompress.compressAndGetFile(
-            pickedFile.path,
-            '${pickedFile.path}_compressed.jpg', // 압축된 이미지 저장 경로
-            quality: 25, // 압축 품질
+                },
+              ),
+            ],
           );
+        },
+      ))
+          .onPermanentlyDeniedCallback(() {
+        return showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('알림'),
+              content: const Text('게시글에는 이미지가 포함되어야합니다.'),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('확인'),
+                  onPressed: () {
+                    Navigator.of(context).pop(false);
 
-          if (compressedFile != null) {
+                  },
+                ),
+                TextButton(
+                  child: const Text('설정 열기'),
+                  onPressed: () {
+                    openAppSettings();
+
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      })
+          .onLimitedCallback(() {
+        return showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('알림'),
+              content: const Text('게시글에는 이미지가 포함되어야합니다.'),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('확인'),
+                  onPressed: () {
+                    Navigator.of(context).pop(false);
+
+                  },
+                ),
+                TextButton(
+                  child: const Text('설정 열기'),
+                  onPressed: () {
+                    openAppSettings();
+
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      })
+          .request().isGranted) {
+        final pickedFile = await ImagePicker().pickImage(
+          source: ImageSource.gallery,
+        );
+
+        if (pickedFile != null) {
+          // 파일 확장자 검사
+          String extension = pickedFile.path
+              .split('.')
+              .last
+              .toLowerCase();
+
+          if (extension != 'gif') {
+            // GIF가 아닌 경우, 이미지 압축
+            final compressedFile = await FlutterImageCompress
+                .compressAndGetFile(
+              pickedFile.path,
+              '${pickedFile.path}_compressed.jpg', // 압축된 이미지 저장 경로
+              quality: 25, // 압축 품질
+            );
+
+            if (compressedFile != null) {
+              setState(() {
+                // 압축된 이미지로 _image 업데이트
+                _image = XFile(compressedFile.path);
+              });
+            }
+          } else {
             setState(() {
-              // 압축된 이미지로 _image 업데이트
-              _image = XFile(compressedFile.path);
+              // GIF 이미지인 경우, 원본 이미지로 _image 업데이트
+              _image = pickedFile;
             });
           }
-        } else {
-          setState(() {
-            // GIF 이미지인 경우, 원본 이미지로 _image 업데이트
-            _image = pickedFile;
-          });
         }
       }
     }
