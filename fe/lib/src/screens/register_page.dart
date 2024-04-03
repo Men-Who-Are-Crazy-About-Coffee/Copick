@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:fe/constants.dart';
 import 'package:fe/src/services/api_service.dart';
 import 'package:fe/src/widgets/rounded_button.dart';
@@ -20,7 +21,7 @@ class _RegisterState extends State<Register> {
   final TextEditingController nicknameController = TextEditingController();
   final TextEditingController ageController = TextEditingController();
 
-  void join() {
+  void join() async {
     if (idController.text.length == "" ||
         validatePassword(pwController.text) != null ||
         nicknameController.text == "" ||
@@ -28,13 +29,33 @@ class _RegisterState extends State<Register> {
       getDialog();
       return;
     }
-    ApiService apiService = ApiService();
-    apiService.post('/api/auth/register', data: {
-      "id": idController.text,
-      "password": pwController.text,
-      "nickname": nicknameController.text,
-    });
-    Navigator.pushNamed(context, '/login');
+    try {
+      ApiService apiService = ApiService();
+      await apiService.post('/api/auth/register', data: {
+        "id": idController.text,
+        "password": pwController.text,
+        "nickname": nicknameController.text,
+      });
+      Navigator.pushNamed(context, '/login');
+    } catch (e) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('안내메세지'),
+            content: const Text("중복된 아이디입니다."),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('닫기'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   void getDialog() {
