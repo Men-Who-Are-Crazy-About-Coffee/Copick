@@ -3,10 +3,14 @@ import 'package:flutter/material.dart';
 class InputField extends StatefulWidget {
   final String label;
   final TextEditingController controller;
+  final int maxLength;
+  final String description;
   const InputField({
-    super.key,
+    super.key, // Key 매개변수를 옵셔널로 변경합니다.
     required this.label,
     required this.controller,
+    this.maxLength = 20, // 기본값을 여기서 설정합니다.
+    this.description = '',
   });
 
   @override
@@ -34,8 +38,10 @@ class _InputFieldState extends State<InputField> {
 
     return TextField(
       controller: widget.controller,
+      maxLength: widget.maxLength,
       obscureText: isPassword ? _isObscured : false, // 비밀번호일 경우 가시성 토글
       decoration: InputDecoration(
+        counterText: '',
         labelText: widget.label,
         filled: true,
         fillColor: Colors.grey[200],

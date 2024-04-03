@@ -20,8 +20,8 @@ class _RegisterState extends State<Register> {
   final TextEditingController ageController = TextEditingController();
 
   void join() {
-    if (idController.text == "" ||
-        pwController.text == "" ||
+    if (idController.text.length == "" ||
+        validatePassword(pwController.text) != null ||
         nicknameController.text == "") {
       getDialog();
       return;
@@ -43,8 +43,8 @@ class _RegisterState extends State<Register> {
           title: const Text('안내메세지'),
           content: idController.text == ""
               ? const Text('아이디를 입력해주세요.')
-              : pwController.text == ""
-                  ? const Text("비밀번호를 입력해주세요.")
+              : validatePassword(pwController.text) != null
+                  ? const Text("특수문자, 문자, 숫자 포함 8자 이상 16자 이내로 입력하세요.")
                   : const Text("닉네임을 입력해주세요."),
           actions: <Widget>[
             TextButton(
@@ -57,6 +57,22 @@ class _RegisterState extends State<Register> {
         );
       },
     );
+  }
+
+  String? validatePassword(String value) {
+    String pattern =
+        r'^(?=.*[a-zA-z])(?=.*[0-9])(?=.*[$`~!@$!%*#^?&\\(\\)\-_=+]).{8,15}$';
+    RegExp regExp = RegExp(pattern);
+
+    if (value.isEmpty) {
+      return '비밀번호를 입력하세요';
+    } else if (value.length < 8) {
+      return '비밀번호는 8자리 이상이어야 합니다';
+    } else if (!regExp.hasMatch(value)) {
+      return '특수문자, 문자, 숫자 포함 8자 이상 15자 이내로 입력하세요.';
+    } else {
+      return null; //null을 반환하면 정상
+    }
   }
 
   @override
@@ -96,6 +112,7 @@ class _RegisterState extends State<Register> {
                           InputField(
                             label: 'Id',
                             controller: idController,
+                            maxLength: 10,
                           ),
                           const SizedBox(
                             height: 20,
@@ -103,13 +120,23 @@ class _RegisterState extends State<Register> {
                           InputField(
                             label: 'password',
                             controller: pwController,
+                            maxLength: 16,
+                          ),
+                          const Row(
+                            children: [
+                              Text(
+                                "8~16자의 영문 대/소문자, 숫자, 특수문자를 사용해 주세요.",
+                                style: TextStyle(fontSize: 11),
+                              ),
+                            ],
                           ),
                           const SizedBox(
-                            height: 20,
+                            height: 15,
                           ),
                           InputField(
                             label: '닉네임',
                             controller: nicknameController,
+                            maxLength: 7,
                           ),
                           const SizedBox(
                             height: 20,
