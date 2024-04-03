@@ -43,7 +43,7 @@ public class CommentService {
         Comment comment = commentRepository.findById(commentIndex)
                 .orElseThrow(() -> new IllegalArgumentException("Comment not found"));
 
-        if (!comment.getCreatedBy().equals(member) && member.getRole() != Role.ADMIN)
+        if (!comment.getCreatedBy().getIndex().equals(member.getIndex()) && member.getRole() != Role.ADMIN)
             throw new IllegalStateException("You do not have permission to update this comment.");
 
         comment.setContent(commentUpdateRequestDto.getContent());
@@ -55,7 +55,7 @@ public class CommentService {
         Comment comment = commentRepository.findById(commentIndex)
                 .orElseThrow(() -> new IllegalArgumentException("Comment not found"));
 
-        if (!comment.getCreatedBy().equals(member) && member.getRole() != Role.ADMIN)
+        if (!comment.getCreatedBy().getIndex().equals(member.getIndex()) && member.getRole() != Role.ADMIN)
             throw new IllegalStateException("You do not have permission to update this comment.");
 
         commentRepository.delete(comment);
