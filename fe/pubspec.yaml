@@ -100,22 +100,9 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-    - family: main
-      fonts:
-        - asset: assets/fonts/main.ttf
-
     - family: SDchild
       fonts:
         - asset: assets/fonts/NanumSquareRoundR.ttf
-
-    - family: netmarble
-      fonts:
-        - asset: assets/fonts/netmarbleB.ttf
-          weight: 100
-        - asset: assets/fonts/netmarbleL.ttf
-          weight: 200
-        - asset: assets/fonts/netmarbleM.ttf
-          weight: 300
 
   #   - family: Trajan Pro
   #     fonts:
