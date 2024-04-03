@@ -1,17 +1,3 @@
-//
-//  Generated file. Do not edit.
-//
-
-// clang-format off
-
-#include "generated_plugin_registrant.h"
-
-#include <file_selector_windows/file_selector_windows.h>
-#include <flutter_secure_storage_windows/flutter_secure_storage_windows_plugin.h>
-
-void RegisterPlugins(flutter::PluginRegistry* registry) {
-  FileSelectorWindowsRegisterWithRegistrar(
-      registry->GetRegistrarForPlugin("FileSelectorWindows"));
-  FlutterSecureStorageWindowsPluginRegisterWithRegistrar(
-      registry->GetRegistrarForPlugin("FlutterSecureStorageWindowsPlugin"));
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:384b2836e0f01867036cc70a4c622775fad3dda23cf6c9093eb5c9fdf793cc09
+size 545
