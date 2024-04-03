@@ -52,16 +52,6 @@ void main() async {
           Locale('ko', 'KR'),
         ],
         scrollBehavior: AppScrollBehavior(),
-        builder: (context, child) {
-          ScreenParams.screenSize = MediaQuery.of(context).size;
-          final MediaQueryData data = MediaQuery.of(context);
-          return MediaQuery(
-            data: data.copyWith(
-              textScaler: const TextScaler.linear(1.3),
-            ),
-            child: child!,
-          );
-        },
         theme: ThemeData(
           fontFamily: "SDchild",
         ),

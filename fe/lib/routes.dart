@@ -25,5 +25,6 @@ final routes = {
       camera: Provider.of<CameraProvider>(context).camera as CameraDescription),
   "/camera": (context) => CameraPage(
       camera: Provider.of<CameraProvider>(context).camera as CameraDescription),
-  "/my_content": (context)=> const MyContentPage(profileContentType: ProfileContentType.board),
+  "/my_content": (context) =>
+      const MyContentPage(profileContentType: ProfileContentType.board),
 };
