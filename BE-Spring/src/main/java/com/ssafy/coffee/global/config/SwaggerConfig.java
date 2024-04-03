@@ -12,8 +12,8 @@ import org.springframework.context.annotation.Profile;
 
 @OpenAPIDefinition(
         info = @Info(
-                title = "호날두 (호로록 날로먹는 원두) API 명세서",
-                description = "호날두 API 명세서",
+                title = "CoPick API 명세서",
+                description = "CoPick API 명세서",
                 version = "v1"
         )
 )
