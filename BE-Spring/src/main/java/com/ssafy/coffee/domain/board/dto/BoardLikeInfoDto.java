@@ -1,3 +1,13 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:a82029a564f62ec1db86ad0497215c16708bdc2ebe393ca18bc6b28128d7b2ee
-size 254
+package com.ssafy.coffee.domain.board.dto;
+
+import lombok.Builder;
+import lombok.Getter;
+
+import java.util.Objects;
+@Builder
+@Getter
+public class BoardLikeInfoDto {
+    private boolean liked;
+    private long likesCount;
+    private long commentCount;
+}

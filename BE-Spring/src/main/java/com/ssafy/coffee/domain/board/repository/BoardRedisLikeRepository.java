@@ -1,3 +1,12 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:4c58f057eadb37a802ea71d184dfe9416b4a68029d286d4fed2147fe33dbe6f9
-size 444
+package com.ssafy.coffee.domain.board.repository;
+
+import com.ssafy.coffee.domain.board.entity.BoardRedisLike;
+import org.springframework.data.repository.CrudRepository;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface BoardRedisLikeRepository extends CrudRepository<BoardRedisLike, Integer> {
+    List<BoardRedisLike> findAllByBoardIndex(Long boardIndex);
+    List<BoardRedisLike> findAllByMemberIndex(Long memberIndex);
+}
