@@ -43,6 +43,7 @@ void main() async {
             create: (context) => UserProvider()..fetchUserData()),
       ],
       child: MaterialApp(
+        title: "Copick",
         localizationsDelegates: const [
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
