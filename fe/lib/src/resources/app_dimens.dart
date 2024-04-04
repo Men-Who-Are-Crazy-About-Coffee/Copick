@@ -1,13 +1,3 @@
-class AppDimens {
-  static const double menuMaxNeededWidth = 304;
-  static const double menuRowHeight = 74;
-  static const double menuIconSize = 32;
-  static const double menuDocumentationIconSize = 44;
-  static const double menuTextSize = 20;
-
-  static const double chartBoxMinWidth = 350;
-
-  static const double defaultRadius = 8;
-  static const double chartSamplesSpace = 32.0;
-  static const double chartSamplesMinWidth = 350;
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:0f9acebfda2b978c5fd2795512d9c2640a01b917ea4dbc744d6fd22913a3c1bf
+size 433
