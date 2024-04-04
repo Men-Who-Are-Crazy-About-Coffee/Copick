@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.copick.app.front",
+      "sha256_cert_fingerprints": [
+        "59:1D:79:19:28:74:37:A9:4F:C4:4D:75:30:55:B9:B1:00:5F:B0:DF:10:D2:3C:58:9C:5B:8A:BE:D9:CE:02:9B"
+      ]
+    }
+  }
+]
