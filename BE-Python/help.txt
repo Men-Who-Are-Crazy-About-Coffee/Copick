@@ -1,0 +1,13 @@
+requirements.txt 업데이트
+pip freeze > requirements.txt
+
+requiremnets.txt 패키지 설치
+pip install -r requirements.txt
+
+실행코드
+uvicorn server:app --reload (로컬만 허용)
+uvicorn server:app --host 0.0.0.0 --reload (외부 접속 허용)
+
+스웨거
+{주소}/docs
+ex)http://localhost:8000/docs
