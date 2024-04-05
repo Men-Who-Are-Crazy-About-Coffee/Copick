@@ -1,3 +1,3 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:415f36f28b7872bb81bb49f4b295a07fad83bff8914c6ecd4b189a65fb153992
-size 200
+export 'video_page_stub.dart'
+    if (dart.library.io) 'video_page_mobile.dart' // 모바일 (dart:io 사용 가능)
+    if (dart.library.html) 'video_page_web.dart'; // 웹 (dart:html 사용 가능)
