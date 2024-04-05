@@ -71,7 +71,7 @@
 프로젝트 정보(개발기간, 팀원)
 2024.02.19 ~ 2024.04.04
 
-프로젝트 개요 (프로젝트를 문장으로 소개하삼 음슴체ㄴㄴ)
+프로젝트 개요
 
 - 원두 핸드픽이 힘드신 홈 바리스타들을 위해, AI를 사용해서 도와드립니다.
 
@@ -89,16 +89,18 @@
 
 ## 서비스 화면
 
-<p align="center">
-  <img src="readme_image/main_page.gif" alt="main_page" width="100" style="margin-right: 100px;">
-  <img src="readme_image/video_page.gif" alt="video_page" width="100" style="margin-right: 100px;">
-  <img src="readme_image/camera_page.gif" alt="camera_page" width="100" style="margin-right: 100px;">
-</p>
-<p align="center">
-  <img src="readme_image/resukt_page.gif" alt="resukt_page" width="100" style="margin-right: 100px;">
-  <img src="readme_image/galery_page.gif" alt="galery_page" width="100" style="margin-right: 100px;">
-  <img src="readme_image/community_page.gif" alt="community_page" width="100" style="margin-right: 100px;">
-</p>
+<table width="100%" border-style="non" cellspacing="0" cellpadding="100">
+  <tr>
+    <td align="center"><img src="readme_image/main_page.gif" alt="main_page" width="200"></td>
+    <td align="center"><img src="readme_image/video_page.gif" alt="video_page" width="200"></td>
+    <td align="center"><img src="readme_image/camera_page.gif" alt="camera_page" width="200"></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="readme_image/resukt_page.gif" alt="result_page" width="200"></td>
+    <td align="center"><img src="readme_image/galery_page.gif" alt="galery_page" width="200"></td>
+    <td align="center"><img src="readme_image/community_page.gif" alt="community_page" width="200"></td>
+  </tr>
+</table>
 
 <br/><br/>
 
@@ -122,7 +124,7 @@
 컨벤션 설정을 통해 규칙을 정하고 GERRIT을 함께 활용하여 서로의 코드에 코멘트를 남겨 보완할 수 있도록 합니다.
 
 - GIT 컨벤션
-  ![GIT 컨벤션](readme_image/git.png)
+  ![GIT 컨벤션](readme_image/Git.png)
 
 ### Notion
 
@@ -146,8 +148,9 @@
 
 **FRONTEND**
 
-` 이호성`(FE 리더) : Flutter 디자인 및 기능 구현 <br/>
-`강보훈`: Flutter 디자인 및 기능 구현 | on device AI <br/>`전재우`(Team 리더) : AI 모델 설정 및 학습 <br/>
+`이호성`(FE 리더) : Flutter 디자인 및 기능 구현 <br/>
+`강보훈`: Flutter 디자인 및 기능 구현 | on device AI <br/>
+`전재우`(Team 리더) : Project Manager | AI modeling <br/>
 
 **BACKEND**
 
