@@ -1,3 +1,14 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:aa6227b06bd2886565488b8c324a1cce9dd9158a570fe92edd91cae06961d1e6
-size 351
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+class DeleteStorage {
+  final storage = const FlutterSecureStorage();
+
+  Future<void> deleteAll() async {
+    await storage.deleteAll();
+  }
+
+  Future<void> deleteTokens() async {
+    await storage.delete(key: 'ACCESS_TOKEN');
+    await storage.delete(key: 'REFRESH_TOKEN');
+  }
+}

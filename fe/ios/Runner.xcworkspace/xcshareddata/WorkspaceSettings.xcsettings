@@ -1,3 +1,8 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:11b247bc6796892d67c9a821d18604db4dd6a880981b34f38460b9866e6b247f
-size 226
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>PreviewsEnabled</key>
+	<false/>
+</dict>
+</plist>

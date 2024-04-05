@@ -1,3 +1,2 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:8067d533ef6593760baad9a9855a786a7a77470fcc3f0925ec04fe43bc1ac4b0
-size 77
+#include "../../Flutter/Flutter-Debug.xcconfig"
+#include "Warnings.xcconfig"
