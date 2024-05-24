@@ -1,6 +1,6 @@
 # Copick
 
-<img src="readme_image/logo.png" width="150px"/>
+<img src="readme_image/CoPick_Logo.png" width="150px"/>
 
 <br/>
 
